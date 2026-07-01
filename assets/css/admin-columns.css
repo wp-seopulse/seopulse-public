@@ -1,0 +1,156 @@
+/**
+ * Admin Columns Styles
+ *
+ * Styles for SEO columns displayed in post/page list tables.
+ * Uses design-system tokens (--sp-*) for consistency.
+ *
+ * @package SEOPulse
+ * @since   1.0.0
+ */
+
+/* ── Column widths ──────────────────────────────────────────── */
+.column-seopulse_score {
+	width: 10%;
+	text-align: center;
+}
+
+.column-seopulse_meta {
+	width: 20%;
+	text-align: left;
+}
+
+.column-seopulse_status {
+	width: 8%;
+	text-align: center;
+}
+
+/* ── Constrain WP taxonomy columns ──────────────────────────── */
+.column-title {
+	width: 30%;
+}
+
+.column-categories,
+.column-tags {
+	width: 8% !important;
+}
+
+.column-seopulse_sitemap {
+	width: 4% !important;
+	text-align: center;
+}
+
+/* ── Vertical alignment ─────────────────────────────────────── */
+.wp-list-table .column-seopulse_score,
+.wp-list-table .column-seopulse_meta,
+.wp-list-table .column-seopulse_status {
+	vertical-align: middle;
+}
+
+/* ── Score badge (col-score) ────────────────────────────────── */
+.seopulse-col-score {
+	display: inline-block;
+	padding: 4px 12px;
+	border-radius: var(--sp-radius-full, 9999px);
+	font-weight: var(--sp-weight-semibold, 600);
+	font-size: var(--sp-text-sm, 12px);
+	text-align: center;
+	min-width: 46px;
+	text-decoration: none;
+	transition: opacity 0.15s ease;
+}
+
+.seopulse-col-score:hover {
+	opacity: 0.85;
+}
+
+.seopulse-col-score--green {
+	background: var(--sp-success-subtle);
+	color: var(--sp-success-text);
+}
+
+.seopulse-col-score--yellow {
+	background: var(--sp-warning-subtle);
+	color: var(--sp-warning-text);
+}
+
+.seopulse-col-score--red {
+	background: var(--sp-error-subtle);
+	color: var(--sp-error-text);
+}
+
+.seopulse-col-score--na {
+	background: var(--sp-gray-100, #f1f3f6);
+	color: var(--sp-text-secondary, #6e6e73);
+}
+
+/* ── Meta column (title / desc) ─────────────────────────────── */
+.seopulse-col-meta {
+	line-height: 1.4;
+	word-break: break-word;
+}
+
+.seopulse-col-meta--empty {
+	color: var(--sp-text-secondary, #6e6e73);
+	font-style: italic;
+	font-size: var(--sp-text-sm, 12px);
+}
+
+.seopulse-col-meta__title {
+	color: var(--sp-text-primary, #3c4556);
+	font-weight: var(--sp-weight-semibold, 600);
+	font-size: 13px;
+	margin-bottom: 2px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 160px;
+}
+
+.seopulse-col-meta__desc {
+	color: var(--sp-text-secondary, #6e6e73);
+	font-size: var(--sp-text-sm, 12px);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 160px;
+}
+
+/* ── Status column ──────────────────────────────────────────── */
+.seopulse-col-status {
+	display: inline-block;
+	padding: 3px 10px;
+	border-radius: var(--sp-radius-full, 9999px);
+	font-size: var(--sp-text-xs, 11px);
+	font-weight: var(--sp-weight-semibold, 600);
+	letter-spacing: 0.02em;
+}
+
+.seopulse-col-status--up-to-date {
+	background: var(--sp-success-subtle);
+	color: var(--sp-success-text);
+}
+
+.seopulse-col-status--needs-analysis {
+	background: var(--sp-warning-subtle);
+	color: var(--sp-warning-text);
+}
+
+.seopulse-col-status--not-analyzed {
+	background: var(--sp-gray-100, #f1f3f6);
+	color: var(--sp-text-secondary, #6e6e73);
+}
+
+.seopulse-col-status__time {
+	color: var(--sp-text-secondary, #6e6e73);
+	font-size: var(--sp-text-xs, 11px);
+}
+
+/* ── Mobile: hide SEO columns ───────────────────────────────── */
+@media screen and (max-width: 782px) {
+
+	.column-seopulse_score,
+	.column-seopulse_meta,
+	.column-seopulse_status {
+		display: none !important;
+	}
+}

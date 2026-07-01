@@ -1,0 +1,461 @@
+/**
+ * Image SEO (Alt Wizard) — Admin styles (BEM)
+ *
+ * Layout aligned with MetaSeo / LocalSeo module architecture.
+ * Block: .seopulse-image-alt
+ * Consumes CSS custom properties from seopulse-admin.css design tokens.
+ *
+ * @package SEOPulse
+ * @since   1.0.0
+ */
+
+/* ── Main container ─────────────────────────────────────────── */
+.seopulse-image-alt {
+	max-width: 100%;
+}
+
+/* ── Body: sidebar + content ────────────────────────────────── */
+.seopulse-image-alt__body {
+	display: flex;
+	gap: 0;
+	min-height: 500px;
+	border: 1px solid var(--sp-border-strong);
+	background: var(--sp-surface-solid);
+	overflow: visible;
+}
+
+/* ── Left column (sidebar) ──────────────────────────────────── */
+.seopulse-image-alt__left {
+	display: flex;
+	flex-direction: column;
+	width: 220px;
+	min-width: 220px;
+	background: var(--sp-glass-bg);
+	backdrop-filter: blur(var(--sp-depth-blur-elevated));
+	-webkit-backdrop-filter: blur(var(--sp-depth-blur-elevated));
+	position: sticky;
+	top: 80px;
+
+	/* WP admin bar height */
+	align-self: flex-start;
+	max-height: calc(100vh - 80px);
+}
+
+/* ── Sidebar navigation ─────────────────────────────────────── */
+.seopulse-image-alt__sidebar {
+	flex: 1;
+	overflow-y: auto;
+	padding: var(--sp-space-3) 0;
+}
+
+.seopulse-image-alt__nav-btn {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	padding: 11px 20px;
+	margin: 0;
+	background: transparent;
+	border: none;
+	border-left: 3px solid transparent;
+	cursor: pointer;
+	font-size: var(--sp-text-meta);
+	font-weight: var(--sp-weight-semibold);
+	font-family: var(--sp-font-family);
+	color: var(--sp-text-secondary);
+	text-align: left;
+	transition: all var(--sp-transition-fast);
+}
+
+.seopulse-image-alt__nav-btn .dashicons {
+	font-size: 18px;
+	width: 18px;
+	height: 18px;
+	line-height: 18px;
+	opacity: 0.6;
+	transition: opacity var(--sp-transition-fast);
+}
+
+.seopulse-image-alt__nav-btn:hover {
+	background: var(--sp-surface-hover);
+	color: var(--sp-text-primary);
+}
+
+.seopulse-image-alt__nav-btn:hover .dashicons {
+	opacity: 0.85;
+}
+
+.seopulse-image-alt__nav-btn.active {
+	background: var(--sp-accent-subtle);
+	color: var(--sp-accent);
+	border-left-color: var(--sp-accent);
+	font-weight: var(--sp-weight-semibold);
+}
+
+.seopulse-image-alt__nav-btn.active .dashicons {
+	color: var(--sp-accent);
+	opacity: 1;
+}
+
+/* ── Content area ───────────────────────────────────────────── */
+.seopulse-image-alt__content {
+	flex: 1;
+	min-width: 0;
+	padding: 0;
+	border-left: 1px solid var(--sp-border-color);
+}
+
+/* ── Panel (tab content) ────────────────────────────────────── */
+.seopulse-image-alt__panel {
+	display: none;
+	padding: 28px;
+}
+
+.seopulse-image-alt__panel.active {
+	display: block;
+}
+
+/* ── Section header ─────────────────────────────────────────── */
+.seopulse-image-alt__section {
+	margin-bottom: var(--sp-space-8);
+	padding-bottom: var(--sp-space-6);
+	border-bottom: 1px solid var(--sp-border-color);
+}
+
+.seopulse-image-alt__section:last-child {
+	margin-bottom: 0;
+	padding-bottom: 0;
+	border-bottom: none;
+}
+
+.seopulse-image-alt__section-title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 8px;
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--sp-text-primary);
+	letter-spacing: -0.01em;
+}
+
+.seopulse-image-alt__section-title .dashicons {
+	color: var(--sp-accent);
+}
+
+.seopulse-image-alt__section-desc {
+	margin: 0 0 16px;
+	color: var(--sp-text-secondary);
+	font-size: var(--sp-text-meta);
+	line-height: 1.6;
+}
+
+/* ── Stats cards ────────────────────────────────────────────── */
+.seopulse-image-alt__cards {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: var(--sp-space-4);
+	margin-bottom: var(--sp-space-6);
+}
+
+.seopulse-image-alt__card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--sp-space-2);
+	padding: var(--sp-space-5);
+	background: var(--sp-surface-solid);
+	border: 1px solid var(--sp-border-color);
+	border-radius: var(--sp-radius-lg);
+	text-align: center;
+	transition: box-shadow var(--sp-transition), border-color var(--sp-transition);
+}
+
+.seopulse-image-alt__card:hover {
+	border-color: var(--sp-border-strong);
+	box-shadow: var(--sp-shadow-sm);
+}
+
+.seopulse-image-alt__card-icon {
+	font-size: 24px;
+	width: 24px;
+	height: 24px;
+	color: var(--sp-accent);
+	opacity: 0.7;
+}
+
+.seopulse-image-alt__card-value {
+	font-size: var(--sp-text-3xl);
+	font-weight: var(--sp-weight-bold);
+	color: var(--sp-text-primary);
+	line-height: 1;
+}
+
+.seopulse-image-alt__card-label {
+	font-size: var(--sp-text-sm);
+	color: var(--sp-text-secondary);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	font-weight: var(--sp-weight-medium);
+}
+
+/* Card color variants */
+.seopulse-image-alt__card--danger .seopulse-image-alt__card-icon {
+	color: var(--sp-error);
+}
+
+.seopulse-image-alt__card--danger .seopulse-image-alt__card-value {
+	color: var(--sp-error-text);
+}
+
+.seopulse-image-alt__card--success .seopulse-image-alt__card-icon {
+	color: var(--sp-success);
+}
+
+.seopulse-image-alt__card--success .seopulse-image-alt__card-value {
+	color: var(--sp-success-text);
+}
+
+.seopulse-image-alt__card--info .seopulse-image-alt__card-icon {
+	color: var(--sp-info);
+}
+
+.seopulse-image-alt__card--info .seopulse-image-alt__card-value {
+	color: var(--sp-info-text);
+}
+
+/* ── Notice ─────────────────────────────────────────────────── */
+.seopulse-image-alt__notice {
+	display: flex;
+	gap: var(--sp-space-3);
+	padding: var(--sp-space-4);
+	border-radius: var(--sp-radius-sm);
+	font-size: var(--sp-text-meta);
+	line-height: 1.5;
+}
+
+.seopulse-image-alt__notice>.dashicons {
+	flex-shrink: 0;
+	font-size: 20px;
+	width: 20px;
+	height: 20px;
+	margin-top: 1px;
+}
+
+.seopulse-image-alt__notice p {
+	margin: var(--sp-space-1) 0 0;
+	font-weight: var(--sp-weight-regular);
+}
+
+.seopulse-image-alt__notice--warning {
+	background: var(--sp-warning-subtle);
+	border: 1px solid var(--sp-warning);
+	color: var(--sp-warning-text);
+}
+
+/* ── Field group (settings form) ────────────────────────────── */
+.seopulse-image-alt__field-group {
+	margin-bottom: var(--sp-space-6);
+	padding-bottom: var(--sp-space-6);
+	border-bottom: 1px solid var(--sp-border-subtle);
+}
+
+.seopulse-image-alt__field-group:last-of-type {
+	border-bottom: none;
+	padding-bottom: 0;
+}
+
+.seopulse-image-alt__field-label {
+	display: block;
+	font-weight: var(--sp-weight-semibold);
+	font-size: var(--sp-text-base);
+	color: var(--sp-text-primary);
+	margin-bottom: var(--sp-space-2);
+}
+
+.seopulse-image-alt__field-control {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-space-2);
+}
+
+.seopulse-image-alt__field-help {
+	margin: var(--sp-space-2) 0 0;
+	font-size: var(--sp-text-sm);
+	color: var(--sp-text-secondary);
+	line-height: 1.5;
+}
+
+/* ── Toggle (checkbox) label ────────────────────────────────── */
+.seopulse-image-alt__toggle-label {
+	display: flex;
+	align-items: center;
+	gap: var(--sp-space-2);
+	cursor: pointer;
+	font-size: var(--sp-text-meta);
+	color: var(--sp-text-primary);
+}
+
+.seopulse-image-alt__toggle-label input[type="checkbox"] {
+	margin: 0;
+}
+
+/* ── Radio labels ───────────────────────────────────────────── */
+.seopulse-image-alt__radio-label {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--sp-space-3);
+	padding: var(--sp-space-3) var(--sp-space-4);
+	background: var(--sp-bg-flat);
+	border: 1px solid var(--sp-border-color);
+	border-radius: var(--sp-radius-sm);
+	cursor: pointer;
+	transition: border-color var(--sp-transition), background var(--sp-transition);
+}
+
+.seopulse-image-alt__radio-label:hover {
+	border-color: var(--sp-accent);
+	background: var(--sp-accent-subtle);
+}
+
+.seopulse-image-alt__radio-label input[type="radio"] {
+	margin: 3px 0 0;
+	flex-shrink: 0;
+}
+
+.seopulse-image-alt__radio-label span {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.seopulse-image-alt__radio-label strong {
+	font-size: var(--sp-text-meta);
+	color: var(--sp-text-primary);
+}
+
+.seopulse-image-alt__radio-label small {
+	font-size: var(--sp-text-sm);
+	color: var(--sp-text-secondary);
+	line-height: 1.4;
+}
+
+/* ── Actions row ────────────────────────────────────────────── */
+.seopulse-image-alt__actions {
+	display: flex;
+	align-items: center;
+	gap: var(--sp-space-3);
+	margin-top: var(--sp-space-6);
+}
+
+.seopulse-image-alt__status {
+	font-size: var(--sp-text-sm);
+	color: var(--sp-success-text);
+}
+
+/* ── Batch action ───────────────────────────────────────────── */
+.seopulse-image-alt__batch-action {
+	margin: var(--sp-space-4) 0;
+}
+
+.seopulse-image-alt__batch-action .seopulse-core__btn .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+/* ── Progress bar ───────────────────────────────────────────── */
+.seopulse-image-alt__progress {
+	margin-top: var(--sp-space-6);
+}
+
+.seopulse-image-alt__progress-track {
+	background: var(--sp-gray-150);
+	border-radius: var(--sp-radius-full);
+	height: 10px;
+	overflow: hidden;
+}
+
+.seopulse-image-alt__progress-bar {
+	background: var(--sp-accent);
+	height: 100%;
+	width: 0%;
+	border-radius: var(--sp-radius-full);
+	transition: width 0.3s var(--sp-ease);
+}
+
+.seopulse-image-alt__progress-text {
+	margin-top: var(--sp-space-2);
+	font-size: var(--sp-text-sm);
+	color: var(--sp-text-secondary);
+}
+
+/* ── Reduced motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+
+	.seopulse-image-alt__nav-btn,
+	.seopulse-image-alt__nav-btn .dashicons,
+	.seopulse-image-alt__card,
+	.seopulse-image-alt__radio-label,
+	.seopulse-image-alt__progress-bar {
+		transition: none;
+	}
+}
+
+/* ── Responsive: stack sidebar below 782px ──────────────────── */
+@media (max-width: 782px) {
+
+	.seopulse-image-alt__body {
+		flex-direction: column;
+		min-height: auto;
+	}
+
+	.seopulse-image-alt__left {
+		flex-direction: row;
+		flex-wrap: nowrap;
+		width: 100%;
+		min-width: 0;
+		border-right: none;
+		border-bottom: 1px solid var(--sp-border-color);
+		position: static;
+		max-height: none;
+		align-self: auto;
+	}
+
+	.seopulse-image-alt__sidebar {
+		display: flex;
+		flex-direction: row;
+		flex: 1;
+		padding: 0;
+		overflow-x: auto;
+	}
+
+	.seopulse-image-alt__nav-btn {
+		flex: 0 0 auto;
+		border-left: none;
+		border-bottom: 3px solid transparent;
+		padding: 10px 16px;
+		white-space: nowrap;
+		font-size: 12px;
+	}
+
+	.seopulse-image-alt__nav-btn .dashicons {
+		font-size: 16px;
+		width: 16px;
+		height: 16px;
+		line-height: 16px;
+	}
+
+	.seopulse-image-alt__nav-btn.active {
+		border-left-color: transparent;
+		border-bottom-color: var(--sp-accent);
+	}
+
+	.seopulse-image-alt__panel {
+		padding: 20px;
+	}
+
+	.seopulse-image-alt__cards {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}

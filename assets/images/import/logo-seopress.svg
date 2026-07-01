@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1920 1920">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#Dégradé_sans_nom_25-2);
+      }
+
+      .cls-1, .cls-2, .cls-3, .cls-4, .cls-5, .cls-6, .cls-7, .cls-8, .cls-9, .cls-10, .cls-11, .cls-12 {
+        stroke-width: 0px;
+      }
+
+      .cls-2 {
+        fill: url(#Dégradé_sans_nom_25-3);
+      }
+
+      .cls-3 {
+        fill: url(#Dégradé_sans_nom_10-5);
+      }
+
+      .cls-4 {
+        fill: url(#Dégradé_sans_nom_10-6);
+      }
+
+      .cls-5 {
+        fill: url(#Dégradé_sans_nom_10-2);
+      }
+
+      .cls-6 {
+        fill: url(#Dégradé_sans_nom_10-3);
+      }
+
+      .cls-7 {
+        fill: url(#Dégradé_sans_nom_10-4);
+      }
+
+      .cls-8 {
+        fill: url(#Dégradé_sans_nom_4);
+      }
+
+      .cls-9 {
+        fill: url(#Dégradé_sans_nom_3);
+      }
+
+      .cls-10 {
+        fill: #fff;
+      }
+
+      .cls-11 {
+        fill: url(#Dégradé_sans_nom_10);
+      }
+
+      .cls-12 {
+        fill: url(#Dégradé_sans_nom_25);
+      }
+    </style>
+    <linearGradient id="Dégradé_sans_nom_4" data-name="Dégradé sans nom 4" x1="-64.45" y1="2029.27" x2="4063.83" y2="-2279.62" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2b1f99"/>
+      <stop offset="1" stop-color="#0c082f"/>
+    </linearGradient>
+    <linearGradient id="Dégradé_sans_nom_3" data-name="Dégradé sans nom 3" x1="2846.51" y1="4086.54" x2="2846.51" y2="4094.35" gradientTransform="translate(212774.93 -168351.69) rotate(-135) scale(10.56 -65.99)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f6e71d"/>
+      <stop offset="1" stop-color="#f6e71d" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="Dégradé_sans_nom_25" data-name="Dégradé sans nom 25" x1="-579.39" y1="7820.97" x2="-1074.92" y2="7325.44" gradientTransform="translate(8540.52 2211.67) rotate(90)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4e21e7" stop-opacity="0"/>
+      <stop offset="1" stop-color="#4e21e7"/>
+    </linearGradient>
+    <linearGradient id="Dégradé_sans_nom_25-2" data-name="Dégradé sans nom 25" x1="-1009.79" y1="8251.37" x2="-1505.32" y2="7755.84" xlink:href="#Dégradé_sans_nom_25"/>
+    <linearGradient id="Dégradé_sans_nom_25-3" data-name="Dégradé sans nom 25" x1="-538.57" y1="8292.35" x2="-1290.2" y2="7540.72" xlink:href="#Dégradé_sans_nom_25"/>
+    <linearGradient id="Dégradé_sans_nom_10" data-name="Dégradé sans nom 10" x1="2821.36" y1="4083.66" x2="2821.36" y2="4091.47" gradientTransform="translate(231322.28 -186843.91) rotate(-135) scale(10.56 -72.39)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f6b8a9"/>
+      <stop offset="1" stop-color="#f6b8a9" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="Dégradé_sans_nom_10-2" data-name="Dégradé sans nom 10" x1="2871.63" y1="4083.66" x2="2871.63" y2="4091.47" gradientTransform="translate(231267.16 -186899.04) rotate(-135) scale(10.56 -72.39)" xlink:href="#Dégradé_sans_nom_10"/>
+    <linearGradient id="Dégradé_sans_nom_10-3" data-name="Dégradé sans nom 10" x1="2845.85" y1="4083.75" x2="2845.85" y2="4091.56" gradientTransform="translate(308080.72 -263617.77) rotate(-135) scale(10.57 -98.98)" xlink:href="#Dégradé_sans_nom_10"/>
+    <linearGradient id="Dégradé_sans_nom_10-4" data-name="Dégradé sans nom 10" x1="3110.4" y1="4085.19" x2="3110.4" y2="4092.99" gradientTransform="translate(211181 -177639.9) rotate(-135) scale(7.19 -67.32)" xlink:href="#Dégradé_sans_nom_10"/>
+    <linearGradient id="Dégradé_sans_nom_10-5" data-name="Dégradé sans nom 10" x1="3006.34" y1="4084.69" x2="3006.34" y2="4092.5" gradientTransform="translate(173477.77 -137725.34) rotate(-135) scale(7.86 -53.88)" xlink:href="#Dégradé_sans_nom_10"/>
+    <linearGradient id="Dégradé_sans_nom_10-6" data-name="Dégradé sans nom 10" x1="3073.89" y1="4084.69" x2="3073.89" y2="4092.5" gradientTransform="translate(173422.64 -137780.47) rotate(-135) scale(7.86 -53.88)" xlink:href="#Dégradé_sans_nom_10"/>
+  </defs>
+  <rect id="Conteneur_Picto" data-name="Conteneur Picto" class="cls-8" x="10" y="10" width="1900" height="1900" rx="158.33" ry="158.33"/>
+  <g>
+    <g>
+      <path id="yellow" class="cls-9" d="M843.71,1077.55c-16.1-16.1-38.74-19.55-50.59-7.71l-321.52,321.52c-11.83,11.85-8.38,34.49,7.71,50.59,16.1,16.1,38.75,19.55,50.59,7.71l321.52-321.52c11.84-11.84,8.39-34.49-7.71-50.59Z"/>
+      <g id="purple">
+        <path id="Tracé_623" data-name="Tracé 623" class="cls-12" d="M1215.08,1136.75c-16.1-16.1-42.2-16.1-58.3,0l-437.23,437.23c-16.1,16.1-16.1,42.2,0,58.3,16.1,16.1,42.2,16.1,58.3,0l437.23-437.23c16.1-16.1,16.1-42.2,0-58.29h0Z"/>
+        <path id="Tracé_625" data-name="Tracé 625" class="cls-1" d="M784.68,706.35c-16.1-16.1-42.2-16.1-58.3,0l-437.23,437.23c-16.1,16.1-16.1,42.2,0,58.3,16.1,16.1,42.2,16.1,58.3,0l437.23-437.23c16.1-16.1,16.1-42.2,0-58.29h0Z"/>
+        <path id="Tracé_624" data-name="Tracé 624" class="cls-2" d="M999.79,921.47c-16.1-16.1-48.95-9.35-73.37,15.06l-663.2,663.2c-24.41,24.42-31.16,57.27-15.06,73.37,16.1,16.1,48.95,9.35,73.37-15.06l663.17-663.17c24.45-24.45,31.19-57.29,15.09-73.39Z"/>
+      </g>
+      <g id="red-large">
+        <path id="Tracé_626" data-name="Tracé 626" class="cls-11" d="M1215.08,1136.75c-16.1-16.1-39.68-18.62-52.66-5.64l-352.74,352.74c-12.98,12.99-10.46,36.57,5.64,52.66,16.1,16.1,39.68,18.62,52.66,5.64l352.74-352.74c12.99-12.99,10.46-36.56-5.64-52.66Z"/>
+        <path id="Tracé_628" data-name="Tracé 628" class="cls-5" d="M784.68,706.35c-16.1-16.1-39.68-18.62-52.66-5.64l-352.74,352.74c-12.98,12.99-10.46,36.57,5.64,52.66,16.1,16.1,39.68,18.62,52.66,5.64l352.74-352.74c12.99-12.99,10.46-36.56-5.64-52.66Z"/>
+        <path id="Tracé_627" data-name="Tracé 627" class="cls-6" d="M1002.42,918.84c-17.78-16.04-45.18-14.7-61.3,3l-482.26,482.26c-17.7,16.13-19.04,43.53-3,61.3,17.78,16.04,45.18,14.7,61.3-3l482.26-482.26c17.7-16.13,19.04-43.53,3-61.3Z"/>
+      </g>
+      <g id="red-small">
+        <path id="Tracé_630" data-name="Tracé 630" class="cls-7" d="M915.01,1006.25c-12.09-10.91-30.72-9.99-41.69,2.04l-328,328c-12.04,10.97-12.95,29.6-2.04,41.69,12.09,10.91,30.72,9.99,41.69-2.04l328.02-328.02c12.02-10.97,12.93-29.59,2.03-41.68Z"/>
+        <path id="Tracé_631" data-name="Tracé 631" class="cls-3" d="M1163.95,1187.88c-11.98-11.98-29.53-13.86-39.19-4.19l-262.52,262.52c-9.67,9.66-7.8,27.2,4.19,39.19,11.99,11.99,29.53,13.86,39.19,4.19l262.52-262.52c9.66-9.66,7.79-27.21-4.19-39.19Z"/>
+        <path id="Tracé_632" data-name="Tracé 632" class="cls-4" d="M733.56,757.48c-11.98-11.98-29.53-13.86-39.19-4.19l-262.52,262.52c-9.67,9.66-7.8,27.2,4.19,39.19,11.99,11.99,29.53,13.86,39.19,4.19l262.52-262.52c9.66-9.66,7.79-27.21-4.19-39.19Z"/>
+      </g>
+    </g>
+    <g id="Logo">
+      <path id="reactor-r" class="cls-10" d="M837.83,711.47l-269.74,269.74c-17.2,14.98-43.29,13.19-58.28-4.01-13.55-15.55-13.55-38.71,0-54.26l269.74-269.74c17.2-14.98,43.29-13.19,58.28,4.01,13.55,15.55,13.55,38.71,0,54.26Z"/>
+      <path id="reactor-l" class="cls-10" d="M940.18,1353.37l269.39-269.39c17.2-14.98,43.29-13.19,58.28,4.01,13.55,15.55,13.55,38.71,0,54.26l-269.39,269.39c-17.2,14.98-43.29,13.19-58.28-4.01-13.55-15.55-13.55-38.71,0-54.26Z"/>
+      <path id="ship" class="cls-10" d="M1571.86,839.9c-124.12,124.04-321.32,135.84-459.34,27.49l-333.2,333.2c-17.27,15.05-43.47,13.24-58.51-4.03-13.6-15.61-13.6-38.87,0-54.48l333.24-333.24c-118.35-150.62-92.2-368.67,58.42-487.02,150.62-118.35,368.67-92.2,487.02,58.42,108.51,138.1,96.68,335.51-27.56,459.65l-.06.02ZM1141.46,409.5c-102.25,102.25-102.25,268.03,0,370.28,102.25,102.25,268.03,102.25,370.28,0,102.25-102.25,102.25-268.03,0-370.28h0c-102.25-102.24-268.03-102.24-370.27,0h0Z"/>
+    </g>
+  </g>
+</svg>

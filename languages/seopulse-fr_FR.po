@@ -1,0 +1,3834 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: SEOPulse 1.0.0\n"
+"Report-Msgid-Bugs-To: https://www.citrus-design.fr\n"
+"Last-Translator: Alexandre Jacquin\n"
+"Language-Team: French\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-03-26T15:40:39+00:00\n"
+"PO-Revision-Date: 2026-03-26T15:40:39+00:00\n"
+"Language: fr_FR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: SEOPulse Translation Generator\n"
+"X-Domain: seopulse\n"
+
+#. Plugin Name of the plugin
+#: seopulse.php
+msgid "SEOPulse"
+msgstr "SEOPulse"
+
+#. Plugin URI of the plugin
+#: seopulse.php
+msgid "https://wordpress.org/plugins/seopulse/"
+msgstr "https://wordpress.org/plugins/seopulse/"
+
+#. Author of the plugin
+#: seopulse.php
+msgid "Citrus Design Lab"
+msgstr "Citrus Design Lab"
+
+#. Author URI of the plugin
+#: seopulse.php
+msgid "https://www.citrus-design.fr"
+msgstr "https://www.citrus-design.fr"
+
+#: assets/build/dashboard.js:9
+msgid "All clear! No issues detected."
+msgstr "Tout est bon ! Aucun problème détecté."
+
+#: assets/build/dashboard.js:9
+msgid "View"
+msgstr "Voir"
+
+#: assets/build/dashboard.js:1
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+#: assets/build/dashboard.js:1
+msgid "Toggle dashboard sections"
+msgstr "Afficher/masquer les sections du tableau de bord"
+
+#: assets/build/admin.js:5
+#: assets/build/dashboard.js:1
+#: assets/build/dashboard.js:9
+msgid "Notifications"
+msgstr "Notifications"
+
+#: assets/build/dashboard.js:9
+msgid "Close notifications"
+msgstr "Fermer les notifications"
+
+#: assets/build/dashboard.js:9
+msgid "Dashboard sections visibility"
+msgstr "Visibilité des sections du tableau de bord"
+
+#: assets/build/dashboard.js:9
+msgid "Dashboard Sections"
+msgstr "Sections du tableau de bord"
+
+#: assets/build/dashboard.js:9
+msgid "Close visibility panel"
+msgstr "Fermer le panneau de visibilité"
+
+#: assets/build/dashboard.js:3
+#: assets/build/dashboard.js:9
+msgid "SEO Health Status"
+msgstr "État de santé SEO"
+
+#: assets/build/dashboard.js:9
+msgid "Technical SEO Check"
+msgstr "Vérification SEO technique"
+
+#: assets/build/admin.js:4
+#: assets/build/dashboard.js:5
+#: assets/build/dashboard.js:9
+#: assets/build/editor-sidebar.js:12
+msgid "Quick Wins"
+msgstr "Gains rapides"
+
+#: assets/build/dashboard.js:9
+msgid "Setup Wizard"
+msgstr "Assistant de configuration"
+
+#: assets/build/dashboard.js:8
+#: assets/build/dashboard.js:9
+msgid "SEOPulse Suite"
+msgstr "Suite SEOPulse"
+
+#: assets/build/dashboard.js:9
+msgid "Image Issues"
+msgstr "Problèmes d'images"
+
+#: assets/build/dashboard.js:7
+#: assets/build/dashboard.js:9
+msgid "Instant Indexing"
+msgstr "Indexation instantanée"
+
+#: assets/build/dashboard.js:1
+#: assets/build/dashboard.js:9
+msgid "Modules"
+msgstr "Modules"
+
+#: assets/build/dashboard.js:1
+#: assets/build/dashboard.js:8
+#: assets/build/dashboard.js:9
+msgid "Recent Analyses"
+msgstr "Analyses récentes"
+
+#: assets/build/dashboard.js:9
+msgid "Your SEO health is below. Fix quick wins first, then explore the checks that need attention."
+msgstr "La santé SEO de votre site est faible. Corrigez d'abord les gains rapides, puis examinez les vérifications qui demandent de l'attention."
+
+#: assets/build/dashboard.js:9
+msgid "Drag to reorder"
+msgstr "Glissez pour réorganiser"
+
+#: assets/build/dashboard.js:8
+msgid "Get SEO-ready in 5 minutes"
+msgstr "Préparez votre SEO en 5 minutes"
+
+#: assets/build/dashboard.js:8
+msgid "The wizard configures your titles, local info and core settings in three quick steps."
+msgstr "L'assistant configure vos titres, vos informations locales et vos réglages essentiels en trois étapes rapides."
+
+#: assets/build/dashboard.js:8
+msgid "Define your business identity"
+msgstr "Définir l'identité de votre entreprise"
+
+#: assets/build/dashboard.js:8
+msgid "Add your local business details"
+msgstr "Ajouter les détails de votre activité locale"
+
+#: assets/build/dashboard.js:8
+msgid "Verify your technical SEO setup"
+msgstr "Vérifier votre configuration SEO technique"
+
+#: assets/build/dashboard.js:8
+msgid "Start Setup Wizard"
+msgstr "Lancer l'assistant de configuration"
+
+#: assets/build/dashboard.js:8
+msgid "SEOPulse plugins currently enabled on your site."
+msgstr "Plugins SEOPulse actuellement activés sur votre site."
+
+#: assets/build/admin.js:1
+#: assets/build/dashboard.js:9
+#: assets/build/editor-sidebar.js:1
+#: assets/build/editor-sidebar.js:5
+msgid "Blocker"
+msgstr "Bloquant"
+
+#: assets/build/dashboard.js:9
+msgid "Action needed"
+msgstr "Action requise"
+
+#: assets/build/admin.js:1
+#: assets/build/dashboard.js:9
+#: assets/build/editor-sidebar.js:1
+#: assets/build/editor-sidebar.js:5
+msgid "Quick Win"
+msgstr "Gain rapide"
+
+#: assets/build/admin.js:5
+#: assets/build/dashboard.js:9
+msgid "Warning"
+msgstr "Avertissement"
+
+#: assets/build/dashboard.js:9
+#: assets/build/meta-seo-settings.js:1
+msgid "OK"
+msgstr "OK"
+
+#: assets/build/dashboard.js:9
+#: assets/build/logs-viewer.js:1
+msgid "Info"
+msgstr "Info"
+
+#: assets/build/admin.js:5
+#: assets/build/dashboard.js:9
+#: assets/build/indexing-settings.js:1
+msgid "Success"
+msgstr "Succès"
+
+#: assets/build/dashboard.js:9
+#: assets/build/editor-sidebar.js:5
+msgid "SEO Score"
+msgstr "Score SEO"
+
+#: assets/build/dashboard.js:1
+msgid "Core SEO analysis, meta tags, sitemap & redirections."
+msgstr "Analyse SEO, balises méta, sitemap et redirections."
+
+#: assets/build/dashboard.js:1
+msgid "Free"
+msgstr "Gratuit"
+
+#: assets/build/dashboard.js:6
+msgid "No featured image"
+msgstr "Pas d'image mise en avant"
+
+#: assets/build/dashboard.js:6
+msgid "Missing alt text"
+msgstr "Texte alt manquant"
+
+#: assets/build/dashboard.js:6
+#: assets/build/meta-seo-settings.js:1
+msgid "Poor filename"
+msgstr "Nom de fichier peu descriptif"
+
+#: assets/build/dashboard.js:6
+msgid "Images to Fix"
+msgstr "Images à corriger"
+
+#: assets/build/dashboard.js:6
+msgid "Edit"
+msgstr "Modifier"
+
+#: assets/build/dashboard.js:5
+#: assets/build/dashboard.js:6
+msgid "Fix"
+msgstr "Corriger"
+
+#: assets/build/dashboard.js:7
+msgid "Audit all images"
+msgstr "Auditer toutes les images"
+
+#: assets/build/dashboard.js:7
+msgid "Automatically notify search engines (IndexNow, Google) when you publish or update content."
+msgstr "Notifier automatiquement les moteurs de recherche (IndexNow, Google) lorsque vous publiez ou mettez à jour du contenu."
+
+#. translators: %s: human-readable time difference
+#: assets/build/dashboard.js:8
+#, php-format,js-format
+msgid "Last submission: %s ago"
+msgstr "Dernière soumission : il y a %s"
+
+#: assets/build/dashboard.js:8
+msgid "Configure Instant Indexing"
+msgstr "Configurer l'indexation instantanée"
+
+#: assets/build/dashboard.js:8
+msgid "Supports IndexNow (Bing, Yandex, Naver) and Google Indexing API. Configure providers in the settings page."
+msgstr "Prend en charge IndexNow (Bing, Yandex, Naver) et l'API Google Indexing. Configurez les fournisseurs dans la page des paramètres."
+
+#: assets/build/dashboard.js:1
+#: assets/build/dashboard.js:9
+#: assets/build/indexing-settings.js:1
+#: assets/build/meta-seo-settings.js:1
+msgid "Active"
+msgstr "Actif"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Disabled"
+msgstr "Désactivé"
+
+#: assets/build/dashboard.js:1
+#: assets/build/indexing-settings.js:1
+#: assets/build/meta-seo-settings.js:1
+msgid "Inactive"
+msgstr "Inactif"
+
+#: assets/build/dashboard.js:1
+#: assets/build/dashboard.js:5
+msgid "Go"
+msgstr "Aller"
+
+#: assets/build/dashboard.js:8
+msgid "No analyses yet. Start by editing a post and running an SEO analysis."
+msgstr "Aucune analyse pour le moment. Commencez par modifier un article et lancer une analyse SEO."
+
+#: assets/build/dashboard.js:8
+msgid "Post"
+msgstr "Article"
+
+#: assets/build/dashboard.js:8
+msgid "Score"
+msgstr "Score"
+
+#: assets/build/dashboard.js:5
+#: assets/build/dashboard.js:8
+#: assets/build/dashboard.js:9
+msgid "Analyzed"
+msgstr "Analysé"
+
+#: assets/build/logs-viewer.js:1
+#: assets/build/sitemap-settings.js:1
+msgid "Actions"
+msgstr "Actions"
+
+#. translators: %s: human-readable time difference
+#: assets/build/dashboard.js:2
+#, php-format,js-format
+msgid "%s ago"
+msgstr "il y a %s"
+
+#. translators: %d: number of issues
+#: assets/build/dashboard.js:4
+#, php-format,js-format
+msgid "%d item needs attention"
+msgid_plural "%d items need attention"
+msgstr[0] "%d élément nécessite une attention particulière"
+msgstr[1] "%d éléments nécessitent une attention particulière"
+
+#: assets/build/dashboard.js:4
+msgid "All clear"
+msgstr "Tout est bon"
+
+#: assets/build/dashboard.js:1
+#: assets/build/dashboard.js:5
+#: assets/build/wp-dashboard-widget.js:1
+msgid "Average SEO Score"
+msgstr "Score SEO moyen"
+
+#: assets/build/dashboard.js:5
+msgid "Avg Score"
+msgstr "Score moyen"
+
+#: assets/build/dashboard.js:5
+#: assets/build/dashboard.js:9
+msgid "To Improve"
+msgstr "À améliorer"
+
+#: assets/build/dashboard.js:5
+msgid "Missing Meta"
+msgstr "Méta manquante"
+
+#: assets/build/dashboard.js:5
+msgid "No Featured Image"
+msgstr "Aucune image mise en avant"
+
+#: assets/build/dashboard.js:5
+msgid "Missing Alt"
+msgstr "Alt manquant"
+
+#: assets/build/dashboard.js:5
+msgid "Setup Progress"
+msgstr "Progression de la configuration"
+
+#: assets/build/wp-dashboard-widget.js:3
+msgid "Go to SEOPulse dashboard"
+msgstr "Accéder au tableau de bord SEOPulse"
+
+#: assets/build/admin.js:1
+#: assets/build/editor-sidebar.js:5
+#: assets/build/editor-sidebar.js:6
+msgid "Readability"
+msgstr "Lisibilité"
+
+#: assets/build/admin.js:1
+#: assets/build/editor-sidebar.js:5
+#: assets/build/meta-seo-settings.js:1
+msgid "Technical SEO"
+msgstr "SEO technique"
+
+#: assets/build/wp-dashboard-widget.js:3
+msgid "No analyzed posts yet. Run your first SEO analysis to see your scores here."
+msgstr "Aucun article analysé. Lancez votre première analyse SEO pour voir vos scores ici."
+
+#: assets/build/wp-dashboard-widget.js:3
+msgid "Get started"
+msgstr "Commencer"
+
+#: assets/build/wp-dashboard-widget.js:2
+msgid "pts vs prev. 30 days"
+msgstr "pts vs 30 jours préc."
+
+#: assets/build/wp-dashboard-widget.js:2
+msgid "Top Recurring Issues"
+msgstr "Problèmes récurrents principaux"
+
+#. translators: %d: number of posts with this issue
+#: assets/build/wp-dashboard-widget.js:3
+#, js-format
+msgid "%d post"
+msgid_plural "%d posts"
+msgstr[0] "%d article"
+msgstr[1] "%d articles"
+
+#: assets/build/wp-dashboard-widget.js:3
+msgid "Recently Analyzed"
+msgstr "Récemment analysés"
+
+#: assets/build/dashboard.js:5
+msgid "Technical SEO Checks"
+msgstr "Vérifications SEO techniques"
+
+#: assets/build/dashboard.js:5
+#: assets/build/meta-seo-settings.js:1
+msgid "Configure"
+msgstr "Configurer"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Image SEO"
+msgstr "SEO des images"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Processing..."
+msgstr "Traitement en cours..."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "updated"
+msgstr "mis à jour"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "skipped"
+msgstr "ignorés"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "of"
+msgstr "sur"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "images"
+msgstr "images"
+
+#: assets/build/indexing-settings.js:1
+#: assets/build/local-seo-settings.js:1
+#: assets/build/logs-viewer.js:1
+#: assets/build/meta-seo-settings.js:1
+#: assets/build/sitemap-settings.js:1
+msgid "Settings saved."
+msgstr "Paramètres enregistrés."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Image Diagnostic"
+msgstr "Diagnostic des images"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Loading..."
+msgstr "Chargement..."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "No images found matching your filters."
+msgstr "Aucune image ne correspond à vos filtres."
+
+#: assets/build/logs-viewer.js:1
+msgid "Select all"
+msgstr "Tout sélectionner"
+
+#: assets/build/logs-viewer.js:1
+#: assets/build/meta-seo-settings.js:1
+msgid "selected"
+msgstr "sélectionné(s)"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Auto-fill alt"
+msgstr "Remplir automatiquement l'alt"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Auto-rename"
+msgstr "Renommage automatique"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Export CSV"
+msgstr "Exporter en CSV"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "renamed"
+msgstr "renommé(s)"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "errors"
+msgstr "erreurs"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Done!"
+msgstr "Terminé !"
+
+#: assets/build/local-seo-settings.js:1
+#: assets/build/meta-seo-settings.js:1
+#: assets/build/setup-wizard.js:1
+#: assets/build/sitemap-settings.js:1
+msgid "An error occurred."
+msgstr "Une erreur s'est produite."
+
+#: assets/build/editor-sidebar.js:5
+msgid "Saved"
+msgstr "Enregistré"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Edit alt text"
+msgstr "Modifier le texte alt"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Save Settings"
+msgstr "Enregistrer"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/meta-seo-settings.js:1
+msgid "Cancel"
+msgstr "Annuler"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Page"
+msgstr "Page"
+
+#: assets/build/logs-viewer.js:1
+#: assets/build/meta-seo-settings.js:1
+#: assets/build/setup-wizard.js:1
+msgid "Previous"
+msgstr "Précédent"
+
+#: assets/build/logs-viewer.js:1
+#: assets/build/meta-seo-settings.js:1
+msgid "Next"
+msgstr "Suivant"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Missing"
+msgstr "Manquant"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Missing alt"
+msgstr "Alt manquant"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Large file"
+msgstr "Fichier volumineux"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Unused"
+msgstr "Inutilisé"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "All images"
+msgstr "Toutes les images"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Rename files on disk? This will also update URLs in post content. Continue?"
+msgstr "Renommer les fichiers sur le disque ? Cela mettra aussi à jour les URL dans le contenu des articles. Continuer ?"
+
+#: assets/build/dashboard.js:5
+#: assets/build/logs-viewer.js:1
+msgid "All"
+msgstr "Tous"
+
+#: assets/build/logs-viewer.js:1
+msgid "Errors"
+msgstr "Erreurs"
+
+#: assets/build/logs-viewer.js:1
+msgid "Warnings"
+msgstr "Avertissements"
+
+#: assets/build/logs-viewer.js:1
+msgid "Debug"
+msgstr "Débogage"
+
+#: assets/build/logs-viewer.js:1
+msgid "Search logs…"
+msgstr "Rechercher dans les journaux…"
+
+#: assets/build/logs-viewer.js:1
+msgid "No log entries found."
+msgstr "Aucune entrée de journal trouvée."
+
+#: assets/build/editor-sidebar.js:5
+msgid "Copied!"
+msgstr "Copié !"
+
+#: assets/build/logs-viewer.js:1
+msgid "Logs"
+msgstr "Journaux"
+
+#: assets/build/logs-viewer.js:1
+msgid "Toggle auto-refresh (10s)"
+msgstr "Activer/désactiver l'actualisation auto (10s)"
+
+#: assets/build/logs-viewer.js:1
+msgid "Auto-refresh"
+msgstr "Actualisation automatique"
+
+#: assets/build/logs-viewer.js:1
+msgid "Export"
+msgstr "Exporter"
+
+#: assets/build/logs-viewer.js:1
+msgid "Are you sure you want to clear all logs?"
+msgstr "Voulez-vous vraiment effacer tous les journaux ?"
+
+#: assets/build/logs-viewer.js:1
+msgid "Clear logs"
+msgstr "Effacer les journaux"
+
+#: assets/build/logs-viewer.js:1
+msgid "Total Entries"
+msgstr "Total des entrées"
+
+#: assets/build/logs-viewer.js:1
+msgid "File Size"
+msgstr "Taille du fichier"
+
+#: assets/build/logs-viewer.js:1
+msgid "Settings"
+msgstr "Réglages"
+
+#: assets/build/logs-viewer.js:1
+msgid "Logs cleared successfully."
+msgstr "Journaux effacés avec succès."
+
+#: assets/build/logs-viewer.js:1
+msgid "From date"
+msgstr "Date de début"
+
+#: assets/build/logs-viewer.js:1
+msgid "To date"
+msgstr "Date de fin"
+
+#: assets/build/logs-viewer.js:1
+msgid "All sources"
+msgstr "Toutes les sources"
+
+#: assets/build/logs-viewer.js:1
+msgid "Delete selected"
+msgstr "Supprimer la sélection"
+
+#: assets/build/logs-viewer.js:1
+msgid "Auto-refreshing every 10 seconds…"
+msgstr "Actualisation automatique toutes les 10 secondes…"
+
+#: assets/build/logs-viewer.js:1
+msgid "Timestamp"
+msgstr "Horodatage"
+
+#: assets/build/logs-viewer.js:1
+msgid "Level"
+msgstr "Niveau"
+
+#: assets/build/indexing-settings.js:1
+#: assets/build/logs-viewer.js:1
+msgid "Message"
+msgstr "Message"
+
+#: assets/build/logs-viewer.js:1
+msgid "Context"
+msgstr "Contexte"
+
+#: assets/build/logs-viewer.js:1
+msgid "Expand context"
+msgstr "Développer le contexte"
+
+#: assets/build/logs-viewer.js:1
+msgid "Copy to clipboard"
+msgstr "Copier dans le presse-papiers"
+
+#: assets/build/logs-viewer.js:1
+msgid "Retention Settings"
+msgstr "Paramètres de rétention"
+
+#: assets/build/logs-viewer.js:1
+msgid "Configure the maximum log file size and number of archived rotated files."
+msgstr "Configurez la taille maximale du fichier journal et le nombre de fichiers archivés conservés."
+
+#: assets/build/logs-viewer.js:1
+msgid "Maximum file size"
+msgstr "Taille maximale du fichier"
+
+#: assets/build/logs-viewer.js:1
+msgid "When the log file exceeds this size, it is rotated."
+msgstr "Lorsque le fichier journal dépasse cette taille, il est archivé."
+
+#: assets/build/logs-viewer.js:1
+msgid "Rotated files to keep"
+msgstr "Fichiers archivés à conserver"
+
+#: assets/build/logs-viewer.js:1
+msgid "Number of rotated archive files (.1, .2, …) to keep."
+msgstr "Nombre de fichiers d'archive (.1, .2, …) à conserver."
+
+#: assets/build/local-seo-settings.js:1
+#: assets/build/logs-viewer.js:1
+#: assets/build/meta-seo-settings.js:1
+#: assets/build/sitemap-settings.js:1
+msgid "Save"
+msgstr "Enregistrer"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Content"
+msgstr "Contenu"
+
+#: assets/build/admin.js:1
+#: assets/build/editor-sidebar.js:5
+#: assets/build/editor-sidebar.js:9
+msgid "Meta Tags"
+msgstr "Balises méta"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/indexing-settings.js:1
+#: assets/build/local-seo-settings.js:1
+#: assets/build/meta-seo-settings.js:1
+#: assets/build/sitemap-settings.js:1
+msgid "Loading…"
+msgstr "Chargement…"
+
+#: assets/build/indexing-settings.js:1
+msgid "URL"
+msgstr "URL"
+
+#: assets/build/indexing-settings.js:1
+#: assets/build/meta-seo-settings.js:1
+msgid "Status"
+msgstr "Statut"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Apply"
+msgstr "Appliquer"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Redirect Type"
+msgstr "Type de redirection"
+
+#: assets/build/indexing-settings.js:1
+msgid "General"
+msgstr "Général"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/meta-seo-settings.js:1
+msgid "Advanced"
+msgstr "Avancé"
+
+#: assets/build/sitemap-settings.js:1
+msgid "7 days"
+msgstr "7 jours"
+
+#: assets/build/sitemap-settings.js:1
+msgid "14 days"
+msgstr "14 jours"
+
+#: assets/build/sitemap-settings.js:1
+msgid "30 days"
+msgstr "30 jours"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Category"
+msgstr "Catégorie"
+
+#: assets/build/faq-block.js:1
+msgid "item"
+msgstr "élément"
+
+#: assets/build/faq-block.js:1
+msgid "items"
+msgstr "éléments"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/faq-block.js:1
+#: assets/build/howto-block.js:1
+#: assets/build/local-seo-settings.js:1
+#: assets/build/meta-seo-settings.js:1
+#: assets/build/product-grid-block.js:1
+msgid "Remove"
+msgstr "Supprimer"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/local-seo-settings.js:1
+#: assets/build/logs-viewer.js:1
+#: assets/build/meta-seo-settings.js:1
+#: assets/build/setup-wizard.js:1
+#: assets/build/sitemap-settings.js:1
+msgid "Saving…"
+msgstr "Enregistrement…"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Opens"
+msgstr "Ouvre"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Closes"
+msgstr "Ferme"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Please fill in at least one address field."
+msgstr "Veuillez remplir au moins un champ d'adresse."
+
+#: assets/build/local-seo-settings.js:1
+msgid "Searching…"
+msgstr "Recherche…"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Coordinates found successfully!"
+msgstr "Coordonnées trouvées avec succès !"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Address not found. Please check your input."
+msgstr "Adresse introuvable. Veuillez vérifier votre saisie."
+
+#: assets/build/local-seo-settings.js:1
+msgid "An error occurred while searching. Please try again."
+msgstr "Une erreur s'est produite pendant la recherche. Veuillez réessayer."
+
+#: assets/build/local-seo-settings.js:1
+msgid "Choose Image"
+msgstr "Choisir une image"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Choose Logo"
+msgstr "Choisir le logo"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Use this image"
+msgstr "Utiliser cette image"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Local SEO & Local Business"
+msgstr "SEO local & activité locale"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Select Image"
+msgstr "Sélectionner une image"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/meta-seo-settings.js:1
+msgid "Insert variable"
+msgstr "Insérer une variable"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/meta-seo-settings.js:1
+msgid "Search variables…"
+msgstr "Rechercher des variables…"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Author Archives"
+msgstr "Archives d'auteur"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Date Archives"
+msgstr "Archives par date"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Search Pages"
+msgstr "Pages de recherche"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Page Titles & Descriptions"
+msgstr "Titres et descriptions des pages"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Smart Visibility Rules"
+msgstr "Règles de visibilité intelligentes"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Disable & Redirect"
+msgstr "Désactiver et rediriger"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Crawl Budget Optimization"
+msgstr "Optimisation du budget de crawl"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Help Visitors Find Content"
+msgstr "Aider les visiteurs à trouver du contenu"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Broken URL Monitoring"
+msgstr "Surveillance des URL cassées"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Page Title"
+msgstr "Titre de la page"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/editor-sidebar.js:11
+#: assets/build/meta-seo-settings.js:1
+msgid "Meta Description"
+msgstr "Méta description"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Search Engine Visibility"
+msgstr "Visibilité dans les moteurs de recherche"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Yearly Archive Title"
+msgstr "Titre des archives annuelles"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Monthly Archive Title"
+msgstr "Titre des archives mensuelles"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Daily Archive Title"
+msgstr "Titre des archives quotidiennes"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Hide when you are the only author"
+msgstr "Masquer lorsque vous êtes l'unique auteur"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Hide authors with no published posts"
+msgstr "Masquer les auteurs sans contenu publié"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Disable author archives entirely"
+msgstr "Désactiver complètement les archives d'auteur"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Disable date archives entirely"
+msgstr "Désactiver complètement les archives par date"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Also block in robots.txt"
+msgstr "Bloquer aussi dans robots.txt"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Prevent link following on search pages"
+msgstr "Empêcher le suivi des liens sur les pages de recherche"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Show recent posts"
+msgstr "Afficher les articles récents"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Number of posts to show"
+msgstr "Nombre d'articles à afficher"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Show a search box"
+msgstr "Afficher une boîte de recherche"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Show key pages"
+msgstr "Afficher les pages clés"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Track broken URLs"
+msgstr "Suivre les URL cassées"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Search engines will never index 404 pages — this is automatically enforced."
+msgstr "Les moteurs de recherche n'indexeront jamais les pages 404 : c'est appliqué automatiquement."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Where should visitors be sent?"
+msgstr "Où les visiteurs doivent-ils être envoyés ?"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Homepage"
+msgstr "Page d'accueil"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Blog Page"
+msgstr "Page de blog"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Custom URL"
+msgstr "URL personnalisée"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Custom Redirect URL"
+msgstr "URL de redirection personnalisée"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "301 — Permanent (recommended)"
+msgstr "301 — Permanente (recommandée)"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "302 — Temporary"
+msgstr "302 — Temporaire"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Error saving settings."
+msgstr "Erreur lors de l'enregistrement des paramètres."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "SEO Templates"
+msgstr "Modèles SEO"
+
+#: assets/build/admin.js:4
+msgid "SEO Analysis"
+msgstr "Analyse SEO"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Title Template"
+msgstr "Modèle de titre"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/meta-seo-settings.js:1
+msgid "Robots Directive"
+msgstr "Directive robots"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Title Prefix"
+msgstr "Préfixe de titre"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Title Suffix"
+msgstr "Suffixe de titre"
+
+#: assets/build/admin.js:4
+#: assets/build/editor-sidebar.js:5
+#: assets/build/meta-seo-settings.js:1
+msgid "Analyzing…"
+msgstr "Analyse en cours…"
+
+#: assets/build/admin.js:1
+#: assets/build/editor-sidebar.js:1
+msgid "Recommendations"
+msgstr "Recommandations"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Optimized"
+msgstr "Optimisé"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "XML Sitemap"
+msgstr "Sitemap XML"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "404 Monitoring"
+msgstr "Surveillance 404"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Global Robots"
+msgstr "Robots globaux"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Indexed"
+msgstr "Indexé"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Smart Noindex"
+msgstr "Noindex intelligent"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Tracking active"
+msgstr "Suivi actif"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Tracking inactive"
+msgstr "Suivi inactif"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Your XML sitemap is generated and accessible to search engines."
+msgstr "Votre sitemap XML est généré et accessible aux moteurs de recherche."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Author archives are disabled and redirected."
+msgstr "Les archives d'auteur sont désactivées et redirigées."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Author archives exist but are hidden from search engines."
+msgstr "Les archives d'auteur existent mais sont masquées aux moteurs de recherche."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Indexed by default, with smart rules to hide low-value author pages."
+msgstr "Indexées par défaut, avec des règles intelligentes pour masquer les pages d'auteur à faible valeur."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Author archives are visible to search engines."
+msgstr "Les archives d'auteur sont visibles pour les moteurs de recherche."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Date archives are disabled and redirected."
+msgstr "Les archives par date sont désactivées et redirigées."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Date archives are visible to search engines."
+msgstr "Les archives par date sont visibles pour les moteurs de recherche."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Also blocked via robots.txt."
+msgstr "Également bloquées via robots.txt."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "broken URLs logged"
+msgstr "URL cassées enregistrées"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "No broken URLs detected yet."
+msgstr "Aucune URL cassée détectée pour le moment."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Titles & Metas"
+msgstr "Titres & Metas"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Cache cleared successfully."
+msgstr "Cache vidé avec succès."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Clearing…"
+msgstr "Effacement…"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Robots.txt Preview"
+msgstr "Aperçu de robots.txt"
+
+#: assets/build/dashboard.js:1
+msgid "Close"
+msgstr "Fermer"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Sitemaps & Robots"
+msgstr "Sitemaps & Robots"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Coordinates"
+msgstr "Coordonnées"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Identity"
+msgstr "Identité"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Media"
+msgstr "Médias"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Contact"
+msgstr "Contact"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Address & Area"
+msgstr "Adresse & zone"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Opening Hours"
+msgstr "Horaires d'ouverture"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Social & Keywords"
+msgstr "Social & mots-clés"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Ratings & Pricing"
+msgstr "Avis & tarification"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Slogan"
+msgstr "Slogan"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Founding Date"
+msgstr "Date de création"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Number of Employees"
+msgstr "Nombre d'employés"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Logo URL"
+msgstr "URL du logo"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Fax Number"
+msgstr "Numéro de fax"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Email"
+msgstr "E-mail"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Map URL"
+msgstr "URL de la carte"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Add Time Slot"
+msgstr "Ajouter un créneau horaire"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Add Social Link"
+msgstr "Ajouter un lien social"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Price Range"
+msgstr "Fourchette de prix"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Payment Accepted"
+msgstr "Paiements acceptés"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Currencies Accepted"
+msgstr "Devises acceptées"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Rating Value"
+msgstr "Valeur de la note"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Review Count"
+msgstr "Nombre d'avis"
+
+#: assets/build/local-seo-settings.js:1
+#: assets/build/review-block.js:1
+msgid "Best Rating"
+msgstr "Note maximale"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Worst Rating"
+msgstr "Note minimale"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Founder"
+msgstr "Fondateur"
+
+#: assets/build/setup-wizard.js:1
+msgid "Save & Continue"
+msgstr "Enregistrer et continuer"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Open Graph"
+msgstr "Open Graph"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Technical"
+msgstr "Technique"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/local-seo-settings.js:1
+msgid "Keywords"
+msgstr "Mots-clés"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Canonical URL"
+msgstr "URL canonique"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Robots"
+msgstr "Robots"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Theme Color"
+msgstr "Couleur du thème"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/meta-seo-settings.js:1
+msgid "Card Type"
+msgstr "Type de carte"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/editor-sidebar.js:6
+msgid "Title"
+msgstr "Titre"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/local-seo-settings.js:1
+msgid "Description"
+msgstr "Description"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/meta-seo-settings.js:1
+msgid "Image"
+msgstr "Image"
+
+#: assets/build/faq-block.js:1
+#: assets/build/schema-block.js:1
+msgid "Schema Type"
+msgstr "Type de schéma"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Business Name"
+msgstr "Nom de l'entreprise"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Alternate Name"
+msgstr "Nom alternatif"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Website URL"
+msgstr "URL du site web"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Street Address"
+msgstr "Adresse"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Postal Code"
+msgstr "Code postal"
+
+#: assets/build/local-seo-settings.js:1
+msgid "City"
+msgstr "Ville"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Country"
+msgstr "Pays"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Latitude"
+msgstr "Latitude"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Longitude"
+msgstr "Longitude"
+
+#: assets/build/dashboard.js:9
+msgid "Not configured"
+msgstr "Non configuré"
+
+#: assets/build/howto-block.js:1
+msgid "Step"
+msgstr "Étape"
+
+#: assets/build/setup-wizard.js:1
+msgid "Tell us about your site"
+msgstr "Parlez-nous de votre site"
+
+#: assets/build/setup-wizard.js:1
+msgid "What type of site is this?"
+msgstr "De quel type de site s'agit-il ?"
+
+#: assets/build/setup-wizard.js:1
+msgid "What best describes you?"
+msgstr "Qu'est-ce qui vous décrit le mieux ?"
+
+#: assets/build/setup-wizard.js:1
+msgid "Choose an SEO configuration preset"
+msgstr "Choisissez un preset de configuration SEO"
+
+#: assets/build/setup-wizard.js:1
+msgid "Optional features"
+msgstr "Fonctionnalités optionnelles"
+
+#: assets/build/setup-wizard.js:1
+msgid "I want to configure analytics tracking (GTM / GA4)"
+msgstr "Je souhaite configurer le suivi analytics (GTM / GA4)"
+
+#: assets/build/setup-wizard.js:1
+msgid "Failed to save profile."
+msgstr "Échec de l'enregistrement du profil."
+
+#: assets/build/dashboard.js:9
+#: assets/build/meta-seo-settings.js:1
+msgid "Sitemap"
+msgstr "Sitemap"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Breadcrumbs"
+msgstr "Fil d'Ariane"
+
+#: assets/build/admin.js:4
+#: assets/build/editor-sidebar.js:5
+msgid "Analyze SEO"
+msgstr "Analyser le SEO"
+
+#: assets/build/toc-block.js:1
+msgid "Table of Contents"
+msgstr "Table des matières"
+
+#: assets/build/product-grid-block.js:1
+msgid "View Product"
+msgstr "Voir le produit"
+
+#: assets/build/admin.js:1
+#: assets/build/editor-sidebar.js:1
+#: assets/build/editor-sidebar.js:5
+msgid "Easy"
+msgstr "Facile"
+
+#: assets/build/setup-wizard.js:1
+msgid "Local Business"
+msgstr "Commerce local"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Preview & Test"
+msgstr "Aperçu & Test"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Business Identity"
+msgstr "Identité de l'entreprise"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Logo"
+msgstr "Logo"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Contact Information"
+msgstr "Informations de contact"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Area Served"
+msgstr "Zone desservie"
+
+#: assets/build/local-seo-settings.js:1
+msgid "JSON-LD Preview"
+msgstr "Aperçu JSON-LD"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Home"
+msgstr "Accueil"
+
+#: assets/build/editor-sidebar.js:5
+msgid "SEO"
+msgstr "SEO"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Social"
+msgstr "Social"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Excellent"
+msgstr "Excellent"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Good"
+msgstr "Bon"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Needs Improvement"
+msgstr "Nécessite des améliorations"
+
+#: assets/build/editor-sidebar.js:5
+#, php-format,js-format
+msgid "More checks (%d)"
+msgstr "Plus de vérifications (%d)"
+
+#: assets/build/editor-sidebar.js:7
+msgid "Headings"
+msgstr "Titres"
+
+#: assets/build/editor-sidebar.js:7
+msgid "Flesch Score"
+msgstr "Score Flesch"
+
+#: assets/build/editor-sidebar.js:7
+msgid "Sentences"
+msgstr "Phrases"
+
+#: assets/build/editor-sidebar.js:8
+msgid "Complexity"
+msgstr "Complexité"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/editor-sidebar.js:9
+msgid "Meta Title"
+msgstr "Méta titre"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Meta Keywords"
+msgstr "Méta mots-clés"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Important"
+msgstr "Important"
+
+#: assets/build/admin.js:1
+#: assets/build/editor-sidebar.js:1
+#: assets/build/editor-sidebar.js:5
+msgid "Improvement"
+msgstr "Amélioration"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Minor"
+msgstr "Mineur"
+
+#: assets/build/editor-sidebar.js:5
+msgid "No issues found — great job!"
+msgstr "Aucun problème trouvé — excellent travail !"
+
+#: assets/build/editor-sidebar.js:5
+msgid "OG Title"
+msgstr "Titre OG"
+
+#: assets/build/editor-sidebar.js:5
+msgid "OG Description"
+msgstr "Description OG"
+
+#: assets/build/editor-sidebar.js:5
+msgid "OG Image"
+msgstr "Image OG"
+
+#: assets/build/editor-sidebar.js:5
+msgid "OG URL"
+msgstr "URL OG"
+
+#: assets/build/editor-sidebar.js:5
+msgid "OG Type"
+msgstr "Type OG"
+
+#: assets/build/admin.js:1
+#: assets/build/editor-sidebar.js:1
+#: assets/build/editor-sidebar.js:5
+msgid "Medium"
+msgstr "Moyen"
+
+#: assets/build/admin.js:1
+#: assets/build/editor-sidebar.js:1
+#: assets/build/editor-sidebar.js:5
+msgid "Hard"
+msgstr "Difficile"
+
+#: assets/build/dashboard.js:5
+#: assets/build/dashboard.js:6
+#: assets/build/dashboard.js:8
+msgid "Show less"
+msgstr "Afficher moins"
+
+#: assets/build/admin.js:1
+#: assets/build/editor-sidebar.js:5
+#, php-format,js-format
+msgid "Weight: %d%%"
+msgstr "Poids : %d%%"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/meta-seo-settings.js:1
+msgid "Site Name"
+msgstr "Nom du site"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Archives"
+msgstr "Archives"
+
+#: assets/build/meta-seo-settings.js:1
+#: assets/build/review-block.js:1
+msgid "Review"
+msgstr "Revue"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Broken URLs"
+msgstr "URL cassées"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "logged"
+msgstr "enregistré"
+
+#: assets/build/dashboard.js:9
+#: assets/build/meta-seo-settings.js:1
+msgid "Off"
+msgstr "Désactivé"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Noindex!"
+msgstr "Noindex !"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Indexation"
+msgstr "Indexation"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Global"
+msgstr "Global"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Taxonomies"
+msgstr "Taxonomies"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Social & Technical"
+msgstr "Social & technique"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "X Card"
+msgstr "Carte X"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Schema (JSON-LD)"
+msgstr "Schéma (JSON-LD)"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Structured Data"
+msgstr "Données structurées"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "SEO Images"
+msgstr "Images SEO"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Indexation Center"
+msgstr "Centre d'indexation"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Loading indexation status…"
+msgstr "Chargement de l'état d'indexation…"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Global Templates"
+msgstr "Modèles globaux"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Enable Breadcrumbs"
+msgstr "Activer le fil d'Ariane"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Auto-insert"
+msgstr "Insertion automatique"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Overview"
+msgstr "Vue d'ensemble"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Batch Fill"
+msgstr "Remplissage par lots"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Filename"
+msgstr "Nom de fichier"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Size"
+msgstr "Taille"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Include in sitemap"
+msgstr "Inclure dans le sitemap"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Always"
+msgstr "Toujours"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Hourly"
+msgstr "Horaire"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Daily"
+msgstr "Quotidien"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Weekly"
+msgstr "Hebdomadaire"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Monthly"
+msgstr "Mensuel"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Sitemap Configuration"
+msgstr "Configuration du sitemap"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Tools & Diagnostics"
+msgstr "Outils & Diagnostics"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Robots.txt View"
+msgstr "Vue Robots.txt"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Sitemap Statistics Overview"
+msgstr "Aperçu des statistiques du sitemap"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Total URLs"
+msgstr "URLs totales"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Sitemap URLs"
+msgstr "URL de sitemap"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Posts"
+msgstr "Articles"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Published Content"
+msgstr "Contenu publié"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Pages"
+msgstr "Pages"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Static Pages"
+msgstr "Pages statiques"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Images"
+msgstr "Images"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Optimized Media"
+msgstr "Médias optimisés"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Useful Information"
+msgstr "Informations utiles"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Your Sitemap URLs"
+msgstr "Vos URLs de Sitemap"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Best Practices"
+msgstr "Bonnes pratiques"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Submit your sitemap via Google Search Console"
+msgstr "Soumettez votre sitemap via Google Search Console"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Verify your sitemap in Bing Webmaster Tools"
+msgstr "Vérifiez votre sitemap dans Bing Webmaster Tools"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Notify search engines after important changes"
+msgstr "Notifiez les moteurs de recherche après des changements importants"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Regularly check that your sitemap is valid"
+msgstr "Vérifiez régulièrement que votre sitemap est valide"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Ensure robots.txt allows sitemap crawling"
+msgstr "Assurez-vous que robots.txt autorise le crawl du sitemap"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Specific Content to Exclude"
+msgstr "Contenu spécifique à exclure"
+
+#: assets/build/sitemap-settings.js:1
+msgid "In the post/page editor, add a custom field:"
+msgstr "Dans l'éditeur de l'article/page, ajoutez un champ personnalisé :"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Name:"
+msgstr "Nom :"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Value:"
+msgstr "Valeur :"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Tips"
+msgstr "Conseils"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Make sure your sitemap is submitted to the main search engines. You can submit your sitemap via Google Search Console and Bing Webmaster Tools."
+msgstr "Assurez-vous que votre sitemap est soumis aux principaux moteurs de recherche. Vous pouvez soumettre votre sitemap via Google Search Console et Bing Webmaster Tools."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Sitemap Settings"
+msgstr "Paramètres du sitemap"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Configure your XML sitemap so search engines can discover your most important content efficiently."
+msgstr "Configurez votre sitemap XML afin que les moteurs de recherche découvrent efficacement votre contenu le plus important."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Content Types"
+msgstr "Types de contenu"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Select the content types to include in your XML sitemap."
+msgstr "Sélectionnez les types de contenu à inclure dans votre sitemap XML."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Priority:"
+msgstr "Priorité :"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Frequency:"
+msgstr "Fréquence :"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Categories"
+msgstr "Catégories"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Tags"
+msgstr "Étiquettes (Tags)"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Create a dedicated image sitemap"
+msgstr "Créer un sitemap d'images dédié"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Include images in content URLs"
+msgstr "Inclure les images dans les URLs de contenu"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Adds image:image tags to each URL containing images."
+msgstr "Ajoute les balises image:image dans chaque URL contenant des images."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Google News Sitemap"
+msgstr "Sitemap Google News"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Enable Google News Sitemap"
+msgstr "Activer le sitemap Google News"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Publication Name"
+msgstr "Nom de la publication"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Defaults to your site name if left empty."
+msgstr "Par défaut, le nom de votre site si laissé vide."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Include articles from the last"
+msgstr "Inclure les articles des derniers"
+
+#: assets/build/sitemap-settings.js:1
+msgid "1 day"
+msgstr "1 jour"
+
+#: assets/build/sitemap-settings.js:1
+msgid "2 days (recommended)"
+msgstr "2 jours (recommandé)"
+
+#: assets/build/sitemap-settings.js:1
+msgid "3 days"
+msgstr "3 jours"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Google recommends including only articles from the last 2 days."
+msgstr "Google recommande de n'inclure que les articles des 2 derniers jours."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Exclusions"
+msgstr "Exclusions"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Define URLs to exclude from your sitemap."
+msgstr "Définissez les URLs à exclure de votre sitemap."
+
+#: assets/build/sitemap-settings.js:1
+msgid "URLs to Exclude"
+msgstr "URLs à exclure"
+
+#: assets/build/sitemap-settings.js:1
+msgid "List of URLs to exclude from sitemap"
+msgstr "Liste des URLs à exclure du sitemap"
+
+#: assets/build/sitemap-settings.js:1
+msgid "One URL or URL part per line"
+msgstr "Une URL ou partie d'URL par ligne"
+
+#: assets/build/sitemap-settings.js:1
+msgid "One URL or URL part per line. Examples: /private-page/, /confidential-folder/, etc."
+msgstr "Une URL ou partie d'URL par ligne. Exemples : /page-privee/, /dossier-confidentiel/, etc."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Quick Add:"
+msgstr "Ajouts rapides :"
+
+#: assets/build/sitemap-settings.js:1
+msgid "WP Admin"
+msgstr "Admin WP"
+
+#: assets/build/sitemap-settings.js:1
+msgid "WP Includes"
+msgstr "Includes WP"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Uploads"
+msgstr "Téléversements"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/product-grid-block.js:1
+#: assets/build/sitemap-settings.js:1
+msgid "Search"
+msgstr "Recherche"
+
+#: assets/build/sitemap-settings.js:1
+msgid "URL Parameters"
+msgstr "Paramètres URL"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Authors"
+msgstr "Auteurs"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Advanced Options"
+msgstr "Options avancées"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Advanced settings for experienced users."
+msgstr "Paramètres avancés pour les utilisateurs expérimentés."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Native WordPress Sitemap"
+msgstr "Sitemap WordPress natif"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Disable native WordPress sitemap"
+msgstr "Désactiver le sitemap natif de WordPress"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Disables the built-in WordPress sitemap to avoid conflicts. Recommended if you use this module."
+msgstr "Désactive le sitemap intégré de WordPress pour éviter les conflits. Recommandé si vous utilisez ce module."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Physical robots.txt File"
+msgstr "Fichier robots.txt physique"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Create a physical robots.txt file"
+msgstr "Créer un fichier robots.txt physique"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Generates a real robots.txt file at the site root instead of serving it dynamically."
+msgstr "Génère un fichier robots.txt réel à la racine du site au lieu de le servir dynamiquement."
+
+#: assets/build/sitemap-settings.js:1
+msgid "View Sitemap"
+msgstr "Voir le Sitemap"
+
+#: assets/build/sitemap-settings.js:1
+msgid "View robots.txt"
+msgstr "Voir robots.txt"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Clear Cache"
+msgstr "Vider le cache"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Notify Search Engines"
+msgstr "Notifier les moteurs de recherche"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Validate Online"
+msgstr "Valider en ligne"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Robots.txt Editor"
+msgstr "Éditeur de Robots.txt"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Quick Templates"
+msgstr "Templates rapides"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Block Google Images"
+msgstr "Bloquer Google Images"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Crawl Delay"
+msgstr "Délai de crawl"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Protect Private Folders"
+msgstr "Protéger les dossiers privés"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Block Unwanted Crawlers"
+msgstr "Bloquer les crawlers parasites"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Manage Parameters"
+msgstr "Gérer les paramètres"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Secure WordPress"
+msgstr "Sécuriser WordPress"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Reference Sitemap"
+msgstr "Référencer le sitemap"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Poor"
+msgstr "Faible"
+
+#: assets/build/admin.js:1
+#: assets/build/editor-sidebar.js:5
+msgid "Scores by Category"
+msgstr "Scores par catégorie"
+
+#: assets/build/admin.js:1
+#: assets/build/editor-sidebar.js:5
+#: assets/build/editor-sidebar.js:6
+msgid "Content Structure"
+msgstr "Structure du contenu"
+
+#: assets/build/admin.js:1
+#: assets/build/editor-sidebar.js:5
+msgid "Performance"
+msgstr "Performance"
+
+#: assets/build/admin.js:1
+#: assets/build/editor-sidebar.js:1
+msgid "No recommendations at this time. Great job!"
+msgstr "Aucune recommandation pour le moment. Excellent travail !"
+
+#: assets/build/admin.js:1
+#: assets/build/editor-sidebar.js:1
+#: assets/build/editor-sidebar.js:5
+msgid "points"
+msgstr "points"
+
+#: assets/build/admin.js:1
+#: assets/build/editor-sidebar.js:1
+msgid "Show Less"
+msgstr "Afficher moins"
+
+#. translators: %d: number of additional recommendations
+#: assets/build/admin.js:2
+#: assets/build/editor-sidebar.js:2
+#, js-format
+msgid "Show %d More Recommendations"
+msgstr "Afficher %d recommandations supplémentaires"
+
+#: assets/build/admin.js:2
+#: assets/build/editor-sidebar.js:5
+msgid "Invalid response from API"
+msgstr "Réponse invalide de l'API"
+
+#: assets/build/editor-sidebar.js:5
+msgid "SEO analysis complete — Score: "
+msgstr "Analyse SEO terminée — Score : "
+
+#: assets/build/admin.js:3
+#: assets/build/editor-sidebar.js:5
+msgid "An unknown error occurred"
+msgstr "Une erreur inconnue s'est produite"
+
+#: assets/build/editor-sidebar.js:5
+msgid "SEO analysis failed: "
+msgstr "L'analyse SEO a échoué : "
+
+#: assets/build/admin.js:4
+#: assets/build/dashboard.js:9
+#: assets/build/editor-sidebar.js:5
+#: assets/build/indexing-settings.js:1
+#: assets/build/wp-dashboard-widget.js:3
+msgid "Refresh"
+msgstr "Actualiser"
+
+#: assets/build/admin.js:4
+msgid "Analyzing your content…"
+msgstr "Analyse de votre contenu…"
+
+#: assets/build/admin.js:4
+#: assets/build/editor-sidebar.js:5
+#: assets/build/editor-sidebar.js:12
+msgid "Blockers"
+msgstr "Bloquants"
+
+#: assets/build/admin.js:4
+msgid "Other Improvements"
+msgstr "Autres améliorations"
+
+#. translators: %s: date and time of last analysis
+#: assets/build/admin.js:5
+#, js-format
+msgid "Last analyzed: %s"
+msgstr "Dernière analyse : %s"
+
+#: assets/build/admin.js:5
+#: assets/build/editor-sidebar.js:6
+msgid "Click \"Analyze SEO\" to check your content optimization."
+msgstr "Cliquez sur « Analyser le SEO » pour vérifier l'optimisation de votre contenu."
+
+#: assets/build/admin.js:5
+#: assets/build/indexing-settings.js:1
+#: assets/build/sitemap-settings.js:1
+msgid "Error"
+msgstr "Erreur"
+
+#: assets/build/admin.js:5
+msgid "Information"
+msgstr "Information"
+
+#: assets/build/admin.js:5
+msgid "Unable to load SEO analysis. Post ID not found."
+msgstr "Impossible de charger l'analyse SEO. Identifiant de l'article introuvable."
+
+#: assets/build/editor-sidebar.js:2
+msgid "Great job! All checks pass."
+msgstr "Excellent ! Tous les contrôles sont validés."
+
+#. translators: %d: number of top recommendations shown
+#: assets/build/editor-sidebar.js:3
+#, js-format
+msgid "Top %d Recommendations"
+msgstr "Top %d recommandations"
+
+#. translators: %d: total number of recommendations
+#: assets/build/editor-sidebar.js:4
+#, js-format
+msgid "%d total"
+msgstr "%d au total"
+
+#. translators: %s: recommendation message
+#: assets/build/editor-sidebar.js:5
+#, js-format
+msgid "%s — click to expand"
+msgstr "%s — cliquez pour développer"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Internal link suggestions"
+msgstr "Suggestions de liens internes"
+
+#: assets/build/editor-sidebar.js:5
+msgid "No related posts found for this keyword."
+msgstr "Aucun article similaire trouvé pour ce mot-clé."
+
+#: assets/build/editor-sidebar.js:5
+msgid "Copy link HTML"
+msgstr "Copier le lien HTML"
+
+#: assets/build/editor-sidebar.js:5
+msgid "View post"
+msgstr "Voir l'article"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Keyword must be between 2 and 50 characters."
+msgstr "Le mot-clé doit contenir entre 2 et 50 caractères."
+
+#: assets/build/editor-sidebar.js:5
+msgid "This keyword already exists."
+msgstr "Ce mot-clé existe déjà."
+
+#: assets/build/editor-sidebar.js:5
+msgid "Focus Keywords"
+msgstr "Mots-clés principaux"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Focus keywords"
+msgstr "Mots-clés principaux"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Remove keyword:"
+msgstr "Supprimer le mot-clé :"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Add another keyword…"
+msgstr "Ajouter un autre mot-clé…"
+
+#: assets/build/editor-sidebar.js:5
+msgid "e.g. best hiking shoes"
+msgstr "p. ex. meilleures chaussures de randonnée"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Add focus keyword"
+msgstr "Ajouter un mot-clé principal"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Add"
+msgstr "Ajouter"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Suggested keywords:"
+msgstr "Mots-clés suggérés :"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Used for: title, description, headings, density analysis"
+msgstr "Utilisé pour : titre, description, titres, analyse de densité"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Meta description"
+msgstr "Description meta"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Introduction"
+msgstr "Introduction"
+
+#: assets/build/editor-sidebar.js:5
+msgid "URL / Slug"
+msgstr "URL / Slug"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Placements for"
+msgstr "Occurrences pour"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Pass:"
+msgstr "Réussi :"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Fail:"
+msgstr "Échoué :"
+
+#: assets/build/editor-sidebar.js:5
+msgid "(No title)"
+msgstr "(Sans titre)"
+
+#: assets/build/editor-sidebar.js:5
+msgid "No meta description set."
+msgstr "Aucune description meta définie."
+
+#: assets/build/editor-sidebar.js:5
+msgid "Google search preview"
+msgstr "Aperçu de recherche Google"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Your Site"
+msgstr "Votre site"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Insert Variable"
+msgstr "Insérer une variable"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Failed to save meta fields."
+msgstr "Échec de l'enregistrement des champs meta."
+
+#: assets/build/editor-sidebar.js:5
+msgid "Enter a custom meta title…"
+msgstr "Saisissez un titre meta personnalisé…"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Write a compelling description for search results…"
+msgstr "Rédigez une description accrocheuse pour les résultats de recherche…"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Save failed"
+msgstr "Échec de l'enregistrement"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Undo"
+msgstr "Annuler"
+
+#: assets/build/editor-sidebar.js:5
+msgid "No description available."
+msgstr "Aucune description disponible."
+
+#: assets/build/editor-sidebar.js:5
+msgid "Desc"
+msgstr "Desc"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Edit Social Sharing"
+msgstr "Modifier le partage social"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Failed to load social data."
+msgstr "Échec du chargement des données sociales."
+
+#: assets/build/editor-sidebar.js:5
+msgid "Select Facebook Image"
+msgstr "Sélectionner l'image Facebook"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Select Twitter Image"
+msgstr "Sélectionner l'image Twitter"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Failed to save social settings."
+msgstr "Échec de l'enregistrement des paramètres sociaux."
+
+#: assets/build/editor-sidebar.js:5
+msgid "Facebook / OG"
+msgstr "Facebook / OG"
+
+#: assets/build/editor-sidebar.js:5
+msgid "X / Twitter"
+msgstr "X / Twitter"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/local-seo-settings.js:1
+msgid "Change Image"
+msgstr "Changer l'image"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Leave empty for default"
+msgstr "Laisser vide pour la valeur par défaut"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/meta-seo-settings.js:1
+msgid "@site Handle"
+msgstr "Identifiant @site"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/meta-seo-settings.js:1
+msgid "@creator Handle"
+msgstr "Identifiant @creator"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Save Changes"
+msgstr "Enregistrer les modifications"
+
+#: assets/build/editor-sidebar.js:5
+msgid "keyword1, keyword2, …"
+msgstr "motclé1, motclé2, …"
+
+#: assets/build/editor-sidebar.js:5
+#: assets/build/editor-sidebar.js:12
+msgid "Improvements"
+msgstr "Améliorations"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Hide"
+msgstr "Masquer"
+
+#: assets/build/editor-sidebar.js:5
+msgid "SEOPulse SEO"
+msgstr "SEOPulse SEO"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Content changed — analysis will refresh automatically."
+msgstr "Contenu modifié — l'analyse se rafraîchira automatiquement."
+
+#: assets/build/editor-sidebar.js:5
+msgid "SEO sections"
+msgstr "Sections SEO"
+
+#. translators: %1$d: number of passed checks, %2$d: total number of checks
+#: assets/build/editor-sidebar.js:6
+#, js-format
+msgid "%1$d / %2$d checks passed"
+msgstr "%1$d / %2$d contrôles réussis"
+
+#: assets/build/editor-sidebar.js:6
+msgid "blocker"
+msgstr "bloquant"
+
+#: assets/build/editor-sidebar.js:6
+msgid "blockers"
+msgstr "bloquants"
+
+#: assets/build/editor-sidebar.js:6
+msgid "important"
+msgstr "important"
+
+#: assets/build/editor-sidebar.js:6
+msgid "improvement"
+msgstr "amélioration"
+
+#: assets/build/editor-sidebar.js:6
+msgid "improvements"
+msgstr "améliorations"
+
+#: assets/build/editor-sidebar.js:6
+msgid "minor"
+msgstr "mineur"
+
+#: assets/build/editor-sidebar.js:6
+msgid "View all issues →"
+msgstr "Voir tous les problèmes →"
+
+#. translators: %d: number of recommendations
+#: assets/build/editor-sidebar.js:6
+#, js-format
+msgid "View all %d recommendations →"
+msgstr "Voir les %d recommandations →"
+
+#: assets/build/editor-sidebar.js:6
+msgid "Content Stats"
+msgstr "Statistiques du contenu"
+
+#: assets/build/editor-sidebar.js:6
+msgid "Words"
+msgstr "Mots"
+
+#. translators: %d: number of characters
+#: assets/build/editor-sidebar.js:7
+#: assets/build/editor-sidebar.js:11
+#, js-format
+msgid "%d chars"
+msgstr "%d caractères"
+
+#: assets/build/editor-sidebar.js:7
+msgid "Readability Stats"
+msgstr "Statistiques de lisibilité"
+
+#. translators: %1$d: total number of sentences, %2$d: average words per sentence
+#: assets/build/editor-sidebar.js:8
+#, js-format
+msgid "%1$d (avg %2$d words)"
+msgstr "%1$d (moy. %2$d mots)"
+
+#. translators: %s: percentage of complex words
+#: assets/build/editor-sidebar.js:9
+#, js-format
+msgid "%s%% complex words"
+msgstr "%s%% de mots complexes"
+
+#: assets/build/editor-sidebar.js:9
+msgid "Content Checks"
+msgstr "Vérifications du contenu"
+
+#: assets/build/editor-sidebar.js:9
+msgid "Readability Checks"
+msgstr "Vérifications de lisibilité"
+
+#: assets/build/editor-sidebar.js:9
+msgid "Run an analysis to see content details."
+msgstr "Lancez une analyse pour voir les détails du contenu."
+
+#: assets/build/editor-sidebar.js:9
+msgid "Meta Stats"
+msgstr "Statistiques meta"
+
+#. translators: %1$d: number of characters, %2$d: pixel width
+#: assets/build/editor-sidebar.js:10
+#, js-format
+msgid "%1$d chars (%2$dpx)"
+msgstr "%1$d caractères (%2$dpx)"
+
+#. translators: %1$d: number of characters, %2$d: number of words
+#: assets/build/editor-sidebar.js:12
+#, js-format
+msgid "%1$d chars (%2$d words)"
+msgstr "%1$d caractères (%2$d mots)"
+
+#: assets/build/editor-sidebar.js:12
+msgid "Meta Checks"
+msgstr "Vérifications meta"
+
+#: assets/build/editor-sidebar.js:12
+msgid "Last analyzed:"
+msgstr "Dernière analyse :"
+
+#: assets/build/editor-sidebar.js:12
+msgid "All Issues"
+msgstr "Tous les problèmes"
+
+#: assets/build/editor-sidebar.js:12
+msgid "All Recommendations"
+msgstr "Toutes les recommandations"
+
+#: assets/build/faq-block.js:1
+msgid "FAQ Settings"
+msgstr "Paramètres FAQ"
+
+#: assets/build/faq-block.js:1
+msgid "Items:"
+msgstr "Éléments :"
+
+#: assets/build/faq-block.js:1
+msgid "SEOPulse FAQ"
+msgstr "SEOPulse FAQ"
+
+#: assets/build/faq-block.js:1
+msgid "No FAQ items yet. Click \"Add FAQ\" to get started."
+msgstr "Aucun élément FAQ. Cliquez sur « Ajouter une FAQ » pour commencer."
+
+#: assets/build/faq-block.js:1
+msgid "FAQ item"
+msgstr "Élément FAQ"
+
+#: assets/build/faq-block.js:1
+#: assets/build/howto-block.js:1
+msgid "Move up"
+msgstr "Déplacer vers le haut"
+
+#: assets/build/faq-block.js:1
+#: assets/build/howto-block.js:1
+msgid "Move down"
+msgstr "Déplacer vers le bas"
+
+#: assets/build/faq-block.js:1
+msgid "Question…"
+msgstr "Question…"
+
+#: assets/build/faq-block.js:1
+msgid "Question"
+msgstr "Question"
+
+#: assets/build/faq-block.js:1
+msgid "Answer…"
+msgstr "Réponse…"
+
+#: assets/build/faq-block.js:1
+msgid "Answer"
+msgstr "Réponse"
+
+#: assets/build/faq-block.js:1
+msgid "Add FAQ"
+msgstr "Ajouter une FAQ"
+
+#: assets/build/faq-block.js:1
+#: assets/build/howto-block.js:1
+msgid "Schema:"
+msgstr "Schema :"
+
+#: assets/build/howto-block.js:1
+msgid "HowTo Settings"
+msgstr "Paramètres HowTo"
+
+#: assets/build/howto-block.js:1
+msgid "Estimated Time (minutes)"
+msgstr "Temps estimé (minutes)"
+
+#: assets/build/howto-block.js:1
+msgid "ISO:"
+msgstr "ISO :"
+
+#: assets/build/howto-block.js:1
+msgid "Total Time (minutes)"
+msgstr "Temps total (minutes)"
+
+#: assets/build/howto-block.js:1
+msgid "Yield (optional)"
+msgstr "Rendement (optionnel)"
+
+#: assets/build/howto-block.js:1
+msgid "e.g. 4 servings"
+msgstr "p. ex. 4 portions"
+
+#: assets/build/howto-block.js:1
+msgid "Steps:"
+msgstr "Étapes :"
+
+#: assets/build/howto-block.js:1
+msgid "SEOPulse HowTo"
+msgstr "SEOPulse HowTo"
+
+#: assets/build/howto-block.js:1
+msgid "HowTo title…"
+msgstr "Titre HowTo…"
+
+#: assets/build/howto-block.js:1
+msgid "HowTo title"
+msgstr "Titre HowTo"
+
+#: assets/build/howto-block.js:1
+msgid "HowTo description…"
+msgstr "Description HowTo…"
+
+#: assets/build/howto-block.js:1
+msgid "HowTo description"
+msgstr "Description HowTo"
+
+#: assets/build/howto-block.js:1
+msgid "No steps yet. Click \"Add Step\" to get started."
+msgstr "Aucune étape. Cliquez sur « Ajouter une étape » pour commencer."
+
+#: assets/build/howto-block.js:1
+msgid "Step name…"
+msgstr "Nom de l'étape…"
+
+#: assets/build/howto-block.js:1
+msgid "Step name"
+msgstr "Nom de l'étape"
+
+#: assets/build/howto-block.js:1
+msgid "Step description…"
+msgstr "Description de l'étape…"
+
+#: assets/build/howto-block.js:1
+msgid "Step description"
+msgstr "Description de l'étape"
+
+#: assets/build/howto-block.js:1
+msgid "Step image"
+msgstr "Image de l'étape"
+
+#: assets/build/howto-block.js:1
+msgid "Remove image"
+msgstr "Supprimer l'image"
+
+#: assets/build/howto-block.js:1
+msgid "Add image"
+msgstr "Ajouter une image"
+
+#: assets/build/howto-block.js:1
+msgid "Add Step"
+msgstr "Ajouter une étape"
+
+#: assets/build/howto-block.js:1
+msgid "step"
+msgstr "étape"
+
+#: assets/build/howto-block.js:1
+msgid "steps"
+msgstr "étapes"
+
+#: assets/build/howto-block.js:1
+msgid "Est."
+msgstr "Est."
+
+#: assets/build/howto-block.js:1
+msgid "Total"
+msgstr "Total"
+
+#: assets/build/indexing-settings.js:1
+msgid "IndexNow"
+msgstr "IndexNow"
+
+#: assets/build/indexing-settings.js:1
+msgid "Instantly notify Bing, Yandex, Naver, and other search engines when content changes."
+msgstr "Notifiez instantanément Bing, Yandex, Naver et les autres moteurs de recherche lorsque le contenu change."
+
+#: assets/build/indexing-settings.js:1
+msgid "Enable IndexNow"
+msgstr "Activer IndexNow"
+
+#: assets/build/indexing-settings.js:1
+msgid "API Key"
+msgstr "Clé API"
+
+#: assets/build/indexing-settings.js:1
+msgid "This key was auto-generated. Search engines use it to verify your ownership."
+msgstr "Cette clé a été générée automatiquement. Les moteurs de recherche l'utilisent pour vérifier votre propriété."
+
+#: assets/build/indexing-settings.js:1
+msgid "Google credentials saved."
+msgstr "Identifiants Google enregistrés."
+
+#: assets/build/indexing-settings.js:1
+msgid "Invalid JSON file."
+msgstr "Fichier JSON invalide."
+
+#: assets/build/indexing-settings.js:1
+msgid "Google Indexing API: Connection OK."
+msgstr "API Google Indexing : connexion OK."
+
+#: assets/build/indexing-settings.js:1
+msgid "Google Indexing API: Connection failed."
+msgstr "API Google Indexing : échec de la connexion."
+
+#: assets/build/indexing-settings.js:1
+msgid "Test failed."
+msgstr "Test échoué."
+
+#: assets/build/indexing-settings.js:1
+msgid "Google Indexing API"
+msgstr "API Google Indexing"
+
+#: assets/build/indexing-settings.js:1
+msgid "Use the Google Indexing API to request instant crawling of your pages."
+msgstr "Utilisez l'API Google Indexing pour demander l'exploration instantanée de vos pages."
+
+#: assets/build/indexing-settings.js:1
+msgid "Enable Google Indexing API"
+msgstr "Activer l'API Google Indexing"
+
+#: assets/build/indexing-settings.js:1
+msgid "Service Account Credentials"
+msgstr "Identifiants du compte de service"
+
+#: assets/build/indexing-settings.js:1
+msgid "Credentials configured."
+msgstr "Identifiants configurés."
+
+#: assets/build/indexing-settings.js:1
+#: assets/build/local-seo-settings.js:1
+msgid "Testing…"
+msgstr "Test en cours…"
+
+#: assets/build/indexing-settings.js:1
+msgid "Test Connection"
+msgstr "Tester la connexion"
+
+#: assets/build/indexing-settings.js:1
+msgid "No credentials uploaded yet."
+msgstr "Aucun identifiant téléversé."
+
+#: assets/build/indexing-settings.js:1
+msgid "Upload the JSON key file from your Google Cloud service account."
+msgstr "Téléversez le fichier de clé JSON de votre compte de service Google Cloud."
+
+#: assets/build/indexing-settings.js:1
+msgid "URL submitted successfully."
+msgstr "URL soumise avec succès."
+
+#: assets/build/indexing-settings.js:1
+msgid "Some providers failed. Check results below."
+msgstr "Certains fournisseurs ont échoué. Vérifiez les résultats ci-dessous."
+
+#: assets/build/indexing-settings.js:1
+msgid "Submission failed."
+msgstr "Échec de la soumission."
+
+#: assets/build/indexing-settings.js:1
+msgid "Manual URL Submission"
+msgstr "Soumission manuelle d'URL"
+
+#: assets/build/indexing-settings.js:1
+msgid "Submit a specific URL to all configured indexing providers."
+msgstr "Soumettre une URL spécifique à tous les fournisseurs d'indexation configurés."
+
+#: assets/build/indexing-settings.js:1
+msgid "Action"
+msgstr "Action"
+
+#: assets/build/indexing-settings.js:1
+msgid "URL Updated / Published"
+msgstr "URL mise à jour / publiée"
+
+#: assets/build/indexing-settings.js:1
+msgid "URL Deleted / Removed"
+msgstr "URL supprimée / retirée"
+
+#: assets/build/indexing-settings.js:1
+msgid "Submitting…"
+msgstr "Soumission en cours…"
+
+#: assets/build/indexing-settings.js:1
+msgid "Submit URL"
+msgstr "Soumettre l'URL"
+
+#: assets/build/indexing-settings.js:1
+msgid "Results"
+msgstr "Résultats"
+
+#: assets/build/indexing-settings.js:1
+msgid "Provider"
+msgstr "Fournisseur"
+
+#: assets/build/indexing-settings.js:1
+msgid "Failed"
+msgstr "Échoué"
+
+#: assets/build/indexing-settings.js:1
+msgid "Activity Log"
+msgstr "Journal d'activité"
+
+#: assets/build/indexing-settings.js:1
+msgid "No indexing activity yet."
+msgstr "Aucune activité d'indexation pour le moment."
+
+#: assets/build/indexing-settings.js:1
+msgid "Date"
+msgstr "Date"
+
+#: assets/build/indexing-settings.js:1
+msgid "← Previous"
+msgstr "← Précédent"
+
+#: assets/build/indexing-settings.js:1
+msgid "Next →"
+msgstr "Suivant →"
+
+#: assets/build/indexing-settings.js:1
+#: assets/build/logs-viewer.js:1
+msgid "Failed to save settings."
+msgstr "Échec de l'enregistrement des paramètres."
+
+#: assets/build/indexing-settings.js:1
+msgid "Providers"
+msgstr "Fournisseurs"
+
+#: assets/build/indexing-settings.js:1
+msgid "Manual Submit"
+msgstr "Soumission manuelle"
+
+#: assets/build/indexing-settings.js:1
+msgid "Automatically submit URLs when publishing or updating posts"
+msgstr "Soumettre automatiquement les URL lors de la publication ou mise à jour d'articles"
+
+#: assets/build/product-grid-block.js:1
+msgid "Grid Settings"
+msgstr "Paramètres de la grille"
+
+#: assets/build/product-grid-block.js:1
+msgid "Columns"
+msgstr "Colonnes"
+
+#: assets/build/product-grid-block.js:1
+msgid "Show Price"
+msgstr "Afficher le prix"
+
+#: assets/build/product-grid-block.js:1
+msgid "Show Rating"
+msgstr "Afficher la note"
+
+#: assets/build/product-grid-block.js:1
+msgid "Show Button"
+msgstr "Afficher le bouton"
+
+#: assets/build/product-grid-block.js:1
+msgid "Product Grid"
+msgstr "Grille de produits"
+
+#: assets/build/product-grid-block.js:1
+msgid "WooCommerce does not seem to be active. This block requires WooCommerce."
+msgstr "WooCommerce ne semble pas actif. Ce bloc nécessite WooCommerce."
+
+#: assets/build/product-grid-block.js:1
+msgid "Search Products"
+msgstr "Rechercher des produits"
+
+#: assets/build/product-grid-block.js:1
+msgid "No products selected. Use the search above to add products."
+msgstr "Aucun produit sélectionné. Utilisez la recherche ci-dessus pour ajouter des produits."
+
+#: assets/build/review-block.js:1
+msgid "Review Settings"
+msgstr "Paramètres de l'avis"
+
+#: assets/build/review-block.js:1
+msgid "Rating"
+msgstr "Note"
+
+#: assets/build/review-block.js:1
+msgid "Reviewer Name"
+msgstr "Nom de l'évaluateur"
+
+#: assets/build/review-block.js:1
+msgid "Review schema will be emitted."
+msgstr "Le schéma d'avis sera généré."
+
+#: assets/build/review-block.js:1
+msgid "Fill item name, rating, and reviewer to emit schema."
+msgstr "Remplissez le nom de l'élément, la note et l'évaluateur pour générer le schéma."
+
+#: assets/build/review-block.js:1
+msgid "Schema"
+msgstr "Schema"
+
+#: assets/build/review-block.js:1
+msgid "Item being reviewed…"
+msgstr "Élément évalué…"
+
+#: assets/build/review-block.js:1
+msgid "Short summary…"
+msgstr "Résumé court…"
+
+#: assets/build/review-block.js:1
+msgid "Write your review…"
+msgstr "Rédigez votre avis…"
+
+#: assets/build/schema-block.js:1
+msgid "JSON cannot be empty."
+msgstr "Le JSON ne peut pas être vide."
+
+#: assets/build/schema-block.js:1
+msgid "Schema must be a JSON object, not an array or primitive."
+msgstr "Le schéma doit être un objet JSON, pas un tableau ou une valeur primitive."
+
+#: assets/build/schema-block.js:1
+msgid "Invalid JSON syntax."
+msgstr "Syntaxe JSON invalide."
+
+#: assets/build/schema-block.js:1
+msgid "Schema Settings"
+msgstr "Paramètres du schéma"
+
+#: assets/build/schema-block.js:1
+msgid "JSON is valid"
+msgstr "JSON valide"
+
+#: assets/build/schema-block.js:1
+msgid "JSON is invalid"
+msgstr "JSON invalide"
+
+#: assets/build/schema-block.js:1
+msgid "Custom Schema"
+msgstr "Schéma personnalisé"
+
+#: assets/build/schema-block.js:1
+msgid "JSON-LD"
+msgstr "JSON-LD"
+
+#: assets/build/schema-block.js:1
+msgid "Schema will be output as JSON-LD on the frontend."
+msgstr "Le schéma sera affiché en JSON-LD sur le site."
+
+#: assets/build/schema-block.js:1
+msgid "Invalid schema will not be output on the frontend."
+msgstr "Un schéma invalide ne sera pas affiché sur le site."
+
+#: assets/build/setup-wizard.js:1
+msgid "Blog / Magazine"
+msgstr "Blog / Magazine"
+
+#: assets/build/setup-wizard.js:1
+msgid "E-commerce"
+msgstr "E-commerce"
+
+#: assets/build/setup-wizard.js:1
+msgid "Service / Agency"
+msgstr "Service / Agence"
+
+#: assets/build/setup-wizard.js:1
+msgid "Portfolio / Showcase"
+msgstr "Portfolio / Vitrine"
+
+#: assets/build/setup-wizard.js:1
+msgid "Corporate / Institutional"
+msgstr "Entreprise / Institutionnel"
+
+#: assets/build/setup-wizard.js:1
+msgid "Media / News"
+msgstr "Média / Actualités"
+
+#: assets/build/setup-wizard.js:1
+msgid "Other"
+msgstr "Autre"
+
+#: assets/build/setup-wizard.js:1
+msgid "Content Creator / Blogger"
+msgstr "Créateur de contenu / Blogueur"
+
+#: assets/build/setup-wizard.js:1
+msgid "Agency / Consultant"
+msgstr "Agence / Consultant"
+
+#: assets/build/setup-wizard.js:1
+msgid "Freelancer / Solo"
+msgstr "Freelance / Indépendant"
+
+#: assets/build/setup-wizard.js:1
+msgid "Brand / Company"
+msgstr "Marque / Entreprise"
+
+#: assets/build/setup-wizard.js:1
+msgid "Nonprofit / Association"
+msgstr "Association / Organisation à but non lucratif"
+
+#: assets/build/setup-wizard.js:1
+msgid "Balanced (recommended)"
+msgstr "Équilibré (recommandé)"
+
+#: assets/build/setup-wizard.js:1
+msgid "Balanced settings suitable for most sites."
+msgstr "Paramètres équilibrés adaptés à la plupart des sites."
+
+#: assets/build/setup-wizard.js:1
+msgid "Blog / Content"
+msgstr "Blog / Contenu"
+
+#: assets/build/setup-wizard.js:1
+msgid "Optimized for content-heavy sites with many articles."
+msgstr "Optimisé pour les sites riches en contenu avec de nombreux articles."
+
+#: assets/build/setup-wizard.js:1
+msgid "Focused on local SEO with structured data."
+msgstr "Orienté SEO local avec données structurées."
+
+#: assets/build/setup-wizard.js:1
+msgid "Product-oriented with rich snippets support."
+msgstr "Orienté produit avec support des extraits enrichis."
+
+#: assets/build/setup-wizard.js:1
+msgid "Portfolio"
+msgstr "Portfolio"
+
+#: assets/build/setup-wizard.js:1
+msgid "Lightweight settings for showcase sites."
+msgstr "Paramètres légers pour les sites vitrines."
+
+#: assets/build/setup-wizard.js:1
+msgid "Saved!"
+msgstr "Enregistré !"
+
+#: assets/build/setup-wizard.js:1
+msgid "This helps SEOPulse shape a more relevant onboarding path and stronger default recommendations."
+msgstr "Cela aide SEOPulse à proposer un parcours d'intégration plus pertinent et des recommandations par défaut plus adaptées."
+
+#: assets/build/setup-wizard.js:1
+msgid "I want to configure Local SEO (JSON-LD)"
+msgstr "Je souhaite configurer le SEO local (JSON-LD)"
+
+#: assets/build/toc-block.js:1
+msgid "ToC Settings"
+msgstr "Paramètres du sommaire"
+
+#: assets/build/toc-block.js:1
+msgid "Include H1"
+msgstr "Inclure H1"
+
+#: assets/build/toc-block.js:1
+msgid "Minimum headings"
+msgstr "Minimum de titres"
+
+#: assets/build/toc-block.js:1
+msgid "Collapsible"
+msgstr "Repliable"
+
+#: assets/build/toc-block.js:1
+msgid "Show numbers"
+msgstr "Afficher les numéros"
+
+#: assets/build/toc-block.js:1
+msgid "Not enough headings detected (minimum:"
+msgstr "Pas assez de titres détectés (minimum :"
+
+#: assets/build/toc-block.js:1
+msgid "No headings detected in this post."
+msgstr "Aucun titre détecté dans cet article."
+
+#: assets/build/toc-block.js:1
+msgid "headings"
+msgstr "titres"
+
+#: assets/build/toc-block.js:1
+msgid "collapsible"
+msgstr "repliable"
+
+#. Description of the plugin
+#: seopulse.php
+msgid "SEOPulse is a SEO Plugin to Boost Rankings & Traffic."
+msgstr "SEOPulse est un plugin SEO pour améliorer votre classement et votre trafic."
+
+#. translators: %d: SEO score out of 100
+#: assets/build/admin.js:3
+#, js-format
+msgid "SEO analysis complete — Score: %d/100"
+msgstr "Analyse SEO terminée — Score : %d/100"
+
+#. translators: %s: error message
+#: assets/build/admin.js:4
+#, js-format
+msgid "SEO analysis failed: %s"
+msgstr "L'analyse SEO a échoué : %s"
+
+#: assets/build/dashboard.js:1
+msgid "Open command palette (Ctrl+K)"
+msgstr "Ouvrir la palette de commandes (Ctrl+K)"
+
+#: assets/build/dashboard.js:1
+msgid "Command palette (Ctrl+K)"
+msgstr "Palette de commandes (Ctrl+K)"
+
+#: assets/build/dashboard.js:1
+msgid "notification"
+msgstr "notification"
+
+#: assets/build/dashboard.js:1
+msgid "notifications"
+msgstr "notifications"
+
+#: assets/build/dashboard.js:1
+msgid "Command palette"
+msgstr "Palette de commandes"
+
+#: assets/build/dashboard.js:1
+msgid "Search for a page or action…"
+msgstr "Rechercher une page ou une action…"
+
+#: assets/build/dashboard.js:1
+msgid "Search commands"
+msgstr "Rechercher des commandes"
+
+#: assets/build/dashboard.js:1
+msgid "No matching actions found."
+msgstr "Aucune action correspondante trouvée."
+
+#: assets/build/dashboard.js:1
+msgid "Navigate"
+msgstr "Naviguer"
+
+#: assets/build/dashboard.js:1
+msgid "Dependencies not met"
+msgstr "Dépendances non satisfaites"
+
+#: assets/build/dashboard.js:2
+#: assets/build/dashboard.js:8
+#, js-format
+msgid "%d second"
+msgid_plural "%d seconds"
+msgstr[0] "%d seconde"
+msgstr[1] "%d secondes"
+
+#: assets/build/dashboard.js:2
+#: assets/build/dashboard.js:8
+#, js-format
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] "%d minute"
+msgstr[1] "%d minutes"
+
+#: assets/build/dashboard.js:2
+#: assets/build/dashboard.js:8
+#, js-format
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] "%d heure"
+msgstr[1] "%d heures"
+
+#: assets/build/dashboard.js:2
+#: assets/build/dashboard.js:8
+#, js-format
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] "%d jour"
+msgstr[1] "%d jours"
+
+#. translators: %s: post title
+#: assets/build/dashboard.js:3
+#, js-format
+msgid "Edit \"%s\""
+msgstr "Modifier \"%s\""
+
+#. translators: %d: SEO score out of 100
+#: assets/build/dashboard.js:5
+#, js-format
+msgid "SEO Score: %d/100"
+msgstr "Score SEO : %d/100"
+
+#: assets/build/dashboard.js:5
+msgid "14d"
+msgstr "14j"
+
+#: assets/build/dashboard.js:5
+msgid "Filter checks by status"
+msgstr "Filtrer les vérifications par statut"
+
+#: assets/build/dashboard.js:5
+msgid "Fail"
+msgstr "Échec"
+
+#: assets/build/dashboard.js:5
+msgid "Warn"
+msgstr "Avertissement"
+
+#: assets/build/dashboard.js:5
+msgid "Pass"
+msgstr "Réussi"
+
+#: assets/build/dashboard.js:5
+msgid "No checks match this filter."
+msgstr "Aucune vérification ne correspond à ce filtre."
+
+#. translators: %d: number of remaining quick wins
+#: assets/build/dashboard.js:6
+#, js-format
+msgid "See all %d actions"
+msgstr "Voir les %d actions"
+
+#. translators: %d: number of hidden images
+#: assets/build/dashboard.js:7
+#, js-format
+msgid "See all %d images"
+msgstr "Voir les %d images"
+
+#. translators: %d: number of remaining analyses
+#: assets/build/dashboard.js:9
+#, js-format
+msgid "See all %d analyses"
+msgstr "Voir les %d analyses"
+
+#: assets/build/dashboard.js:9
+msgid "Welcome to"
+msgstr "Bienvenue sur"
+
+#: assets/build/dashboard.js:9
+msgid "Refresh dashboard data"
+msgstr "Actualiser les données du tableau de bord"
+
+#: assets/build/dashboard.js:9
+msgid "Refresh KPIs"
+msgstr "Actualiser les KPI"
+
+#: assets/build/dashboard.js:9
+msgid "Refreshing…"
+msgstr "Actualisation…"
+
+#: assets/build/dashboard.js:9
+msgid "pages / posts"
+msgstr "pages / articles"
+
+#: assets/build/dashboard.js:9
+msgid "pages below score 50"
+msgstr "pages avec un score inférieur à 50"
+
+#: assets/build/dashboard.js:9
+msgid "Actions Required"
+msgstr "Actions requises"
+
+#: assets/build/dashboard.js:9
+msgid "technical checks failing"
+msgstr "vérifications techniques échouées"
+
+#: assets/build/dashboard.js:9
+msgid "XML sitemap configured"
+msgstr "plan du site XML configuré"
+
+#: assets/build/dashboard.js:9
+msgid "KPI Instrument Cluster"
+msgstr "Tableau de bord KPI"
+
+#: assets/build/editor-sidebar.js:5
+msgid "Add focus keywords to optimize your content for multiple search terms."
+msgstr "Ajoutez des mots-clés principaux pour optimiser votre contenu sur plusieurs termes de recherche."
+
+#: assets/build/local-seo-settings.js:1
+msgid "Define your business type, name and key identity information for Schema.org markup."
+msgstr "Définissez le type, le nom et les informations d'identité de votre entreprise pour le balisage Schema.org."
+
+#: assets/build/local-seo-settings.js:1
+msgid "Business Type"
+msgstr "Type d'entreprise"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Upload your business image and logo for rich results."
+msgstr "Importez l'image et le logo de votre entreprise pour les résultats enrichis."
+
+#: assets/build/local-seo-settings.js:1
+msgid "Business Image"
+msgstr "Image de l'entreprise"
+
+#: assets/build/local-seo-settings.js:1
+#: assets/build/meta-seo-settings.js:1
+msgid "Image URL"
+msgstr "URL de l'image"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Change Logo"
+msgstr "Changer le logo"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Provide contact details for your business Schema.org markup."
+msgstr "Renseignez les coordonnées de votre entreprise pour le balisage Schema.org."
+
+#: assets/build/local-seo-settings.js:1
+msgid "Telephone"
+msgstr "Téléphone"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Region / State"
+msgstr "Région / Département"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Get Coordinates"
+msgstr "Obtenir les coordonnées"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Region"
+msgstr "Région"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Define your business opening hours. Add multiple time slots for different day groups."
+msgstr "Définissez les horaires d'ouverture de votre entreprise. Ajoutez plusieurs plages horaires pour différents groupes de jours."
+
+#: assets/build/local-seo-settings.js:1
+msgid "Time Slot"
+msgstr "Plage horaire"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Social Profiles (sameAs)"
+msgstr "Profils sociaux (sameAs)"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Add your social media profile URLs. These are used in the sameAs property of your Schema.org markup."
+msgstr "Ajoutez les URL de vos profils réseaux sociaux. Elles sont utilisées dans la propriété sameAs de votre balisage Schema.org."
+
+#: assets/build/local-seo-settings.js:1
+msgid "Keywords (comma-separated)"
+msgstr "Mots-clés (séparés par des virgules)"
+
+#: assets/build/local-seo-settings.js:1
+msgid "restaurant, french cuisine, paris"
+msgstr "restaurant, cuisine française, paris"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Price range, e.g. \"$\", \"$$\", \"$$$\" or \"€€€\"."
+msgstr "Gamme de prix, ex. \"€\", \"€€\", \"€€€\"."
+
+#: assets/build/local-seo-settings.js:1
+msgid "Cash, Credit Card, etc."
+msgstr "Espèces, Carte de crédit, etc."
+
+#: assets/build/local-seo-settings.js:1
+msgid "Aggregate Rating"
+msgstr "Note globale"
+
+#: assets/build/local-seo-settings.js:1
+msgid "An error occurred while testing."
+msgstr "Une erreur s'est produite lors du test."
+
+#: assets/build/local-seo-settings.js:1
+msgid "This is a live preview of the structured data that will be generated from your current settings."
+msgstr "Aperçu en direct des données structurées générées à partir de vos paramètres actuels."
+
+#: assets/build/local-seo-settings.js:1
+msgid "Test a URL"
+msgstr "Tester une URL"
+
+#: assets/build/local-seo-settings.js:1
+msgid "Enter a URL from your site to check if JSON-LD is present."
+msgstr "Entrez une URL de votre site pour vérifier la présence du JSON-LD."
+
+#: assets/build/local-seo-settings.js:1
+msgid "Test"
+msgstr "Tester"
+
+#: assets/build/logs-viewer.js:1
+msgid "File size:"
+msgstr "Taille du fichier :"
+
+#: assets/build/logs-viewer.js:1
+msgid "entries (most recent first)."
+msgstr "entrées (les plus récentes en premier)."
+
+#: assets/build/logs-viewer.js:1
+msgid "Failed to clear logs."
+msgstr "Échec de l'effacement des journaux."
+
+#: assets/build/logs-viewer.js:1
+msgid "Failed to delete entries."
+msgstr "Échec de la suppression des entrées."
+
+#: assets/build/logs-viewer.js:1
+msgid "Export failed."
+msgstr "Échec de l'exportation."
+
+#: assets/build/logs-viewer.js:1
+msgid "Max:"
+msgstr "Max :"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "The sitemap module is disabled."
+msgstr "Le module plan du site est désactivé."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Date archives are hidden from search engines."
+msgstr "Les archives de dates sont masquées des moteurs de recherche."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Search result pages are hidden from search engines."
+msgstr "Les pages de résultats de recherche sont masquées des moteurs de recherche."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Search result pages are visible to search engines."
+msgstr "Les pages de résultats de recherche sont visibles par les moteurs de recherche."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Enable 404 tracking to identify broken links."
+msgstr "Activez le suivi 404 pour identifier les liens brisés."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Your entire site is set to noindex."
+msgstr "L'ensemble de votre site est paramétré en noindex."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Your global robots directive allows search engine indexation."
+msgstr "Votre directive robots globale autorise l'indexation par les moteurs de recherche."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "See at a glance what search engines can access on your site."
+msgstr "Visualisez en un coup d'œil ce que les moteurs de recherche peuvent accéder sur votre site."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "No variables found."
+msgstr "Aucune variable trouvée."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Configure title and meta templates. Use variables for dynamic values."
+msgstr "Configurez les modèles de titre et de métadonnées. Utilisez des variables pour les valeurs dynamiques."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Preview:"
+msgstr "Aperçu :"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "My Page Title"
+msgstr "Titre de ma page"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Links on these pages won't be followed."
+msgstr "Les liens sur ces pages ne seront pas suivis."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Hidden from search results — saves crawl budget."
+msgstr "Masqué des résultats de recherche — économise le budget de crawl."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Visible to search engines."
+msgstr "Visible par les moteurs de recherche."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Let SEOPulse automatically decide which author pages should be hidden."
+msgstr "Laissez SEOPulse décider automatiquement quelles pages d'auteur doivent être masquées."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "When someone hits a 404, show them useful content."
+msgstr "Quand un utilisateur tombe sur une page 404, montrez-lui un contenu utile."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Track which URLs trigger 404 errors."
+msgstr "Suivez les URLs qui déclenchent des erreurs 404."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "SEO Settings"
+msgstr "Paramètres SEO"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Templates"
+msgstr "Modèles"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Description Template"
+msgstr "Modèle de description"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Canonical Template"
+msgstr "Modèle canonique"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Crawl Control"
+msgstr "Contrôle du crawl"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Hide empty terms (no posts)"
+msgstr "Masquer les termes vides (sans articles)"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Hide thin terms (few posts)"
+msgstr "Masquer les termes pauvres (peu d'articles)"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Minimum posts to be considered useful"
+msgstr "Nombre minimum d'articles pour être considéré utile"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Don't follow outgoing links from these term pages"
+msgstr "Ne pas suivre les liens sortants de ces pages de termes"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "This prevents PageRank from flowing through taxonomy links."
+msgstr "Cela empêche le PageRank de s'écouler à travers les liens de taxonomie."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Analyze Taxonomy"
+msgstr "Analyser la taxonomie"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Total terms:"
+msgstr "Termes totaux :"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Empty terms:"
+msgstr "Termes vides :"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Thin terms:"
+msgstr "Termes pauvres :"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Noindexed terms:"
+msgstr "Termes noindexés :"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Select Default OG Image"
+msgstr "Sélectionner l'image OG par défaut"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Default Open Graph values used when sharing on Facebook, LinkedIn, etc."
+msgstr "Valeurs Open Graph par défaut utilisées lors du partage sur Facebook, LinkedIn, etc."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Default OG Title"
+msgstr "Titre OG par défaut"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Leave empty to use page title"
+msgstr "Laissez vide pour utiliser le titre de la page"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Default OG Description"
+msgstr "Description OG par défaut"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Leave empty to use meta description"
+msgstr "Laissez vide pour utiliser la méta description"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Default OG Type"
+msgstr "Type OG par défaut"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "OG Locale"
+msgstr "Langue OG"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Leave empty to use WordPress site title"
+msgstr "Laissez vide pour utiliser le titre du site WordPress"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Default OG URL"
+msgstr "URL OG par défaut"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Leave empty to use canonical URL"
+msgstr "Laissez vide pour utiliser l'URL canonique"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Default OG Image"
+msgstr "Image OG par défaut"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Browse"
+msgstr "Parcourir"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Select Twitter Card Image"
+msgstr "Sélectionner l'image de la Twitter Card"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Twitter Card"
+msgstr "Twitter Card"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Default Twitter Card values. Per-post settings override these."
+msgstr "Valeurs Twitter Card par défaut. Les paramètres par article remplacent ces valeurs."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Default Title"
+msgstr "Titre par défaut"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Default Description"
+msgstr "Description par défaut"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Default Image"
+msgstr "Image par défaut"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Twitter account associated with this website."
+msgstr "Compte Twitter associé à ce site web."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Default content creator handle."
+msgstr "Identifiant par défaut du créateur de contenu."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Breadcrumbs improve navigation and generate structured data for search engines."
+msgstr "Les fils d'Ariane améliorent la navigation et génèrent des données structurées pour les moteurs de recherche."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Enable breadcrumb navigation"
+msgstr "Activer la navigation par fil d'Ariane"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Automatically insert breadcrumbs before the content"
+msgstr "Insérer automatiquement le fil d'Ariane avant le contenu"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Post Types"
+msgstr "Types de contenu"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Select which post types should display breadcrumbs. If none are selected, all types are included."
+msgstr "Sélectionnez les types de contenu qui doivent afficher le fil d'Ariane. Si aucun n'est sélectionné, tous les types sont inclus."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Separator"
+msgstr "Séparateur"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Current Page"
+msgstr "Page actuelle"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "(hidden)"
+msgstr "(masqué)"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Show Home"
+msgstr "Afficher l'accueil"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Include \"Home\" link at the start"
+msgstr "Inclure le lien \"Accueil\" au début"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Show Current Page"
+msgstr "Afficher la page actuelle"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Show the current page title in the breadcrumb trail"
+msgstr "Afficher le titre de la page actuelle dans le fil d'Ariane"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Integration"
+msgstr "Intégration"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "If auto-insert is disabled, you can manually add breadcrumbs using:"
+msgstr "Si l'insertion automatique est désactivée, vous pouvez ajouter manuellement le fil d'Ariane en utilisant :"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Shortcode:"
+msgstr "Shortcode :"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Template tag:"
+msgstr "Tag de modèle :"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Global Robots Directive"
+msgstr "Directive robots globale"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Warning:"
+msgstr "Attention :"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Your site is currently set to noindex."
+msgstr "Votre site est actuellement paramétré en noindex."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Your entire site is hidden from search engines and links won't be followed. This is a critical setting."
+msgstr "L'ensemble de votre site est masqué des moteurs de recherche et les liens ne seront pas suivis. Il s'agit d'un paramètre critique."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Your site is hidden from search results. Only use this during development."
+msgstr "Votre site est masqué des résultats de recherche. Utilisez ceci uniquement en développement."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Search engines can index your pages but won't follow outgoing links."
+msgstr "Les moteurs de recherche peuvent indexer vos pages mais ne suivront pas les liens sortants."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Your site is visible to search engines and links are followed."
+msgstr "Votre site est visible par les moteurs de recherche et les liens sont suivis."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Browser Theme Color"
+msgstr "Couleur du thème du navigateur"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Sets the theme-color meta tag for mobile browsers."
+msgstr "Définit la balise méta theme-color pour les navigateurs mobiles."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Head Cleanup"
+msgstr "Nettoyage du <head>"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Remove unnecessary tags from your site's <head> section to improve security and performance."
+msgstr "Supprimez les balises inutiles de la section <head> de votre site pour améliorer la sécurité et les performances."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "RSS feeds will no longer be discoverable from your HTML. Make sure this is what you want."
+msgstr "Les flux RSS ne seront plus détectables depuis votre HTML. Assurez-vous que c'est bien ce que vous souhaitez."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "JSON-LD structured data helps search engines understand your site."
+msgstr "Les données structurées JSON-LD aident les moteurs de recherche à comprendre votre site."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Schema Types"
+msgstr "Types de schéma"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Enable or disable individual schema types output on your site."
+msgstr "Activez ou désactivez individuellement les types de schéma générés sur votre site."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Automatically optimize image attributes for better visibility in search results."
+msgstr "Optimisez automatiquement les attributs des images pour une meilleure visibilité dans les résultats de recherche."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Enable Image SEO"
+msgstr "Activer l'Image SEO"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Automatically manage image alt and title attributes"
+msgstr "Gérer automatiquement les attributs alt et title des images"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Alt Text Format"
+msgstr "Format du texte alternatif"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Pattern for auto-generated alt text. Use variables for dynamic values."
+msgstr "Modèle pour le texte alternatif auto-généré. Utilisez des variables pour les valeurs dynamiques."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Title Text Format"
+msgstr "Format du texte du titre"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Pattern for auto-generated title attribute."
+msgstr "Modèle pour l'attribut title auto-généré."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Auto Rename"
+msgstr "Renommage automatique"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Clean up file names on upload (remove numbers, dashes, underscores)"
+msgstr "Nettoyer les noms de fichiers lors de l'import (supprimer les chiffres, tirets, underscores)"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Auto-fill on Upload"
+msgstr "Remplissage automatique à l'import"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Automatically fill missing alt text when images are uploaded."
+msgstr "Remplir automatiquement le texte alternatif manquant lors de l'import des images."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Enable Auto-fill"
+msgstr "Activer le remplissage automatique"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Automatically fill alt text on new uploads"
+msgstr "Remplir automatiquement le texte alternatif lors des nouveaux imports"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Alt Text Source"
+msgstr "Source du texte alternatif"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Overwrite Existing"
+msgstr "Écraser l'existant"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Overwrite existing alt text on upload (not recommended)"
+msgstr "Écraser le texte alternatif existant lors de l'import (non recommandé)"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Rename on Upload"
+msgstr "Renommer à l'import"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Clean up non-SEO-friendly filenames on upload"
+msgstr "Nettoyer les noms de fichiers non adaptés au SEO lors de l'import"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Fill missing alt text for all existing images in your media library."
+msgstr "Remplir le texte alternatif manquant pour toutes les images existantes dans votre médiathèque."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Processing…"
+msgstr "Traitement en cours…"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Run Batch Fill"
+msgstr "Lancer le remplissage par lot"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Scan your media library to identify images missing alt text, large file sizes, and other issues."
+msgstr "Analysez votre médiathèque pour identifier les images sans texte alternatif, les fichiers volumineux et autres problèmes."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Search..."
+msgstr "Rechercher..."
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Alt text"
+msgstr "Texte alternatif"
+
+#: assets/build/meta-seo-settings.js:1
+msgid "Used in"
+msgstr "Utilisé dans"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Error clearing the cache."
+msgstr "Erreur lors du vidage du cache."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Quick access to your essential sitemap files and tools."
+msgstr "Accès rapide à vos fichiers et outils de plan du site essentiels."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Quick Access"
+msgstr "Accès rapide"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Open your XML sitemap in a new tab."
+msgstr "Ouvrir votre plan du site XML dans un nouvel onglet."
+
+#: assets/build/sitemap-settings.js:1
+msgid "View your current robots.txt file."
+msgstr "Afficher votre fichier robots.txt actuel."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Clear Sitemap Cache"
+msgstr "Vider le cache du plan du site"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Force sitemap regeneration on next request."
+msgstr "Forcer la regénération du plan du site à la prochaine requête."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Cleared!"
+msgstr "Vidé !"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Notify Google and Bing of your sitemap updates."
+msgstr "Notifier Google et Bing des mises à jour de votre plan du site."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Ping Google"
+msgstr "Pinger Google"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Validation"
+msgstr "Validation"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Validate Sitemap"
+msgstr "Valider le plan du site"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Validate your XML sitemap with an external tool."
+msgstr "Validez votre plan du site XML avec un outil externe."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Customize the content of your robots.txt file."
+msgstr "Personnalisez le contenu de votre fichier robots.txt."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Robots.txt Custom Content"
+msgstr "Contenu personnalisé de robots.txt"
+
+#: assets/build/sitemap-settings.js:1
+msgid "This content will be added to your robots.txt file. Use one directive per line."
+msgstr "Ce contenu sera ajouté à votre fichier robots.txt. Utilisez une directive par ligne."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Preview robots.txt"
+msgstr "Aperçu de robots.txt"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Click on a template to append it to the editor."
+msgstr "Cliquez sur un modèle pour l'ajouter à l'éditeur."
+
+#: assets/build/sitemap-settings.js:1
+msgid "Syntax Reference"
+msgstr "Référence de syntaxe"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Applies to all crawlers"
+msgstr "S'applique à tous les robots"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Blocks access to /path/"
+msgstr "Bloque l'accès à /chemin/"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Allows access within a blocked path"
+msgstr "Autorise l'accès dans un chemin bloqué"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Indicates your sitemap location"
+msgstr "Indique l'emplacement de votre plan du site"
+
+#: assets/build/sitemap-settings.js:1
+msgid "Wait 10 seconds between requests (some bots)"
+msgstr "Attendre 10 secondes entre les requêtes (certains robots)"
+
+#: assets/build/sitemap-settings.js:1
+msgid "No custom robots.txt content defined."
+msgstr "Aucun contenu personnalisé de robots.txt défini."
+
+#. translators: %d: number of analyzed posts
+#: assets/build/wp-dashboard-widget.js:2
+#, js-format
+msgid "Based on %d analyzed post"
+msgid_plural "Based on %d analyzed posts"
+msgstr[0] "Basé sur %d article analysé"
+msgstr[1] "Basé sur %d articles analysés"
+
+#: assets/build/wp-dashboard-widget.js:3
+msgid "Failed to load data."
+msgstr "Échec du chargement des données."
+
+#: assets/build/wp-dashboard-widget.js:3
+msgid "Refresh failed."
+msgstr "Échec de l'actualisation."

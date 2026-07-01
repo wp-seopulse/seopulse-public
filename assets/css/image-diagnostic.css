@@ -1,0 +1,466 @@
+/**
+ * Image Diagnostic — Admin styles (BEM)
+ *
+ * Layout aligned with MetaSeo / ImageAltWizard module architecture.
+ * Block: .seopulse-image-diagnostic
+ * Consumes CSS custom properties from seopulse-admin.css design tokens.
+ *
+ * @package SEOPulse
+ * @since   1.0.0
+ */
+
+/* ── Main container ─────────────────────────────────────────── */
+.seopulse-image-diagnostic {
+	max-width: 100%;
+}
+
+/* ── Body wrapper (bordered container below header) ─────────── */
+.seopulse-image-diagnostic__body {
+	background: var(--sp-surface-solid);
+	border: 1px solid var(--sp-border-color);
+	border-top: none;
+	padding: var(--sp-space-6);
+}
+
+/* ── Summary cards ──────────────────────────────────────────── */
+.seopulse-image-diagnostic__summary {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: var(--sp-space-4);
+	margin-bottom: var(--sp-space-6);
+}
+
+.seopulse-image-diagnostic__card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--sp-space-2);
+	padding: var(--sp-space-5);
+	background: var(--sp-surface-solid);
+	border: 1px solid var(--sp-border-color);
+	border-radius: var(--sp-radius-lg);
+	text-align: center;
+	transition: box-shadow var(--sp-transition), border-color var(--sp-transition);
+}
+
+.seopulse-image-diagnostic__card:hover {
+	border-color: var(--sp-border-strong);
+	box-shadow: var(--sp-shadow-sm);
+}
+
+.seopulse-image-diagnostic__card-icon {
+	font-size: 24px;
+	width: 24px;
+	height: 24px;
+	color: var(--sp-accent);
+	opacity: 0.7;
+}
+
+.seopulse-image-diagnostic__card-value {
+	display: block;
+	font-size: var(--sp-text-3xl);
+	font-weight: var(--sp-weight-bold);
+	color: var(--sp-text-primary);
+	line-height: 1;
+}
+
+.seopulse-image-diagnostic__card-label {
+	font-size: var(--sp-text-sm);
+	color: var(--sp-text-secondary);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	font-weight: var(--sp-weight-medium);
+}
+
+/* Card color variants */
+.seopulse-image-diagnostic__card--danger .seopulse-image-diagnostic__card-icon {
+	color: var(--sp-error);
+}
+
+.seopulse-image-diagnostic__card--danger .seopulse-image-diagnostic__card-value {
+	color: var(--sp-error-text);
+}
+
+.seopulse-image-diagnostic__card--success .seopulse-image-diagnostic__card-icon {
+	color: var(--sp-success);
+}
+
+.seopulse-image-diagnostic__card--success .seopulse-image-diagnostic__card-value {
+	color: var(--sp-success-text);
+}
+
+/* ── Toolbar ────────────────────────────────────────────────── */
+.seopulse-image-diagnostic__toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: var(--sp-space-2);
+	margin-bottom: var(--sp-space-4);
+}
+
+.seopulse-image-diagnostic__filters {
+	display: flex;
+	gap: var(--sp-space-1);
+	flex-wrap: wrap;
+}
+
+.seopulse-image-diagnostic__filter-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 7px 14px;
+	border: 1px solid var(--sp-border-color);
+	border-radius: var(--sp-radius-full);
+	background: var(--sp-surface-solid);
+	color: var(--sp-text-secondary);
+	font-size: var(--sp-text-meta);
+	font-weight: var(--sp-weight-medium);
+	font-family: var(--sp-font-family);
+	cursor: pointer;
+	transition: all var(--sp-transition-fast);
+}
+
+.seopulse-image-diagnostic__filter-btn .dashicons {
+	font-size: 14px;
+	width: 14px;
+	height: 14px;
+	line-height: 14px;
+}
+
+.seopulse-image-diagnostic__filter-btn:hover {
+	border-color: var(--sp-accent);
+	color: var(--sp-accent);
+	background: var(--sp-accent-subtle);
+}
+
+.seopulse-image-diagnostic__filter-btn.active {
+	background: var(--sp-accent);
+	border-color: var(--sp-accent);
+	color: var(--sp-text-on-accent);
+}
+
+.seopulse-image-diagnostic__search {
+	flex: 0 0 260px;
+}
+
+.seopulse-image-diagnostic__search input {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid var(--sp-border-color);
+	border-radius: var(--sp-radius-sm);
+	font-size: var(--sp-text-base);
+	font-family: var(--sp-font-family);
+	background: var(--sp-surface-solid);
+	color: var(--sp-text-primary);
+	transition: border-color var(--sp-transition-fast), box-shadow var(--sp-transition-fast);
+}
+
+.seopulse-image-diagnostic__search input:focus {
+	outline: none;
+	border-color: var(--sp-accent);
+	box-shadow: var(--sp-shadow-focus);
+}
+
+/* ── Bulk action bar ────────────────────────────────────────── */
+.seopulse-image-diagnostic__bulk-bar {
+	display: none;
+	align-items: center;
+	gap: var(--sp-space-4);
+	padding: var(--sp-space-3) var(--sp-space-4);
+	margin-bottom: var(--sp-space-4);
+	background: var(--sp-accent-subtle);
+	border: 1px solid var(--sp-border-accent);
+	border-radius: var(--sp-radius-md);
+}
+
+.seopulse-image-diagnostic__bulk-bar[style*="block"],
+.seopulse-image-diagnostic__bulk-bar.is-visible {
+	display: flex;
+}
+
+.seopulse-image-diagnostic__bulk-count {
+	font-size: var(--sp-text-meta);
+	font-weight: var(--sp-weight-semibold);
+	color: var(--sp-accent);
+	white-space: nowrap;
+}
+
+.seopulse-image-diagnostic__bulk-status {
+	font-size: var(--sp-text-meta);
+	color: var(--sp-text-secondary);
+	margin-left: auto;
+}
+
+/* ── Table wrapper ──────────────────────────────────────────── */
+.seopulse-image-diagnostic__table-wrap {
+	overflow-x: auto;
+	border: 1px solid var(--sp-border-color);
+	border-radius: var(--sp-radius-lg);
+	background: var(--sp-surface-solid);
+	box-shadow: var(--sp-shadow-xs);
+}
+
+/* ── Table ──────────────────────────────────────────────────── */
+.seopulse-image-diagnostic__table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--sp-text-base);
+}
+
+.seopulse-image-diagnostic__table th {
+	padding: var(--sp-space-3) var(--sp-space-3);
+	text-align: left;
+	font-weight: var(--sp-weight-semibold);
+	font-size: var(--sp-text-sm);
+	color: var(--sp-text-secondary);
+	text-transform: uppercase;
+	letter-spacing: 0.3px;
+	background: var(--sp-bg-flat);
+	border-bottom: 1px solid var(--sp-border-color);
+	white-space: nowrap;
+}
+
+.seopulse-image-diagnostic__table td {
+	padding: var(--sp-space-3) var(--sp-space-3);
+	border-bottom: 1px solid var(--sp-border-subtle);
+	vertical-align: middle;
+}
+
+.seopulse-image-diagnostic__table tbody tr {
+	transition: background var(--sp-transition-fast);
+}
+
+.seopulse-image-diagnostic__table tbody tr:hover {
+	background: var(--sp-surface-hover);
+}
+
+.seopulse-image-diagnostic__table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.seopulse-image-diagnostic__table th:first-child,
+.seopulse-image-diagnostic__table td:first-child {
+	width: 40px;
+	text-align: center;
+}
+
+/* ── Thumbnail column ───────────────────────────────────────── */
+.seopulse-image-diagnostic__td-thumb {
+	width: 60px;
+}
+
+.seopulse-image-diagnostic__td-thumb img {
+	width: 44px;
+	height: 44px;
+	object-fit: cover;
+	border-radius: var(--sp-radius-sm);
+	display: block;
+	border: 1px solid var(--sp-border-subtle);
+}
+
+.seopulse-image-diagnostic__td-thumb .dashicons {
+	font-size: 32px;
+	width: 44px;
+	height: 44px;
+	line-height: 44px;
+	text-align: center;
+	color: var(--sp-text-quaternary);
+}
+
+/* ── Filename column ────────────────────────────────────────── */
+.seopulse-image-diagnostic__td-filename a {
+	color: var(--sp-text-primary);
+	text-decoration: none;
+	font-weight: var(--sp-weight-medium);
+	word-break: break-all;
+	transition: color var(--sp-transition-fast);
+}
+
+.seopulse-image-diagnostic__td-filename a:hover {
+	color: var(--sp-accent);
+}
+
+/* ── Alt text cell ──────────────────────────────────────────── */
+.seopulse-diag-alt-cell {
+	min-width: 160px;
+}
+
+.seopulse-image-diagnostic__alt-text {
+	color: var(--sp-text-primary);
+}
+
+.seopulse-image-diagnostic__alt-missing {
+	color: var(--sp-error-text);
+	font-style: italic;
+	font-size: var(--sp-text-sm);
+}
+
+.seopulse-diag-edit-alt {
+	background: none;
+	border: none;
+	padding: 2px;
+	cursor: pointer;
+	opacity: 0.3;
+	transition: opacity var(--sp-transition-fast);
+	vertical-align: middle;
+}
+
+.seopulse-image-diagnostic__table tbody tr:hover .seopulse-diag-edit-alt {
+	opacity: 0.6;
+}
+
+.seopulse-diag-edit-alt:hover {
+	opacity: 1;
+}
+
+.seopulse-diag-edit-alt .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	line-height: 16px;
+	color: var(--sp-text-secondary);
+}
+
+/* ── Inline edit ────────────────────────────────────────────── */
+.seopulse-image-diagnostic__inline-edit {
+	display: flex;
+	gap: var(--sp-space-1);
+	align-items: center;
+}
+
+.seopulse-image-diagnostic__inline-edit input {
+	flex: 1;
+	min-width: 120px;
+	padding: 5px 8px;
+	border: 1px solid var(--sp-accent);
+	border-radius: var(--sp-radius-sm);
+	font-size: var(--sp-text-base);
+	font-family: var(--sp-font-family);
+	color: var(--sp-text-primary);
+	background: var(--sp-surface-solid);
+}
+
+.seopulse-image-diagnostic__inline-edit input:focus {
+	outline: none;
+	box-shadow: var(--sp-shadow-focus);
+}
+
+/* ── Size column ────────────────────────────────────────────── */
+.seopulse-image-diagnostic__size--large {
+	color: var(--sp-warning-text);
+	font-weight: var(--sp-weight-semibold);
+}
+
+/* ── Status badges ──────────────────────────────────────────── */
+.seopulse-image-diagnostic__badge {
+	display: inline-block;
+	padding: 3px 10px;
+	border-radius: var(--sp-radius-full);
+	font-size: var(--sp-text-xs);
+	font-weight: var(--sp-weight-semibold);
+	line-height: 1.5;
+	white-space: nowrap;
+	margin: 1px 2px;
+}
+
+.seopulse-image-diagnostic__badge--danger {
+	background: var(--sp-error-subtle);
+	color: var(--sp-error-text);
+}
+
+.seopulse-image-diagnostic__badge--warning {
+	background: var(--sp-warning-subtle);
+	color: var(--sp-warning-text);
+}
+
+.seopulse-image-diagnostic__badge--info {
+	background: var(--sp-info-subtle);
+	color: var(--sp-info-text);
+}
+
+.seopulse-image-diagnostic__badge--success {
+	background: var(--sp-success-subtle);
+	color: var(--sp-success-text);
+}
+
+/* ── Pagination ─────────────────────────────────────────────── */
+.seopulse-image-diagnostic__pagination {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--sp-space-4);
+	padding: var(--sp-space-4) 0;
+}
+
+.seopulse-image-diagnostic__page-info {
+	font-size: var(--sp-text-meta);
+	color: var(--sp-text-secondary);
+}
+
+.seopulse-image-diagnostic__page-btns {
+	display: flex;
+	gap: var(--sp-space-1);
+}
+
+/* ── Loading / empty ────────────────────────────────────────── */
+.seopulse-image-diagnostic__loading,
+.seopulse-image-diagnostic__empty {
+	text-align: center;
+	padding: var(--sp-space-10) var(--sp-space-4);
+	color: var(--sp-text-secondary);
+	font-size: var(--sp-text-base);
+}
+
+.seopulse-image-diagnostic__loading .spinner {
+	float: none;
+	margin: 0 8px 0 0;
+}
+
+/* ── Reduced motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+
+	.seopulse-image-diagnostic__card,
+	.seopulse-image-diagnostic__filter-btn,
+	.seopulse-image-diagnostic__table tbody tr,
+	.seopulse-diag-edit-alt,
+	.seopulse-image-diagnostic__td-filename a,
+	.seopulse-image-diagnostic__search input {
+		transition: none;
+	}
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 782px) {
+
+	.seopulse-image-diagnostic__body {
+		padding: var(--sp-space-4);
+	}
+
+	.seopulse-image-diagnostic__summary {
+		grid-template-columns: 1fr;
+	}
+
+	.seopulse-image-diagnostic__toolbar {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.seopulse-image-diagnostic__search {
+		flex: 1 1 auto;
+	}
+
+	.seopulse-image-diagnostic__bulk-bar {
+		flex-wrap: wrap;
+	}
+
+	.seopulse-image-diagnostic__filters {
+		overflow-x: auto;
+		flex-wrap: nowrap;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.seopulse-image-diagnostic__filter-btn {
+		flex: 0 0 auto;
+	}
+}

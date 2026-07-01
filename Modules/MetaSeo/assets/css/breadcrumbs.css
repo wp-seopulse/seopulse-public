@@ -1,0 +1,55 @@
+/**
+ * SEOPulse Breadcrumbs — Frontend styles
+ *
+ * Minimal, accessible breadcrumb trail styling.
+ * Designed to blend with most WordPress themes.
+ *
+ * @package SEOPulse
+ * @since 2.2.0
+ */
+
+.seopulse-breadcrumbs {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0 0 1rem;
+    padding: 0.5rem 0;
+    color: #6c757d;
+}
+
+.seopulse-breadcrumbs__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+}
+
+.seopulse-breadcrumbs__item {
+    display: inline-flex;
+    align-items: center;
+}
+
+.seopulse-breadcrumbs__link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.seopulse-breadcrumbs__link:hover,
+.seopulse-breadcrumbs__link:focus {
+    color: #0d6efd;
+    text-decoration: underline;
+}
+
+.seopulse-breadcrumbs__current {
+    color: #212529;
+    font-weight: 500;
+}
+
+.seopulse-breadcrumbs__separator {
+    display: inline-block;
+    margin: 0 0.4rem;
+    opacity: 0.5;
+}

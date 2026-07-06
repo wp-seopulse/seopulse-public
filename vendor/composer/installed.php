@@ -3,7 +3,7 @@
         'name' => 'seopulse/seopulse',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '27aee079c9c5a3b048141114e66687fd5e9982b5',
+        'reference' => 'ffa6615314b71edd6c3fb6d8c2a0f2a38beb65ee',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'seopulse/seopulse' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '27aee079c9c5a3b048141114e66687fd5e9982b5',
+            'reference' => 'ffa6615314b71edd6c3fb6d8c2a0f2a38beb65ee',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

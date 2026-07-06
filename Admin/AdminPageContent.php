@@ -95,24 +95,28 @@ final class AdminPageContent
     {
         $nonce = wp_create_nonce('seopulse_toggle_module');
         ?>
-<div class="seopulse-module-page__disabled-notice"
-	data-module="<?php echo esc_attr($definition->key); ?>">
-	<span class="dashicons dashicons-info-outline"></span>
-	<p>
-		<?php
-                printf(
-                    /* translators: %s: Module name wrapped in <strong> (e.g. "Meta SEO") */
-                    esc_html__('The %s module is currently disabled.', 'seopulse'),
-                    '<strong>' . esc_html($definition->label) . '</strong>',
-                );
+<div id="seopulse-settings-root">
+    <div class="seopulse-module-page-layout">
+        <div class="seopulse-module-page__disabled-notice"
+            data-module="<?php echo esc_attr($definition->key); ?>">
+            <span class="dashicons dashicons-info-outline"></span>
+            <p>
+                <?php
+                        printf(
+                            /* translators: %s: Module name wrapped in <strong> (e.g. "Meta SEO") */
+                            esc_html__('The %s module is currently disabled.', 'seopulse'),
+                            '<strong>' . esc_html($definition->label) . '</strong>',
+                        );
         ?>
-	</p>
-	<label class="seopulse-module-page__enable-toggle">
-		<input type="checkbox" class="seopulse-module-page__enable-input"
-			data-module="<?php echo esc_attr($definition->key); ?>"
-			data-nonce="<?php echo esc_attr($nonce); ?>">
-		<span class="seopulse-module-page__enable-toggle-slider"></span>
-	</label>
+            </p>
+            <label class="seopulse-module-page__enable-toggle">
+                <input type="checkbox" class="seopulse-module-page__enable-input"
+                    data-module="<?php echo esc_attr($definition->key); ?>"
+                    data-nonce="<?php echo esc_attr($nonce); ?>">
+                <span class="seopulse-module-page__enable-toggle-slider"></span>
+            </label>
+        </div>
+    </div>
 </div>
 <?php
     }
@@ -128,8 +132,8 @@ final class AdminPageContent
         ?>
 <div class="seopulse-admin-header-wrapper">
     <div id="seopulse-admin-header-root"
-         data-page-title="<?php echo esc_attr($pageTitle); ?>"
-         data-dashboard-url="<?php echo esc_attr($dashboard_url); ?>">
+        data-page-title="<?php echo esc_attr($pageTitle); ?>"
+        data-dashboard-url="<?php echo esc_attr($dashboard_url); ?>">
     </div>
 </div>
 <?php

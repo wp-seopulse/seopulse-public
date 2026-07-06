@@ -4,7 +4,7 @@
  * Plugin Name: SEOPulse
  * Plugin URI: https://wordpress.org/plugins/seopulse/
  * Description: SEOPulse is a SEO Plugin to Boost Rankings & Traffic.
- * Version: 1.4.0
+ * Version: 1.5.0
  * Requires at least: 6.0
  * Requires PHP: 8.1
  * Author: Citrus Design Lab
@@ -28,7 +28,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('SEOPULSE_VERSION', '1.4.0');
+define('SEOPULSE_VERSION', '1.5.0');
 define('SEOPULSE_PLUGIN_FILE', __FILE__);
 define('SEOPULSE_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SEOPULSE_PLUGIN_URL', plugin_dir_url(__FILE__));

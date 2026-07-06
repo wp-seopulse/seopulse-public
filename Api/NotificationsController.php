@@ -15,6 +15,7 @@ namespace SEOPulse\Api;
 
 use SEOPulse\Admin\Notifications\AdminNotificationPanel;
 use SEOPulse\Core\Abstracts\RestController;
+use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -43,6 +44,23 @@ class NotificationsController extends RestController
                 'permission_callback' => [$this, 'check_admin_permissions'],
             ],
         );
+
+        // POST /seopulse/v1/notifications/dismiss
+        register_rest_route(
+            $this->namespace,
+            '/' . $this->rest_base . '/dismiss',
+            [
+                'methods'             => \WP_REST_Server::CREATABLE,
+                'callback'            => [$this, 'dismiss_notification'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+                'args'                => [
+                    'id' => [
+                        'required' => true,
+                        'type'     => 'string',
+                    ],
+                ],
+            ],
+        );
     }
 
     /**
@@ -57,5 +75,27 @@ class NotificationsController extends RestController
         $notifications = AdminNotificationPanel::collect();
 
         return $this->success($notifications);
+    }
+
+    /**
+     * POST /seopulse/v1/notifications/dismiss
+     *
+     * Marks a notification as dismissed for the current user so it no
+     * longer appears in subsequent GET /notifications responses.
+     *
+     * @param WP_REST_Request $request Request
+     * @return WP_REST_Response|WP_Error
+     */
+    public function dismiss_notification(WP_REST_Request $request)
+    {
+        $id = (string) $request->get_param('id');
+
+        if (trim($id) === '') {
+            return $this->error(__('A notification ID is required.', 'seopulse'), 400);
+        }
+
+        AdminNotificationPanel::dismiss($id);
+
+        return $this->success(['dismissed' => true]);
     }
 }

@@ -75,7 +75,7 @@ class SitemapSettings implements ExecuteHooksAdmin
             return;
         }
 
-        // When the module is disabled, skip JS/localization — the API
+        // When the module is disabled, skip JS/CSS/localization — the API
         // routes they call are gated and would 404.
         if (!ModuleManager::instance()->isModuleEnabled('sitemap')) {
             return;
@@ -83,16 +83,6 @@ class SitemapSettings implements ExecuteHooksAdmin
 
         $react_asset_file = SEOPULSE_PLUGIN_DIR . 'assets/build/sitemap-settings.asset.php';
         $asset = require $react_asset_file;
-
-        wp_enqueue_script(
-            'seopulse-sitemap-settings',
-            SEOPULSE_PLUGIN_URL . 'assets/build/sitemap-settings.js',
-            $asset['dependencies'],
-            $asset['version'],
-            true,
-        );
-
-        wp_set_script_translations('seopulse-sitemap-settings', 'seopulse', SEOPULSE_PLUGIN_DIR . 'languages');
 
         wp_enqueue_style(
             'seopulse-sitemap-settings',
@@ -107,6 +97,16 @@ class SitemapSettings implements ExecuteHooksAdmin
             ['seopulse-sitemap-settings'],
             $asset['version'],
         );
+
+        wp_enqueue_script(
+            'seopulse-sitemap-settings',
+            SEOPULSE_PLUGIN_URL . 'assets/build/sitemap-settings.js',
+            $asset['dependencies'],
+            $asset['version'],
+            true,
+        );
+
+        wp_set_script_translations('seopulse-sitemap-settings', 'seopulse', SEOPULSE_PLUGIN_DIR . 'languages');
 
         // Prepare post types data
         $post_types = [];

@@ -5,7 +5,7 @@ Donate link: https://www.seopulse.citrus-design.fr
 Tags: seo, xml sitemap, schema, local seo, google search console
 Requires at least: 6.0
 Tested up to: 7.0
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 Requires PHP: 8.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -345,63 +345,75 @@ Yes. All features are accessible via REST endpoints under `/wp-json/seopulse/v1/
 
 == Changelog ==
 
+= 1.5.0 =
+
+* NEW: Admin Page Header — Notification panel items now have a "Dismiss" button; dismissed notifications are stored per user and filtered out of the `GET /notifications` REST response, plus a new `POST /notifications/dismiss` route to record the dismissal
+* PERFORMANCE: Admin steelsheet now loads only when the module is enabled
+* FIX: Admin Page Header — Notification IDs for disabled modules are now sanitized consistently between generation and dismissal, preventing dismissed notifications from reappearing when a module key contains uppercase or special characters
+* FIX: Dashboard — Toggling a module's enabled state no longer requires a full page reload to update the notification panel and its badge counter; the header bundle now re-fetches notifications after a module toggle via a cross-bundle refresh event
+* FIX: Editor Sidebar — Meta Title/Description character counter and SEO score/Meta Checks warnings now use the resolved value of dynamic variables (`%%post.title%%`, `%%post.excerpt%%`, including combinations with static text) instead of the literal template string length
+* FIX: Admin Columns — Posts list "SEO" column now displays the resolved post title/description instead of the raw `%%post.title%%` / `%%post.excerpt%%` template syntax
+* FIX: Admin Columns — Score badge colors on the posts list `edit.php` screen were not applied because the design-token stylesheet defining `--sp-success-subtle`/`--sp-warning-text`/`--sp-error-*` custom properties was not enqueued outside SEOPulse admin pages
+* FIX: Module Page — Disabled state now renders correctly when the module is disabled
+* FIX: Module Page — Module toggles now correctly redirect to the dedicated module admin page
+
 = 1.4.0 =
 
-* Fixed: Sitemap Settings — "View Sitemap" link in Tools & Diagnostics tab now correctly switches between `wp-sitemap.xml` (native) and `sitemap.xml` (custom) based on the "Disable native WordPress sitemap" checkbox state
-* Fixed: Sitemap Robots.txt — `generate_robots_txt()` now uses `custom_robots` as the full verbatim content when set, preventing duplicate base headers after a load-edit-save cycle
-* Fixed: Meta Engine — `%%author.name%%` and all `author.*` variables now resolve correctly when context is built from a `post_id` alone (e.g. headless API, editor sidebar preview); author is now auto-derived from the post's `post_author` field in `ContextBag::fromArray()`
-* Fixed: Meta Engine — Admin template live preview no longer resolves all contextual variables to empty; `resolve_template` endpoint now builds a sample context from the most recently modified published post when no explicit context is provided
-* Fixed: Editor sidebar — Modal now correctly loads the CSS
-* Fixed: Editor Sidebar — Snippet preview (Search tab) now displays the actual resolved post title and description instead of raw `%%post.title%%` / `%%post.excerpt%%` template strings
-* Fixed: Editor Sidebar — Social preview (Social tab) now displays the actual resolved OG/Twitter title and description instead of raw template strings; `resolved` values from the REST API are now used with a field-level fallback chain matching the PHP defaults
-* Added: Sitemap Robots.txt — "Load current robots.txt" button in the Robots.txt View tab fetches and populates the textarea with the current robots.txt content (physical file if present, otherwise SEOPulse-generated)
-* Improved: General — Graphical improvements
-* Improved: React codebase
+* NEW: Sitemap Robots.txt — "Load current robots.txt" button in the Robots.txt View tab fetches and populates the textarea with the current robots.txt content (physical file if present, otherwise SEOPulse-generated)
+* PERFORMANCE: General — Graphical improvements
+* PERFORMANCE: React codebase
+* FIX: Sitemap Settings — "View Sitemap" link in Tools & Diagnostics tab now correctly switches between `wp-sitemap.xml` (native) and `sitemap.xml` (custom) based on the "Disable native WordPress sitemap" checkbox state
+* FIX: Sitemap Robots.txt — `generate_robots_txt()` now uses `custom_robots` as the full verbatim content when set, preventing duplicate base headers after a load-edit-save cycle
+* FIX: Meta Engine — `%%author.name%%` and all `author.*` variables now resolve correctly when context is built from a `post_id` alone (e.g. headless API, editor sidebar preview); author is now auto-derived from the post's `post_author` field in `ContextBag::fromArray()`
+* FIX: Meta Engine — Admin template live preview no longer resolves all contextual variables to empty; `resolve_template` endpoint now builds a sample context from the most recently modified published post when no explicit context is provided
+* FIX: Editor sidebar — Modal now correctly loads the CSS
+* FIX: Editor Sidebar — Snippet preview (Search tab) now displays the actual resolved post title and description instead of raw `%%post.title%%` / `%%post.excerpt%%` template strings
+* FIX: Editor Sidebar — Social preview (Social tab) now displays the actual resolved OG/Twitter title and description instead of raw template strings; `resolved` values from the REST API are now used with a field-level fallback chain matching the PHP defaults
 
 = 1.3.0 =
 
-* Fixed: Local SEO — `numberOfEmployees` field reverted to 0 on page reload; API response returns a `QuantitativeValue` object which is now properly normalized to a plain string on load.
-* Fixed: Local SEO — `areaServed` region and country fields reverted to empty on page reload; PHP now stores `region` as `AdministrativeArea` and `country` as `Country` (distinct Schema.org types), allowing the frontend to reliably distinguish them on load.
-* Improved: CSS files to reduce the output size.
-* Improved: Rework all React SPAs.
 * NEW: Analytics & Cookie Consent —  Add settings page to configure the Google Analytics 4 and Google Tag Manager tracking scripts.
 * NEW: Add an Header React component to all React SPAs.
+* PERFORMANCE: CSS files to reduce the output size.
+* PERFORMANCE: Rework all React SPAs.
+* FIX: Local SEO — `numberOfEmployees` field reverted to 0 on page reload; API response returns a `QuantitativeValue` object which is now properly normalized to a plain string on load.
+* FIX: Local SEO — `areaServed` region and country fields reverted to empty on page reload; PHP now stores `region` as `AdministrativeArea` and `country` as `Country` (distinct Schema.org types), allowing the frontend to reliably distinguish them on load.
 
 = 1.2.1 =
 
-* Fixed: Dashboard blank — React SPA mount errors are now surfaced via an ErrorBoundary instead of silently leaving `#seopulse-dashboard-root` empty
-* Fixed: Dashboard blank — silent bail conditions in the entry point now log explicit `console.error` messages (`#seopulse-dashboard-root` not found, `window.seopulseDashboard` undefined, `createRoot` unavailable)
-* Fixed: Dashboard blank — added runtime guard for `createRoot` availability
-* Fixed: `DashboardHeader` — unsafe non-null assertion `window.seopulseDashboard!` replaced with optional chaining to prevent `TypeError` crashing the full render tree
+* FIX: Dashboard blank — React SPA mount errors are now surfaced via an ErrorBoundary instead of silently leaving `#seopulse-dashboard-root` empty
+* FIX: Dashboard blank — silent bail conditions in the entry point now log explicit `console.error` messages (`#seopulse-dashboard-root` not found, `window.seopulseDashboard` undefined, `createRoot` unavailable)
+* FIX: Dashboard blank — added runtime guard for `createRoot` availability
+* FIX: `DashboardHeader` — unsafe non-null assertion `window.seopulseDashboard!` replaced with optional chaining to prevent `TypeError` crashing the full render tree
 
 = 1.2.0 =
 
-* Fixed: Monitor404 Settings — after saving, the React state and `window.seopulse404Monitor.settings` were not updated, requiring a full page reload to reflect changes
-* Fixed: Editor sidebar — ScoreGauge SVG circles now enforced via CSS to prevent Gutenberg resets from making them opaque
-* Fixed: Editor sidebar — ScoreGauge render the score text above the SVG
-* Fixed: Editor sidebar — ScoreGauge color variant selectors now use higher specificity to resist WordPress/Gutenberg overrides
-* Fixed: Score level vocabulary mismatch — PHP now returns `needs_improvement` to align with TypeScript components
-* Fixed: Open Graph and Twitter Card global settings were saved correctly but never applied to frontend meta tags
-* Fixed: Third-party admin notices (e.g. Elementor, WooCommerce) no longer appear on SEOPulse plugin pages
-* Fixed: French translations not displayed on Meta SEO, Local SEO, Redirections, Sitemap and Log Viewer pages — `wp_set_script_translations()` was missing for the corresponding script handles
-* Improve: General CSS cleanup
-* Added: Dashboard fully migrated from PHP to React
-* Added: SEO Overview dashboard widget fully migrated from PHP to React with live data fetch via REST API
-* Added: Monitor404 — `sendTest()` method in `Monitor404EmailReporter` to send a test email bypassing the enabled/schedule guards
-* Added: Monitor404 — test email now captures `wp_mail_failed` hook and surfaces the PHPMailer/SMTP error message in the REST response
-* Added: "See all" expand/collapse toggle on the Recent Analyses dashboard widget
+* NEW: Dashboard fully migrated from PHP to React
+* NEW: SEO Overview dashboard widget fully migrated from PHP to React with live data fetch via REST API
+* NEW: Monitor404 — `sendTest()` method in `Monitor404EmailReporter` to send a test email bypassing the enabled/schedule guards
+* NEW: Monitor404 — test email now captures `wp_mail_failed` hook and surfaces the PHPMailer/SMTP error message in the REST response
+* NEW: "See all" expand/collapse toggle on the Recent Analyses dashboard widget
+* PERFORMANCE: General CSS cleanup
+* FIX: Monitor404 Settings — after saving, the React state and `window.seopulse404Monitor.settings` were not updated, requiring a full page reload to reflect changes
+* FIX: Editor sidebar — ScoreGauge SVG circles now enforced via CSS to prevent Gutenberg resets from making them opaque
+* FIX: Editor sidebar — ScoreGauge render the score text above the SVG
+* FIX: Editor sidebar — ScoreGauge color variant selectors now use higher specificity to resist WordPress/Gutenberg overrides
+* FIX: Score level vocabulary mismatch — PHP now returns `needs_improvement` to align with TypeScript components
+* FIX: Open Graph and Twitter Card global settings were saved correctly but never applied to frontend meta tags
+* FIX: Third-party admin notices (e.g. Elementor, WooCommerce) no longer appear on SEOPulse plugin pages
+* FIX: French translations not displayed on Meta SEO, Local SEO, Redirections, Sitemap and Log Viewer pages — `wp_set_script_translations()` was missing for the corresponding script handles
 
 = 1.1.0 =
 
-* Fixed: Fatal error on Setup Wizard
-* Improved: SEO Health Status dashboard widget: score sparkline is now animated
-* Improved: SEO Health Status dashboard widget: KPI badge now shows the live score
-* Improved: Recent Analyses dashboard Widget
-* Added: "See all" expand/collapse toggle on the Quick Wins dashboard widget
-* Added: "See all" expand/collapse toggle on the Images to Fix dashboard widget
-* Added: Command palette (Ctrl+K) in admin bar
-* Added: SEO score in admin bar
-* Added: Modules Panel block is now draggable to left or right columns in the dashboard grid
+* NEW: "See all" expand/collapse toggle on the Quick Wins dashboard widget
+* NEW: "See all" expand/collapse toggle on the Images to Fix dashboard widget
+* NEW: Command palette (Ctrl+K) in admin bar
+* NEW: SEO score in admin bar
+* NEW: Modules Panel block is now draggable to left or right columns in the dashboard grid
+* PERFORMANCE: SEO Health Status dashboard widget: score sparkline is now animated
+* PERFORMANCE: SEO Health Status dashboard widget: KPI badge now shows the live score
+* PERFORMANCE: Recent Analyses dashboard Widget
+* FIX: Fatal error on Setup Wizard
 
 = 1.0.1 =
 

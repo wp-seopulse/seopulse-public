@@ -79,6 +79,11 @@ class MetaSeoSettings implements ExecuteHooksAdmin
             return;
         }
 
+        // When the module is disabled, skip JS/CSS/localization
+        if (!ModuleManager::instance()->isModuleEnabled('meta_seo')) {
+            return;
+        }
+
         // ── React SPA bundle ────────────────────────────────────
         $asset_file = SEOPULSE_PLUGIN_DIR . 'assets/build/meta-seo-settings.asset.php';
         $asset      = file_exists($asset_file) ? require $asset_file : ['dependencies' => [], 'version' => SEOPULSE_VERSION];
@@ -110,11 +115,6 @@ class MetaSeoSettings implements ExecuteHooksAdmin
             ['seopulse-admin-global'],
             SEOPULSE_VERSION,
         );
-
-        // When the module is disabled, skip JS/localization
-        if (!ModuleManager::instance()->isModuleEnabled('meta_seo')) {
-            return;
-        }
 
         wp_enqueue_media();
 

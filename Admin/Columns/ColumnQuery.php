@@ -20,6 +20,8 @@ if (!defined('ABSPATH')) {
 }
 
 use SEOPulse\Core\Constants\PostMeta;
+use SEOPulse\Modules\MetaSeo\Engine\ContextBag;
+use SEOPulse\Modules\MetaSeo\Engine\MetaEngine;
 
 /**
  * ColumnQuery — Batched meta cache primer for admin columns.
@@ -84,7 +86,7 @@ final class ColumnQuery
             return '';
         }
 
-        return trim((string) ($meta_seo['title'] ?? ''));
+        return self::resolve_variables(trim((string) ($meta_seo['title'] ?? '')), $post_id);
     }
 
     /**
@@ -102,7 +104,44 @@ final class ColumnQuery
             return '';
         }
 
-        return trim((string) ($meta_seo['description'] ?? ''));
+        return self::resolve_variables(trim((string) ($meta_seo['description'] ?? '')), $post_id);
+    }
+
+    /**
+     * Resolve dynamic template variables (e.g. %%post.title%%, %%post.excerpt%%)
+     * in a meta value so the admin column shows the actual rendered text
+     * rather than the literal template syntax.
+     *
+     * Values without any %%...%% syntax are returned unchanged.
+     *
+     * @param string $value Raw meta value (may contain %%variable%% tokens).
+     * @param int $post_id Post used to resolve post.* variables.
+     *
+     * @return string Resolved value.
+     */
+    private static function resolve_variables(string $value, int $post_id): string
+    {
+        if ($value === '' || !str_contains($value, '%%')) {
+            return $value;
+        }
+
+        $post = get_post($post_id);
+        if (!($post instanceof \WP_Post)) {
+            return $value;
+        }
+
+        try {
+            $author  = get_userdata((int) $post->post_author);
+            $context = new ContextBag(
+                type: 'singular',
+                post: $post,
+                author: ($author instanceof \WP_User) ? $author : null,
+            );
+
+            return (new MetaEngine())->resolve($value, $context, 'raw');
+        } catch (\Throwable $e) {
+            return $value;
+        }
     }
 
     /**

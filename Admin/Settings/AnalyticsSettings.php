@@ -77,6 +77,12 @@ class AnalyticsSettings implements ExecuteHooksAdmin
             return;
         }
 
+        // When the module is disabled, skip JS/CSS/localization — the API
+        // routes they call are gated and would 404.
+        if (!ModuleManager::instance()->isModuleEnabled('analytics')) {
+            return;
+        }
+
         // CSS is always loaded so the page renders correctly even when
         // the module is disabled (the "disabled" overlay needs styling).
         $script_asset_path = SEOPULSE_PLUGIN_DIR . 'assets/build/analytics-settings.asset.php';
@@ -100,12 +106,6 @@ class AnalyticsSettings implements ExecuteHooksAdmin
             ['seopulse-analytics-settings'],
             $script_asset['version'],
         );
-
-        // When the module is disabled, skip JS/localization — the API
-        // routes they call are gated and would 404.
-        if (!ModuleManager::instance()->isModuleEnabled('analytics')) {
-            return;
-        }
 
         wp_enqueue_script(
             'seopulse-analytics-settings',

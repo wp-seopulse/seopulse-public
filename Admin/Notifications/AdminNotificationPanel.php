@@ -25,6 +25,7 @@ namespace SEOPulse\Admin\Notifications;
 
 use SEOPulse\Core\Constants\Options;
 use SEOPulse\Core\Kernel;
+use SEOPulse\Core\Module\ModuleManager;
 use SEOPulse\Modules\MetaSeo\Archives\ArchiveSettingsManager;
 use SEOPulse\Services\ImageAltFiller;
 
@@ -61,6 +62,60 @@ final class AdminNotificationPanel
     public const TYPE_IMAGE_SEO      = 'image_seo';
     public const TYPE_IMAGE_SEO_BULK = 'image_seo_bulk';
     public const TYPE_INDEXING       = 'instant_indexing';
+
+    /**
+     * User meta key storing the list of dismissed notification IDs.
+     */
+    private const DISMISSED_META_KEY = 'seopulse_dismissed_notifications';
+
+    /**
+     * Marks a notification as dismissed for the current user.
+     *
+     * @param string $id Notification ID.
+     * @return void
+     */
+    public static function dismiss(string $id): void
+    {
+        $user_id = get_current_user_id();
+
+        if ($user_id <= 0) {
+            return;
+        }
+
+        $id = sanitize_key($id);
+
+        if ($id === '') {
+            return;
+        }
+
+        $dismissed = self::get_dismissed();
+
+        if (in_array($id, $dismissed, true)) {
+            return;
+        }
+
+        $dismissed[] = $id;
+
+        update_user_meta($user_id, self::DISMISSED_META_KEY, $dismissed);
+    }
+
+    /**
+     * Returns the list of notification IDs dismissed by the current user.
+     *
+     * @return array<int, string>
+     */
+    private static function get_dismissed(): array
+    {
+        $user_id = get_current_user_id();
+
+        if ($user_id <= 0) {
+            return [];
+        }
+
+        $dismissed = get_user_meta($user_id, self::DISMISSED_META_KEY, true);
+
+        return is_array($dismissed) ? $dismissed : [];
+    }
 
     /**
      * Collects all panel notifications.
@@ -104,6 +159,20 @@ final class AdminNotificationPanel
          * @param array $notifications The collected notifications.
          */
         $notifications = apply_filters('seopulse_panel_notifications', $notifications);
+
+        // Filter out notifications dismissed by the current user
+        $dismissed = self::get_dismissed();
+
+        if (!empty($dismissed)) {
+            $notifications = array_values(
+                array_filter(
+                    $notifications,
+                    static function (array $notification) use ($dismissed): bool {
+                        return !in_array($notification['id'], $dismissed, true);
+                    },
+                ),
+            );
+        }
 
         // Sort by severity weight
         usort(
@@ -190,6 +259,8 @@ final class AdminNotificationPanel
     private static function check_sitemap(): array
     {
         $module_active = Kernel::isModuleEnabled('sitemap');
+        $page_slug  = self::get_module_page_slug('sitemap');
+        $action_url = $page_slug !== null ? admin_url('admin.php?page=' . $page_slug) : admin_url('admin.php?page=seopulse');
 
         if (!$module_active) {
             return [
@@ -200,7 +271,7 @@ final class AdminNotificationPanel
                     'title'        => __('Enable your XML sitemap', 'seopulse'),
                     'message'      => __('A sitemap helps search engines discover all your pages. Enable the Sitemap module to get started.', 'seopulse'),
                     'icon'         => 'dashicons-networking',
-                    'action_url'   => admin_url('admin.php?page=seopulse#modules'),
+                    'action_url'   => $action_url,
                     'action_label' => __('Enable', 'seopulse'),
                 ],
             ];
@@ -216,7 +287,7 @@ final class AdminNotificationPanel
                     'title'        => __('Configure your sitemap', 'seopulse'),
                     'message'      => __('The Sitemap module is active but not yet configured. Set it up so search engines can find your content.', 'seopulse'),
                     'icon'         => 'dashicons-networking',
-                    'action_url'   => admin_url('admin.php?page=seopulse-sitemap'),
+                    'action_url'   => $action_url,
                     'action_label' => __('Configure', 'seopulse'),
                 ],
             ];
@@ -289,7 +360,7 @@ final class AdminNotificationPanel
      */
     private static function check_modules(): array
     {
-        $modules       = Kernel::getModulesDefinition();
+        $modules       = ModuleManager::instance()->getDefinitionsForUI();
         $enabled       = get_option(Options::MODULES_ENABLED, []);
         $notifications = [];
 
@@ -306,8 +377,13 @@ final class AdminNotificationPanel
             $is_enabled = !isset($enabled[ $key ]) || (bool) $enabled[ $key ];
 
             if (!$is_enabled) {
+                $page_slug  = self::get_module_page_slug($key);
+                $action_url = $page_slug !== null
+                    ? admin_url('admin.php?page=' . $page_slug)
+                    : admin_url('admin.php?page=seopulse');
+
                 $notifications[] = [
-                    'id'           => 'module_disabled_' . $key,
+                    'id'           => 'module_disabled_' . sanitize_key($key),
                     'type'         => self::TYPE_MODULE,
                     'severity'     => self::SEVERITY_INFO,
                     'title'        => sprintf(
@@ -322,7 +398,7 @@ final class AdminNotificationPanel
                         $module['description'] ?? '',
                     ),
                     'icon'         => $module['icon'] ?? 'dashicons-admin-plugins',
-                    'action_url'   => admin_url('admin.php?page=seopulse#modules'),
+                    'action_url'   => $action_url,
                     'action_label' => __('Enable module', 'seopulse'),
                 ];
             }
@@ -537,6 +613,22 @@ final class AdminNotificationPanel
             self::SEVERITY_INFO      => 3,
             self::SEVERITY_SUCCESS   => 4,
             default                  => 99,
+        };
+    }
+
+    /**
+     * Maps a module key to its dedicated admin page slug, if any.
+     */
+    private static function get_module_page_slug(string $key): ?string
+    {
+        return match ($key) {
+            'analytics'    => 'seopulse-analytics',
+            'local_seo'    => 'seopulse-local-seo',
+            'meta_seo'     => 'seopulse-meta-seo',
+            'monitor_404'  => 'seopulse-404-monitor',
+            'redirections' => 'seopulse-redirections',
+            'sitemap'      => 'seopulse-sitemap',
+            default        => null,
         };
     }
 }

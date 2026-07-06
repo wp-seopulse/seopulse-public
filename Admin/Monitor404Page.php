@@ -49,6 +49,12 @@ class Monitor404Page implements ExecuteHooksAdmin
             return;
         }
 
+        // When the module is disabled, skip JS/CSS/localization — the API
+        // routes they call are gated and would 404.
+        if (!ModuleManager::instance()->isModuleEnabled('monitor_404')) {
+            return;
+        }
+
         // CSS always loaded for disabled overlay styling
         wp_enqueue_style(
             'seopulse-404-monitor',
@@ -64,11 +70,6 @@ class Monitor404Page implements ExecuteHooksAdmin
             ['seopulse-404-monitor'],
             SEOPULSE_VERSION,
         );
-
-        // Skip JS when module is disabled — API routes are gated
-        if (!ModuleManager::instance()->isModuleEnabled('monitor_404')) {
-            return;
-        }
 
         wp_enqueue_script(
             'seopulse-404-monitor',

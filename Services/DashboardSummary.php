@@ -24,6 +24,7 @@ if (!defined('ABSPATH')) {
 
 use SEOPulse\Core\Constants\Options;
 use SEOPulse\Core\Kernel;
+use SEOPulse\Core\Module\ModuleManager;
 use SEOPulse\Modules\MetaSeo\Archives\ArchiveSettingsManager;
 use SEOPulse\Modules\Monitor404\Monitor404Repository;
 
@@ -360,7 +361,7 @@ final class DashboardSummary
      */
     private function get_modules_status(): array
     {
-        $definitions = Kernel::getModulesDefinition();
+        $definitions = ModuleManager::instance()->getDefinitionsForUI();
         $status      = [];
 
         foreach (array_keys($definitions) as $key) {

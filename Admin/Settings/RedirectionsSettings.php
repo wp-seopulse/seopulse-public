@@ -97,7 +97,7 @@ class RedirectionsSettings implements ExecuteHooksAdmin
             return;
         }
 
-        // When the module is disabled, skip JS/localization — the API
+        // When the module is disabled, skip JS/CSS/localization — the API
         // routes they call are gated and would 404.
         if (!ModuleManager::instance()->isModuleEnabled('redirections')) {
             return;
@@ -106,16 +106,6 @@ class RedirectionsSettings implements ExecuteHooksAdmin
         // React SPA entry point
         $asset_file = SEOPULSE_PLUGIN_DIR . 'assets/build/redirections.asset.php';
         $asset      = file_exists($asset_file) ? require $asset_file : ['dependencies' => [], 'version' => SEOPULSE_VERSION];
-
-        wp_enqueue_script(
-            'seopulse-redirections-admin',
-            SEOPULSE_PLUGIN_URL . 'assets/build/redirections.js',
-            array_merge($asset['dependencies'], ['seopulse-admin-global']),
-            $asset['version'],
-            true,
-        );
-
-        wp_set_script_translations('seopulse-redirections-admin', 'seopulse', SEOPULSE_PLUGIN_DIR . 'languages');
 
         wp_enqueue_style(
             'seopulse-redirections-admin-spa',
@@ -130,6 +120,16 @@ class RedirectionsSettings implements ExecuteHooksAdmin
             ['seopulse-redirections-admin-spa'],
             $asset['version'],
         );
+
+        wp_enqueue_script(
+            'seopulse-redirections-admin',
+            SEOPULSE_PLUGIN_URL . 'assets/build/redirections.js',
+            array_merge($asset['dependencies'], ['seopulse-admin-global']),
+            $asset['version'],
+            true,
+        );
+
+        wp_set_script_translations('seopulse-redirections-admin', 'seopulse', SEOPULSE_PLUGIN_DIR . 'languages');
 
         // Localization
         wp_localize_script(

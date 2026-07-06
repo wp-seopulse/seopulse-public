@@ -449,7 +449,7 @@ abstract class Kernel
     /**
      * Checks if a module is enabled.
      *
-     * @deprecated 3.1.0 Use ModuleManager::instance()->isModuleEnabled() instead.
+     * @deprecated 1.5.0 Use ModuleManager::instance()->isModuleEnabled() instead.
      * @param string $moduleKey Module key
      * @return bool
      */
@@ -461,7 +461,7 @@ abstract class Kernel
     /**
      * Checks if a class should be loaded based on module state.
      *
-     * @deprecated 3.1.0 Use ModuleManager::instance()->shouldLoadClass() instead.
+     * @deprecated 1.5.0 Use ModuleManager::instance()->shouldLoadClass() instead.
      * @param string $className Class FQCN
      * @return bool
      */
@@ -473,7 +473,7 @@ abstract class Kernel
     /**
      * Returns the definition of all togglable modules.
      *
-     * @deprecated 3.1.0 Use ModuleManager::instance()->getDefinitionsForUI() instead.
+     * @deprecated 1.5.0 Use ModuleManager::instance()->getDefinitionsForUI() instead.
      * @return array<string, array{label: string, description: string, icon: string, pro: bool}>
      */
     public static function getModulesDefinition(): array
@@ -490,7 +490,7 @@ abstract class Kernel
     /**
      * Registers additional class-to-module mappings.
      *
-     * @deprecated 3.1.0 Use ModuleManager::instance()->registerNamespaceMappings() instead.
+     * @deprecated 1.5.0 Use ModuleManager::instance()->registerNamespaceMappings() instead.
      * @param array<string, string|null> $mappings
      * @return void
      */

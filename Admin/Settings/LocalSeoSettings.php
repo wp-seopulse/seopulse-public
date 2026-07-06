@@ -77,15 +77,13 @@ class LocalSeoSettings implements ExecuteHooksAdmin
             return;
         }
 
-        // When the module is disabled, skip JS — the API routes would 404.
+        // When the module is disabled, skip JS/CSS.
         if (!ModuleManager::instance()->isModuleEnabled('local_seo')) {
             return;
         }
 
         // Allow Pro plugin to enqueue Leaflet map assets.
         do_action('seopulse_local_seo_enqueue_map_assets', $hook);
-
-        wp_enqueue_media();
 
         $asset_file = SEOPULSE_PLUGIN_DIR . 'assets/build/local-seo-settings.asset.php';
         $asset      = file_exists($asset_file) ? require $asset_file : ['dependencies' => [], 'version' => SEOPULSE_VERSION];
@@ -96,20 +94,10 @@ class LocalSeoSettings implements ExecuteHooksAdmin
             $deps[] = 'leaflet';
         }
 
-        wp_enqueue_script(
-            'seopulse-local-seo-settings',
-            SEOPULSE_PLUGIN_URL . 'assets/build/local-seo-settings.js',
-            $deps,
-            $asset['version'],
-            true,
-        );
-
-        wp_set_script_translations('seopulse-local-seo-settings', 'seopulse', SEOPULSE_PLUGIN_DIR . 'languages');
-
         wp_enqueue_style(
             'seopulse-local-seo-settings',
             SEOPULSE_PLUGIN_URL . 'assets/css/seopulse-settings.min.css',
-            ['wp-components', 'seopulse-admin-global'],
+            ['wp-components'],
             $asset['version'],
         );
 
@@ -119,6 +107,18 @@ class LocalSeoSettings implements ExecuteHooksAdmin
             ['seopulse-local-seo-settings'],
             $asset['version'],
         );
+
+        wp_enqueue_media();
+
+        wp_enqueue_script(
+            'seopulse-local-seo-settings',
+            SEOPULSE_PLUGIN_URL . 'assets/build/local-seo-settings.js',
+            $deps,
+            $asset['version'],
+            true,
+        );
+
+        wp_set_script_translations('seopulse-local-seo-settings', 'seopulse', SEOPULSE_PLUGIN_DIR . 'languages');
 
         // Locale / 12h logic
         $locale       = get_locale();

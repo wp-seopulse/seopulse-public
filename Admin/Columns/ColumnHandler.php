@@ -172,10 +172,21 @@ class ColumnHandler implements ExecuteHooksAdmin
             return;
         }
 
+        // Design tokens (--sp-success-subtle, --sp-warning-text, etc.) used by
+        // the score/status badge colors below. edit.php is not a SEOPulse admin
+        // page, so the stylesheet defining these custom properties is not
+        // otherwise enqueued there — without it the badge colors silently fail.
+        wp_enqueue_style(
+            'seopulse-admin-global',
+            SEOPULSE_PLUGIN_URL . 'assets/css/seopulse.min.css',
+            [],
+            SEOPULSE_VERSION,
+        );
+
         wp_enqueue_style(
             'seopulse-admin-columns',
             SEOPULSE_PLUGIN_URL . 'assets/css/admin-columns.css',
-            [],
+            ['seopulse-admin-global'],
             SEOPULSE_VERSION,
         );
     }

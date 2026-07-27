@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace SEOPulse\Modules\Redirections;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+if (!defined('ABSPATH')) {
+    exit;
 }
 
 use SEOPulse\Core\Abstracts\Module;
@@ -33,110 +33,116 @@ use WP_Post;
  * Frontend only (template_redirect, wp)
  */
 #[AsModule(
-	key: 'redirections',
-	label: 'Redirections',
-	description: 'Advanced redirect management with regex, groups, scheduling, and import/export.',
-	icon: 'dashicons-randomize',
-	namespace: 'SEOPulse\\Modules\\Redirections\\',
+    key: 'redirections',
+    label: 'Redirections',
+    description: 'Advanced redirect management with regex, groups, scheduling, and import/export.',
+    icon: 'dashicons-randomize',
+    namespace: 'SEOPulse\\Modules\\Redirections\\',
 )]
-class RedirectionsModule extends Module implements ExecuteHooksFrontend, ModuleInterface {
+class RedirectionsModule extends Module implements ExecuteHooksFrontend, ModuleInterface
+{
+    /** Valid redirect HTTP codes. */
+    public const REDIRECT_CODES = [301, 302, 307, 308];
 
-	/** Valid redirect HTTP codes. */
-	public const REDIRECT_CODES = array( 301, 302, 307, 308 );
+    /** Valid maintenance HTTP codes. */
+    public const MAINTENANCE_CODES = [410, 451];
 
-	/** Valid maintenance HTTP codes. */
-	public const MAINTENANCE_CODES = array( 410, 451 );
+    /**
+     * Redirections manager
+     *
+     * @var RedirectionsManager
+     */
+    private RedirectionsManager $manager;
 
-	/**
-	 * Redirections manager
-	 *
-	 * @var RedirectionsManager
-	 */
-	private RedirectionsManager $manager;
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->name   = 'redirections';
+        $this->weight = 0.10; // 10% du score total
 
-	/**
-	 * Constructor
-	 */
-	public function __construct() {
-		$this->name   = 'redirections';
-		$this->weight = 0.10; // 10% du score total
+        // Load dependencies
+        require_once __DIR__ . '/RedirectionsManager.php';
+        require_once __DIR__ . '/RegexRedirectEngine.php';
+        require_once __DIR__ . '/RedirectRepository.php';
 
-		// Load dependencies
-		require_once __DIR__ . '/RedirectionsManager.php';
-		require_once __DIR__ . '/RegexRedirectEngine.php';
-		require_once __DIR__ . '/RedirectRepository.php';
+        $this->manager = new RedirectionsManager();
+    }
 
-		$this->manager = new RedirectionsManager();
-	}
+    /**
+     * Registers the module's WordPress hooks
+     *
+     * @return void
+     */
+    public function hooks(): void
+    {
+        // Frontend: Apply redirections (advanced matching)
+        add_action('template_redirect', [$this->manager, 'apply_redirects'], 1);
+    }
 
-	/**
-	 * Registers the module's WordPress hooks
-	 *
-	 * @return void
-	 */
-	public function hooks(): void {
-		// Frontend: Apply redirections (advanced matching)
-		add_action( 'template_redirect', array( $this->manager, 'apply_redirects' ), 1 );
-	}
+    /**
+     * Analyzes a post (required by the Module interface)
+     *
+     * @param WP_Post $post Post to analyze
+     * @return array Analysis result
+     */
+    public function analyze(WP_Post $post): array
+    {
+        $score           = 100;
+        $issues          = [];
+        $recommendations = [];
 
-	/**
-	 * Analyzes a post (required by the Module interface)
-	 *
-	 * @param WP_Post $post Post to analyze
-	 * @return array Analysis result
-	 */
-	public function analyze( WP_Post $post ): array {
-		$score           = 100;
-		$issues          = array();
-		$recommendations = array();
+        // Check if the post has a configured redirect
+        $redirect_url = get_post_meta($post->ID, '_seopulse_redirect_url', true);
 
-		// Check if the post has a configured redirect
-		$redirect_url = get_post_meta( $post->ID, '_seopulse_redirect_url', true );
+        if (!empty($redirect_url)) {
+            $redirect_type = get_post_meta($post->ID, '_seopulse_redirect_type', true);
 
-		if ( ! empty( $redirect_url ) ) {
-			$redirect_type = get_post_meta( $post->ID, '_seopulse_redirect_type', true );
+            $recommendations[] = [
+                'type'     => 'redirect_active',
+                'priority' => 'low',
+                'message'  => sprintf(
+                    /* translators: 1: redirect type (e.g. 301), 2: redirect URL */
+                    __('This post has a %1$s redirect to: %2$s', 'seopulse'),
+                    $redirect_type ?: '301',
+                    $redirect_url,
+                ),
+                'action'   => __('Redirects are useful for maintaining SEO when moving or merging content.', 'seopulse'),
+            ];
+        }
 
-			$recommendations[] = array(
-				'type'     => 'redirect_active',
-				'priority' => 'low',
-				'message'  => sprintf(
-					/* translators: 1: redirect type (e.g. 301), 2: redirect URL */
-					__( 'This post has a %1$s redirect to: %2$s', 'seopulse' ),
-					$redirect_type ?: '301',
-					$redirect_url,
-				),
-				'action'   => __( 'Redirects are useful for maintaining SEO when moving or merging content.', 'seopulse' ),
-			);
-		}
+        return [
+            'score'           => $score,
+            'issues'          => $issues,
+            'recommendations' => $recommendations,
+            'data'            => [
+                'has_redirect'  => !empty($redirect_url),
+                'redirect_type' => $redirect_url ? ($redirect_type ?: '301') : null,
+            ],
+        ];
+    }
 
-		return array(
-			'score'           => $score,
-			'issues'          => $issues,
-			'recommendations' => $recommendations,
-			'data'            => array(
-				'has_redirect'  => ! empty( $redirect_url ),
-				'redirect_type' => $redirect_url ? ( $redirect_type ?: '301' ) : null,
-			),
-		);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public function getKey(): string
+    {
+        return 'redirections';
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getKey(): string {
-		return 'redirections';
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public function onActivate(): void
+    {
+        // Redirect table is created by the Installer.
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function onActivate(): void {
-		// Redirect table is created by the Installer.
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function onDeactivate(): void {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public function onDeactivate(): void
+    {
+    }
 }

@@ -57,8 +57,16 @@ class Assets implements ExecuteHooks
      */
     public function enqueue_admin_assets(string $hook): void
     {
-        // Only load React in the post/page editor
-        if ($this->is_post_editor($hook)) {
+        // React admin bundle (#seopulse-root mount + window.seopulseAdmin data)
+        // is only needed in the classic editor context: on post/page/CPT screens
+        // without the block editor active, or on the WooCommerce product screen
+        // (product-metabox.js depends on window.seopulseAdmin — see
+        // enqueue_product_metabox_assets()). In the block editor, #seopulse-root
+        // is never rendered (AdminFooter::should_render_root()) and
+        // enqueue_sidebar_assets() provides its own window.seopulseAdmin instead.
+        $is_classic_editor = $this->is_post_editor($hook) && !$this->is_block_editor_screen();
+
+        if ($is_classic_editor) {
             $this->enqueue_editor_assets();
         }
 
@@ -66,6 +74,88 @@ class Assets implements ExecuteHooks
         // This avoids ~130 KB of JS + CSS being parsed on every unrelated admin screen.
         if ($this->is_seopulse_page($hook) || $this->is_post_editor($hook)) {
             $this->enqueue_admin_scripts($hook);
+        }
+
+        // WooCommerce product edit screen: load the dedicated product metabox bundle.
+        if ($this->is_product_editor($hook)) {
+            $this->enqueue_product_metabox_assets();
+        }
+    }
+
+    /**
+     * Checks if the current screen is the block editor (Gutenberg).
+     *
+     * Used to skip loading the classic-editor React bundle (`seopulse-admin`)
+     * when the block editor is active: #seopulse-root is never rendered there
+     * (see AdminFooter::should_render_root()), and the sidebar bundle handles
+     * the analysis UI and its own `window.seopulseAdmin` localisation instead.
+     *
+     * @return bool
+     */
+    private function is_block_editor_screen(): bool
+    {
+        $screen = get_current_screen();
+
+        return $screen ? $screen->is_block_editor() : false;
+    }
+
+    /**
+     * Checks if we are on the WooCommerce product edit screen.
+     *
+     * @param string $hook Current page
+     * @return bool
+     */
+    private function is_product_editor(string $hook): bool
+    {
+        if (!$this->is_post_editor($hook)) {
+            return false;
+        }
+
+        $screen = get_current_screen();
+
+        return $screen && $screen->post_type === 'product';
+    }
+
+    /**
+     * Enqueues the WooCommerce product SEO metabox script (React, classic editor).
+     *
+     * Depends on `seopulse-admin` (already enqueued by enqueue_editor_assets()
+     * for any post.php/post-new.php screen) so `window.seopulseAdmin` is
+     * guaranteed to be populated before this bundle runs.
+     *
+     * @return void
+     */
+    private function enqueue_product_metabox_assets(): void
+    {
+        $asset_path = SEOPULSE_PLUGIN_DIR . 'assets/build/product-metabox.asset.php';
+
+        if (!file_exists($asset_path)) {
+            return;
+        }
+
+        $asset = require $asset_path;
+
+        wp_enqueue_script(
+            'seopulse-product-metabox',
+            SEOPULSE_PLUGIN_URL . 'assets/build/product-metabox.js',
+            array_unique(array_merge($asset['dependencies'], ['seopulse-admin'])),
+            $asset['version'],
+            true,
+        );
+
+        wp_set_script_translations('seopulse-product-metabox', 'seopulse', SEOPULSE_PLUGIN_DIR . 'languages');
+
+        wp_enqueue_media();
+
+        $css_path = SEOPULSE_PLUGIN_DIR . 'assets/build/product-metabox.css';
+
+        if (file_exists($css_path)) {
+            wp_enqueue_style(
+                'seopulse-product-metabox',
+                SEOPULSE_PLUGIN_URL . 'assets/build/product-metabox.css',
+                [],
+                $asset['version'],
+            );
         }
     }
 
@@ -259,7 +349,7 @@ class Assets implements ExecuteHooks
      */
     private function enqueue_admin_scripts(string $hook): void
     {
-        $is_editor = $this->is_post_editor($hook);
+        $is_editor = $this->is_post_editor($hook) && !$this->is_block_editor_screen();
 
         // Global jQuery script dependencies
         $deps = ['jquery'];
@@ -320,7 +410,7 @@ class Assets implements ExecuteHooks
         // React header admin styles
         wp_enqueue_style(
             'seopulse-admin-page-header',
-            SEOPULSE_PLUGIN_URL . 'assets/css/header.min.css',
+            SEOPULSE_PLUGIN_URL . 'assets/build/admin-page-header.css',
             [],
             $this->version,
         );

@@ -97,7 +97,7 @@ class MetaSeoSettings implements ExecuteHooksAdmin
 
         wp_enqueue_style(
             'seopulse-metaseo-css',
-            SEOPULSE_PLUGIN_URL . 'assets/css/seopulse-metaseo.min.css',
+            SEOPULSE_ASSETS_URL . 'build/meta-seo-settings.css',
             ['seopulse-meta-seo-settings'],
             $asset['version'],
         );
@@ -105,13 +105,13 @@ class MetaSeoSettings implements ExecuteHooksAdmin
         // Legacy image diagnostic / alt-wizard CSS (still needed for styling)
         wp_enqueue_style(
             'seopulse-image-alt-wizard',
-            SEOPULSE_PLUGIN_URL . 'assets/css/image-alt-wizard.css',
+            SEOPULSE_PLUGIN_URL . 'assets/css/image-alt-wizard.min.css',
             ['seopulse-admin-global'],
             SEOPULSE_VERSION,
         );
         wp_enqueue_style(
             'seopulse-image-diagnostic',
-            SEOPULSE_PLUGIN_URL . 'assets/css/image-diagnostic.css',
+            SEOPULSE_PLUGIN_URL . 'assets/css/image-diagnostic.min.css',
             ['seopulse-admin-global'],
             SEOPULSE_VERSION,
         );

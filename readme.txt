@@ -5,7 +5,7 @@ Donate link: https://www.seopulse.citrus-design.fr
 Tags: seo, xml sitemap, schema, local seo, google search console
 Requires at least: 6.0
 Tested up to: 7.0
-Stable tag: 1.5.0
+Stable tag: 1.6.0
 Requires PHP: 8.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -344,6 +344,21 @@ Use the WordPress.org support forum.
 Yes. All features are accessible via REST endpoints under `/wp-json/seopulse/v1/`.
 
 == Changelog ==
+
+= 1.6.0 =
+
+* NEW: WooCommerce Product SEO — dedicated "SEOPulse SEO" meta box on the product edit screen
+* NEW: WooCommerce - add variables in the variables picker
+* NEW: Local SEO — Opening Hours fields now use a clock-icon time picker (hour/minute steppers, with automatic AM/PM support in 12-hour mode) instead of manual text entry, for more precise and consistent time selection
+* PERFORMANCE: General — Graphical improvements and styles loading optimization
+* FIX: Meta Template Engine — `%%env.url%%` resolved to the internal REST request URL instead of the actual page/product URL when resolved for an admin-side live preview; now resolves to the post's real permalink whenever a post context is available
+* FIX: Meta Template Engine — `canonical` and `og_url` defaults could be empty for a product that had never been saved yet (`auto-draft` status), because `get_permalink()` returns `false` for that status; now falls back to the same sample-permalink technique already used by the classic metabox view
+* FIX: WooCommerce product edit screen no longer shows the generic "SEO Analysis" panel twice — it's now covered exclusively by the product meta box's Score tab
+* FIX: Fatal error on WooCommerce HPOS order edit pages caused by `register_meta_boxes()` expecting a `WP_Post` instance where WooCommerce passes an `Order` object.
+* FIX: Sitemap — enabling "Disable native WordPress sitemap" registered SEOPulse's custom rewrite rules but never disabled WordPress core's own sitemap module, so /sitemap.xml requests were still intercepted and redirected to /wp-sitemap.xml; the core sitemap module is now properly disabled via wp_sitemaps_enabled and rewrite rules are flushed automatically when the setting changes.
+* FIX: Redirects — Nginx export could generate malformed location blocks when a source or target URL contained special characters (quotes, backslashes, line breaks), producing an invalid config file that would fail nginx -t; values are now properly escaped and quoted.
+* FIX: Redirects — Nginx export no longer produces an unsupported return status code when a redirect's type falls outside the codes accepted by Nginx (301, 302, 303, 307, 308); invalid codes now fall back to 301.
+* FIX: Redirects — Nginx export ordering between exact and pattern-based redirects is now explicit and deterministic instead of relying on implicit sort order.
 
 = 1.5.0 =
 

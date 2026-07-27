@@ -138,6 +138,5 @@ final class AdminPageContent
 </div>
 <?php
     }
-
 }
 ?>

@@ -60,36 +60,3 @@ if (!function_exists(__NAMESPACE__ . '\\seopulse_notify')) {
         Admin\Notifications\AdminNotification::add($type, $message, $options);
     }
 }
-
-if (!function_exists(__NAMESPACE__ . '\\seopulse_breadcrumbs')) {
-    /**
-     * Renders the SEOPulse breadcrumb trail (namespaced version).
-     *
-     * This is the **internal / plugin-code** version of the breadcrumb helper.
-     * It lives in the `SEOPulse\` namespace and is intended to be called from
-     * within the plugin itself or from other namespaced PHP code:
-     *
-     *     \SEOPulse\seopulse_breadcrumbs();
-     *     // or, inside the SEOPulse namespace:
-     *     seopulse_breadcrumbs();
-     *
-     * For **theme integration**, use the global-namespace template tag defined
-     * in `Core/template-tags.php` instead — it does not require any `use` import
-     * and is safe to call from any theme file.
-     *
-     * Both functions delegate to the same `BreadcrumbRenderer::render()` implementation
-     * and produce identical output. The two declarations exist to satisfy two distinct
-     * calling conventions; there is no conflict because the namespaces are different.
-     *
-     * @since 1.0.0
-     *
-     * @param bool $echo Whether to echo (true) or return (false) the HTML.
-     * @return string Breadcrumb HTML.
-     */
-    function seopulse_breadcrumbs(bool $echo = true): string
-    {
-        $renderer = new Modules\MetaSeo\BreadcrumbRenderer();
-
-        return $renderer->render($echo);
-    }
-}

@@ -66,7 +66,7 @@ class Monitor404Page implements ExecuteHooksAdmin
         // 404 Monitor-specific styles (decoupled from the settings shell since 1.3.0)
         wp_enqueue_style(
             'seopulse-404-monitor-css',
-            SEOPULSE_PLUGIN_URL . 'assets/css/seopulse-monitor.min.css',
+            SEOPULSE_ASSETS_URL . 'build/404-monitor.css',
             ['seopulse-404-monitor'],
             SEOPULSE_VERSION,
         );

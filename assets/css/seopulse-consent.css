@@ -1,7 +1,6 @@
 /**
  * SEOPulse Cookie Consent Banner — Frontend Styles
  *
- * macOS Sonoma / Apple Pro Display inspired design.
  * GDPR-compliant cookie consent banner and preferences modal.
  * Self-contained: does NOT depend on admin design tokens.
  *
@@ -9,7 +8,7 @@
  * @since 1.0.0
  */
 
-/* ── CSS Custom Properties (Apple-inspired theming) ────────────── */
+/* ── CSS Custom Properties ────────────── */
 :root {
 	--sp-consent-font:
 		-apple-system,
@@ -282,7 +281,7 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   BUTTONS — Apple-style
+   BUTTONS
    ══════════════════════════════════════════════════════════════════ */
 
 .seopulse-consent-btn {
@@ -386,7 +385,7 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   MODAL — Glass-inspired
+   MODAL
    ══════════════════════════════════════════════════════════════════ */
 
 .seopulse-consent-modal {
@@ -547,7 +546,7 @@
 	letter-spacing: -0.01em;
 }
 
-/* ── Toggle switch — Apple iOS style ───────────────────────────── */
+/* ── Toggle switch ───────────────────────────── */
 .seopulse-consent-switch {
 	position: relative;
 	display: inline-block;

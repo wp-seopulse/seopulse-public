@@ -151,6 +151,24 @@ class SitemapGenerator
     }
 
     /**
+     * Disable the native WordPress sitemap module if the option is enabled.
+     *
+     * Must execute before wp_sitemaps_get_server() runs
+     * on 'init' (priority 10 by default), otherwise WP_Sitemaps::init() will still
+     * redirect /sitemap.xml -> /wp-sitemap.xml on template_redirect.
+     *
+     * @return void
+     */
+    public function maybe_disable_core_sitemaps(): void
+    {
+        $options = $this->get_options();
+
+        if (!empty($options['disable_wp_core_sitemaps'])) {
+            add_filter('wp_sitemaps_enabled', '__return_false');
+        }
+    }
+
+    /**
      * Generates the sitemap index
      *
      * @return string XML content

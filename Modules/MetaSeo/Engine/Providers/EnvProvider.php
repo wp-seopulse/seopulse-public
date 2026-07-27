@@ -42,7 +42,7 @@ final class EnvProvider implements VariableProviderInterface
     public function resolve(string $variable, ContextBag $context): ?string
     {
         return match ($variable) {
-            'url'          => $this->getCurrentUrl(),
+            'url'          => $this->getCurrentUrl($context),
             'domain'       => (string) wp_parse_url(home_url(), PHP_URL_HOST),
             'protocol'     => is_ssl() ? 'https' : 'http',
             'path'         => sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'] ?? '/')),
@@ -66,8 +66,21 @@ final class EnvProvider implements VariableProviderInterface
         ];
     }
 
-    private function getCurrentUrl(): string
+    private function getCurrentUrl(ContextBag $context): string
     {
+        // When resolving for a specific post/product (e.g. the admin-side
+        // live preview called via the REST `/meta-engine/resolve` endpoint),
+        // `$_SERVER['REQUEST_URI']` reflects that REST request itself, not
+        // the page being previewed. Prefer the context's post permalink so
+        // the resolved value is always the real, meaningful URL.
+        $post = $context->getPost();
+        if ($post instanceof \WP_Post) {
+            $permalink = get_permalink($post);
+            if (is_string($permalink) && $permalink !== '') {
+                return $permalink;
+            }
+        }
+
         $protocol = is_ssl() ? 'https' : 'http';
         $host     = sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'] ?? ''));
         if ($host === '') {

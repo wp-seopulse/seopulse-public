@@ -83,7 +83,7 @@ class ToolsSettingsPage implements ExecuteHooksAdmin
 
         wp_enqueue_script(
             'seopulse-tools-settings',
-            SEOPULSE_PLUGIN_URL . 'assets/build/tools-settings.js',
+            SEOPULSE_ASSETS_URL . 'build/tools-settings.js',
             $script_asset['dependencies'],
             $script_asset['version'],
             true,
@@ -100,7 +100,7 @@ class ToolsSettingsPage implements ExecuteHooksAdmin
 
         wp_enqueue_style(
             'seopulse-tools-css',
-            SEOPULSE_PLUGIN_URL . 'assets/css/seopulse-tools.min.css',
+            SEOPULSE_ASSETS_URL . 'build/tools-settings.css',
             ['seopulse-tools-settings'],
             $script_asset['version'],
         );

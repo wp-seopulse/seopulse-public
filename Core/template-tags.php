@@ -20,16 +20,10 @@ if (!function_exists('seopulse_breadcrumbs')) {
     /**
      * Renders the SEOPulse breadcrumb trail.
      *
-     * This is the **theme-facing** template tag. It lives in the **global namespace**
-     * so that theme developers can call it without any `use` import or namespace prefix:
+     * Theme-facing template tag, in the global namespace so themes
+     * can call it directly without any `use` import:
      *
      *     <?php if ( function_exists( 'seopulse_breadcrumbs' ) ) { seopulse_breadcrumbs(); } ?>
-     *
-     * A second declaration of this function exists in `Core/helpers.php` under the
-     * `SEOPulse\` namespace (`SEOPulse\seopulse_breadcrumbs()`). That version is meant
-     * for internal plugin code. The two declarations **do not conflict** because PHP
-     * treats them as distinct symbols due to their different namespaces. Both delegate
-     * to the same `BreadcrumbRenderer::render()` implementation and produce identical output.
      *
      * @since 1.0.0
      *

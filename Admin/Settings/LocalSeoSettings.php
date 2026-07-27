@@ -103,7 +103,7 @@ class LocalSeoSettings implements ExecuteHooksAdmin
 
         wp_enqueue_style(
             'seopulse-local-seo-css',
-            SEOPULSE_PLUGIN_URL . 'assets/css/seopulse-localseo.min.css',
+            SEOPULSE_ASSETS_URL . 'build/local-seo-settings.css',
             ['seopulse-local-seo-settings'],
             $asset['version'],
         );
@@ -112,7 +112,7 @@ class LocalSeoSettings implements ExecuteHooksAdmin
 
         wp_enqueue_script(
             'seopulse-local-seo-settings',
-            SEOPULSE_PLUGIN_URL . 'assets/build/local-seo-settings.js',
+            SEOPULSE_ASSETS_URL . 'build/local-seo-settings.js',
             $deps,
             $asset['version'],
             true,

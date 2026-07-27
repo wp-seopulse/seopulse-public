@@ -93,14 +93,14 @@ class IndexingSettingsPage implements ExecuteHooksAdmin
 
         wp_enqueue_style(
             'seopulse-indexing-css',
-            SEOPULSE_PLUGIN_URL . 'assets/css/seopulse-indexing.min.css',
+            SEOPULSE_ASSETS_URL . 'build/indexing-settings.css',
             ['seopulse-indexing-settings'],
             $asset['version'],
         );
 
         wp_enqueue_script(
             'seopulse-indexing-settings',
-            SEOPULSE_PLUGIN_URL . 'assets/build/indexing-settings.js',
+            SEOPULSE_ASSETS_URL . 'build/indexing-settings.js',
             $asset['dependencies'],
             $asset['version'],
             true,

@@ -81,27 +81,27 @@ class SitemapSettings
         $changefreq = get_post_meta($post->ID, '_seopulse_sitemap_changefreq', true);
         ?>
 <div class="seopulse-sitemap-metabox">
-	<div class="seopulse-field">
-		<label>
-			<input type="checkbox" name="seopulse_exclude_sitemap" value="1"
-				<?php checked($exclude, '1'); ?>
-			/>
-			<?php esc_html_e('Exclude from sitemap', 'seopulse'); ?>
-		</label>
-		<p class="description">
-			<?php esc_html_e('Check this box to exclude this content from the sitemap.', 'seopulse'); ?>
-		</p>
-	</div>
+    <div class="seopulse-field">
+        <label>
+            <input type="checkbox" name="seopulse_exclude_sitemap" value="1"
+                <?php checked($exclude, '1'); ?>
+            />
+            <?php esc_html_e('Exclude from sitemap', 'seopulse'); ?>
+        </label>
+        <p class="description">
+            <?php esc_html_e('Check this box to exclude this content from the sitemap.', 'seopulse'); ?>
+        </p>
+    </div>
 
-	<div class="seopulse-field">
-		<label for="seopulse_sitemap_priority">
-			<?php esc_html_e('Priority', 'seopulse'); ?>
-		</label>
-		<select name="seopulse_sitemap_priority" id="seopulse_sitemap_priority">
-			<option value="">
-				<?php esc_html_e('Default', 'seopulse'); ?>
-			</option>
-			<?php
+    <div class="seopulse-field">
+        <label for="seopulse_sitemap_priority">
+            <?php esc_html_e('Priority', 'seopulse'); ?>
+        </label>
+        <select name="seopulse_sitemap_priority" id="seopulse_sitemap_priority">
+            <option value="">
+                <?php esc_html_e('Default', 'seopulse'); ?>
+            </option>
+            <?php
                     $priorities = ['0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0'];
         foreach ($priorities as $p) {
             printf(
@@ -112,21 +112,21 @@ class SitemapSettings
             );
         }
         ?>
-		</select>
-		<p class="description">
-			<?php esc_html_e('The priority of this URL relative to other URLs on your site (0.1 to 1.0).', 'seopulse'); ?>
-		</p>
-	</div>
+        </select>
+        <p class="description">
+            <?php esc_html_e('The priority of this URL relative to other URLs on your site (0.1 to 1.0).', 'seopulse'); ?>
+        </p>
+    </div>
 
-	<div class="seopulse-field">
-		<label for="seopulse_sitemap_changefreq">
-			<?php esc_html_e('Change Frequency', 'seopulse'); ?>
-		</label>
-		<select name="seopulse_sitemap_changefreq" id="seopulse_sitemap_changefreq">
-			<option value="">
-				<?php esc_html_e('Default', 'seopulse'); ?>
-			</option>
-			<?php
+    <div class="seopulse-field">
+        <label for="seopulse_sitemap_changefreq">
+            <?php esc_html_e('Change Frequency', 'seopulse'); ?>
+        </label>
+        <select name="seopulse_sitemap_changefreq" id="seopulse_sitemap_changefreq">
+            <option value="">
+                <?php esc_html_e('Default', 'seopulse'); ?>
+            </option>
+            <?php
         $frequencies = [
             'always'  => __('Always', 'seopulse'),
             'hourly'  => __('Hourly', 'seopulse'),
@@ -145,11 +145,11 @@ class SitemapSettings
             );
         }
         ?>
-		</select>
-		<p class="description">
-			<?php esc_html_e('How frequently the page is likely to change.', 'seopulse'); ?>
-		</p>
-	</div>
+        </select>
+        <p class="description">
+            <?php esc_html_e('How frequently the page is likely to change.', 'seopulse'); ?>
+        </p>
+    </div>
 
 
 </div>
@@ -255,7 +255,16 @@ class SitemapSettings
      */
     public function sanitize_settings(array $input): array
     {
+        $old_options = get_option('seopulse_sitemap_settings', []);
         $sanitized = [];
+
+        // Flush des rewrite rules si le réglage a changé
+        $old_disabled = !empty($old_options['disable_wp_core_sitemaps']);
+        $new_disabled = !empty($sanitized['disable_wp_core_sitemaps']);
+
+        if ($old_disabled !== $new_disabled) {
+            add_action('shutdown', 'flush_rewrite_rules');
+        }
 
         // Boolean fields
         $bool_fields = [

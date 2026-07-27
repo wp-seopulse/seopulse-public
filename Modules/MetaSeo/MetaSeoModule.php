@@ -94,6 +94,11 @@ class MetaSeoModule extends Module implements ModuleInterface
             add_action('add_meta_boxes', [$this, 'register_meta_boxes'], 10, 2);
             add_action('save_post', [$this, 'save_meta_boxes'], 10, 1);
             add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
+
+            // WooCommerce product SEO meta box — dedicated hook (`add_meta_boxes_product`)
+            // so it only ever fires on the real product edit screen with a genuine
+            // WP_Post (never on the HPOS order-edit screens).
+            add_action('add_meta_boxes_product', [$this, 'register_product_meta_box']);
         }
     }
 
@@ -215,13 +220,14 @@ class MetaSeoModule extends Module implements ModuleInterface
     public function enqueue_admin_assets(): void
     {
         $screen = get_current_screen();
-        if (!$screen || !in_array($screen->post_type, ['post', 'page'], true)) {
+        if (!$screen || !in_array($screen->post_type, ['post', 'page', 'product'], true)) {
             return;
         }
 
         // Metabox CSS and jQuery variable-picker removed — all meta tag editing
-        // is now handled by the React sidebar (VariablePickerButton, SocialEditModal).
-        // Keep media library for the sidebar's image uploaders.
+        // is now handled by the React sidebar (VariablePickerButton, SocialEditModal)
+        // or, for WooCommerce products, the dedicated product metabox bundle.
+        // Keep media library for the image uploaders (OG image, etc.).
         wp_enqueue_media();
     }
 
@@ -451,12 +457,24 @@ class MetaSeoModule extends Module implements ModuleInterface
      * In the block editor, the Gutenberg sidebar (editor-sidebar) handles
      * all meta editing, so the metabox is intentionally skipped.
      *
-     * @param string $post_type Current post type.
-     * @param WP_Post $post Current post object.
+     * Note: this hook (`add_meta_boxes`) is also fired by WooCommerce on its
+     * HPOS order-edit screens, but with an
+     * Automattic\WooCommerce\Admin\Overrides\Order object instead of a
+     * WP_Post — hence the loosened type and the instanceof guard below.
+     *
+     * @param string $post_type Current post type (or WC screen id).
+     * @param mixed $post Current post object (WP_Post expected; may be
+     *                    a non-WP_Post object on non-post admin screens).
      * @return void
      */
-    public function register_meta_boxes(string $post_type, WP_Post $post): void
+    public function register_meta_boxes(string $post_type, $post): void
     {
+        // Bail out on any screen that isn't a real WP_Post (e.g. WooCommerce
+        // HPOS order edit screens, which pass an Order object here).
+        if (!$post instanceof WP_Post) {
+            return;
+        }
+
         // Skip in block editor — the Gutenberg sidebar handles meta editing.
         if (function_exists('use_block_editor_for_post') && use_block_editor_for_post($post)) {
             return;
@@ -476,6 +494,56 @@ class MetaSeoModule extends Module implements ModuleInterface
             'normal',
             'high',
         );
+    }
+
+    /**
+     * Registers the WooCommerce product SEO meta box.
+     *
+     * Fires on `add_meta_boxes_product`, a post-type-specific hook that only
+     * triggers on the real product edit screen (never on HPOS order-edit
+     * screens), always with a genuine WP_Post — no instanceof guard needed.
+     *
+     * @param WP_Post $post Current product
+     * @return void
+     */
+    public function register_product_meta_box(WP_Post $post): void
+    {
+        // WooCommerce must be active.
+        if (!function_exists('wc_get_product')) {
+            return;
+        }
+
+        // Skip if the product is edited with a block-based UI (e.g. a future
+        // WooCommerce block product editor) — mirrors the guard used for
+        // post/page above.
+        if (function_exists('use_block_editor_for_post') && use_block_editor_for_post($post)) {
+            return;
+        }
+
+        add_meta_box(
+            'seopulse-product-seo',
+            __('SEOPulse SEO', 'seopulse'),
+            [$this, 'render_product_meta_box'],
+            'product',
+            'normal',
+            'high',
+        );
+    }
+
+    /**
+     * Displays the WooCommerce product SEO meta box.
+     *
+     * Renders a mount point for the dedicated `product-metabox` React bundle
+     * (see Core\Assets::enqueue_product_metabox_assets()).
+     *
+     * @param WP_Post $post Current product
+     * @return void
+     */
+    public function render_product_meta_box(WP_Post $post): void
+    {
+        wp_nonce_field('seopulse_product_seo_nonce', 'seopulse_product_seo_nonce');
+
+        include __DIR__ . '/metabox/metabox-product-seo.php';
     }
 
     /**

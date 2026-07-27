@@ -843,6 +843,8 @@ class RedirectRepository
 
     /**
      * Generates Nginx redirect rules from active redirects.
+     *
+     * @return string Nginx config snippet, ready to be included via `include`.
      */
     public function exportNginx(): string
     {
@@ -851,48 +853,153 @@ class RedirectRepository
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery
         $rows = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM `{$wpdb->seopulse_redirects}` WHERE status = %s ORDER BY match_type ASC, id ASC",
+                "SELECT * FROM `{$wpdb->seopulse_redirects}` WHERE status = %s ORDER BY id ASC",
                 'active',
             ),
             ARRAY_A,
         );
 
+        $rows = $rows ?: [];
+
+        // Priorité explicite plutôt que de dépendre du tri alphabétique de match_type :
+        // les correspondances exactes doivent toujours être évaluées avant les regex,
+        // conformément à la logique de résolution des "location" de Nginx. Un nouveau
+        // match_type ajouté plus tard ne cassera pas silencieusement l'ordre.
+        usort($rows, static function (array $a, array $b): int {
+            $priority = ['exact' => 0];
+            $pa = $priority[$a['match_type'] ?? ''] ?? 1;
+            $pb = $priority[$b['match_type'] ?? ''] ?? 1;
+
+            return $pa <=> $pb ?: ((int) ($a['id'] ?? 0) <=> (int) ($b['id'] ?? 0));
+        });
+
         $lines = [
             '# SEOPulse Redirects for Nginx',
             '# Generated: ' . current_time('mysql'),
+            '# File generated automatically — any manual changes will be overwritten.',
         ];
 
-        foreach (($rows ?: []) as $row) {
-            $mc     = (int) ($row['maintenance_code'] ?? 0);
-            $source = $row['source_url'] ?? '';
-            $target = $row['target_url'] ?? '';
-            $type   = $row['match_type'] ?? 'exact';
+        /**
+         * Filters the header of the generated file to allow other modules
+         * to add directives (e.g., a rate-limiting block).
+         *
+         * @param array $lines Header lines.
+         */
+        $lines = apply_filters('seopulse_redirects_nginx_header', $lines);
+
+        $skipped = 0;
+
+        foreach ($rows as $row) {
+            $mc         = (int) ($row['maintenance_code'] ?? 0);
+            $source     = $this->normalizeSourcePath((string) ($row['source_url'] ?? ''));
+            $target     = trim((string) ($row['target_url'] ?? ''));
+            $type       = $row['match_type'] ?? 'exact';
+            $ci         = !empty($row['case_insensitive'] ?? false); // column option
+            $keep_query = !empty($row['preserve_query'] ?? false);   // column option
+
+            // An empty or invalid source would break the location directive — it is ignored.
+            if ($source === '') {
+                ++$skipped;
+                continue;
+            }
+
+            $source_escaped = $this->escapeNginxString($source);
 
             if (in_array($mc, [410, 451], true)) {
-                if ($type === 'exact') {
-                    $lines[] = "location = {$source} { return {$mc}; }";
-                } else {
-                    $pattern = $this->toNginxPattern($row);
-                    $lines[] = "location ~ {$pattern} { return {$mc}; }";
-                }
+                $lines[] = $this->buildLocationBlock($type, $ci, $source_escaped, $row, "return {$mc};");
                 continue;
             }
 
             if ($target === '') {
+                ++$skipped;
                 continue;
             }
 
-            $code = (int) ($row['redirect_type'] ?? 301);
+            $code           = $this->sanitizeRedirectCode((int) ($row['redirect_type'] ?? 301));
+            $target_escaped = $this->escapeNginxString($target);
+            $args_suffix    = $keep_query ? '$is_args$args' : '';
 
-            if ($type === 'exact') {
-                $lines[] = "location = {$source} { return {$code} {$target}; }";
-            } else {
-                $pattern = $this->toNginxPattern($row);
-                $lines[] = "location ~ {$pattern} { return {$code} {$target}; }";
-            }
+            $return_stmt = "return {$code} \"{$target_escaped}{$args_suffix}\";";
+
+            $lines[] = $this->buildLocationBlock($type, $ci, $source_escaped, $row, $return_stmt);
         }
 
+        if ($skipped > 0) {
+            $lines[] = "# {$skipped} redirection(s) ignorée(s) car incomplète(s) ou invalide(s).";
+        }
+
+        /**
+         * Dernier point d'extension avant l'export : permet d'ajouter des lignes
+         * personnalisées (ex: règles de cache, en-têtes de sécurité).
+         *
+         * @param array $lines Lignes du fichier de config.
+         * @param array $rows Lignes brutes issues de la base.
+         */
+        $lines = apply_filters('seopulse_redirects_nginx_lines', $lines, $rows);
+
         return implode("\n", $lines) . "\n";
+    }
+
+    /**
+     * Builds a "location" block for Nginx from a given redirect.
+     *
+     * @param string $type Redirect match type (exact, contains, starts_with, ends_with, regex).
+     * @param bool $case_insensitive Whether to use case-insensitive matching.
+     * @param string $source_escaped Escaped source path for the location.
+     * @param array $row Database row data.
+     * @param string $return_stmt Return statement to execute inside the block.
+     * @return string The formatted Nginx location block.
+     */
+    private function buildLocationBlock(string $type, bool $case_insensitive, string $source_escaped, array $row, string $return_stmt): string
+    {
+        if ($type === 'exact') {
+            return "location = \"{$source_escaped}\" { {$return_stmt} }";
+        }
+
+        $pattern         = $this->toNginxPattern($row);
+        $pattern_escaped = $this->escapeNginxString($pattern);
+        $modifier        = $case_insensitive ? '~*' : '~';
+
+        return "location {$modifier} \"{$pattern_escaped}\" { {$return_stmt} }";
+    }
+
+    /**
+     * Escapes a value for safe inclusion in a Nginx token within quotes.
+     *
+     * Removes control characters (including line breaks) that
+     * could exit the current directive and inject arbitrary
+     * config, then escapes backslashes and double quotes.
+     */
+    private function escapeNginxString(string $value): string
+    {
+        $value = preg_replace('/[\x00-\x1F\x7F]/', '', $value) ?? '';
+
+        return str_replace(['\\', '"'], ['\\\\', '\\"'], $value);
+    }
+
+    /**
+     * Ensures that the source path is well-formed for a "location" block.
+     */
+    private function normalizeSourcePath(string $source): string
+    {
+        $source = trim($source);
+
+        if ($source === '') {
+            return '';
+        }
+
+        return $source[0] === '/' ? $source : '/' . $source;
+    }
+
+    /**
+     * Restricts the redirect code to values accepted by the Nginx `return` directive
+     * when a target URL is provided (301-308).
+     */
+    private function sanitizeRedirectCode(int $code): int
+    {
+        static $allowed = [301, 302, 303, 307, 308];
+
+        return in_array($code, $allowed, true) ? $code : 301;
     }
 
     // =========================================================================

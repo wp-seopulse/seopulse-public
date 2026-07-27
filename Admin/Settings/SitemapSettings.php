@@ -93,14 +93,14 @@ class SitemapSettings implements ExecuteHooksAdmin
 
         wp_enqueue_style(
             'seopulse-sitemap-css',
-            SEOPULSE_PLUGIN_URL . 'assets/css/seopulse-sitemap.min.css',
+            SEOPULSE_ASSETS_URL . 'build/sitemap-settings.css',
             ['seopulse-sitemap-settings'],
             $asset['version'],
         );
 
         wp_enqueue_script(
             'seopulse-sitemap-settings',
-            SEOPULSE_PLUGIN_URL . 'assets/build/sitemap-settings.js',
+            SEOPULSE_ASSETS_URL . 'build/sitemap-settings.js',
             $asset['dependencies'],
             $asset['version'],
             true,

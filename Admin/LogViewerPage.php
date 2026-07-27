@@ -80,7 +80,7 @@ class LogViewerPage implements ExecuteHooksAdmin
 
         wp_enqueue_style(
             'seopulse-logs-viewer-css',
-            SEOPULSE_PLUGIN_URL . 'assets/css/seopulse-logs.min.css',
+            SEOPULSE_ASSETS_URL . 'build/logs-viewer.css',
             ['seopulse-logs-viewer'],
             $asset['version'],
         );

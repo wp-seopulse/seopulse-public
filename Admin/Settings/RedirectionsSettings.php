@@ -116,14 +116,14 @@ class RedirectionsSettings implements ExecuteHooksAdmin
 
         wp_enqueue_style(
             'seopulse-redirections-css',
-            SEOPULSE_PLUGIN_URL . 'assets/css/seopulse-redirections.min.css',
+            SEOPULSE_ASSETS_URL . 'build/redirections.css',
             ['seopulse-redirections-admin-spa'],
             $asset['version'],
         );
 
         wp_enqueue_script(
             'seopulse-redirections-admin',
-            SEOPULSE_PLUGIN_URL . 'assets/build/redirections.js',
+            SEOPULSE_ASSETS_URL . 'build/redirections.js',
             array_merge($asset['dependencies'], ['seopulse-admin-global']),
             $asset['version'],
             true,

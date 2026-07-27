@@ -102,14 +102,14 @@ class AnalyticsSettings implements ExecuteHooksAdmin
 
         wp_enqueue_style(
             'seopulse-analytics-css',
-            SEOPULSE_PLUGIN_URL . 'assets/css/seopulse-analytics.min.css',
+            SEOPULSE_ASSETS_URL . 'build/analytics-settings.css',
             ['seopulse-analytics-settings'],
             $script_asset['version'],
         );
 
         wp_enqueue_script(
             'seopulse-analytics-settings',
-            SEOPULSE_PLUGIN_URL . 'assets/build/analytics-settings.js',
+            SEOPULSE_ASSETS_URL . 'build/analytics-settings.js',
             $script_asset['dependencies'],
             $script_asset['version'],
             true,

@@ -82,6 +82,12 @@ class SitemapModule extends Module implements ModuleInterface
         $this->settings     = new SitemapSettings();
         $this->news         = new SitemapNews();
         $this->bulk_actions = new SitemapBulkActions();
+
+        // Disable WordPress core sitemaps
+        $options = get_option('seopulse_sitemap_settings', []);
+        if (!empty($options['disable_wp_core_sitemaps'])) {
+            add_filter('wp_sitemaps_enabled', '__return_false');
+        }
     }
 
     /**
@@ -104,17 +110,6 @@ class SitemapModule extends Module implements ModuleInterface
 
         // Regenerate physical robots.txt when archive settings change
         add_action('update_option_seopulse_archive_settings', [$this, 'maybeRefreshPhysicalRobots'], 10, 0);
-
-        // Disable WordPress core sitemaps if necessary
-        add_action(
-            'after_setup_theme',
-            function () {
-                $options = get_option('seopulse_sitemap_settings', []);
-                if (!empty($options['disable_wp_core_sitemaps'])) {
-                    add_filter('wp_sitemaps_enabled', '__return_false');
-                }
-            },
-        );
 
         // Sitemap Google News
         $this->news->init();

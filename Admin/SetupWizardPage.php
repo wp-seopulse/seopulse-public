@@ -184,6 +184,7 @@ class SetupWizardPage implements ExecuteHooksAdmin
             'estimatedTime'            => __('Takes about 3 minutes', 'seopulse'),
             'benefitVisibility'        => __('Optimized meta tags for better search visibility', 'seopulse'),
             'benefitRecommendations'   => __('Actionable SEO recommendations on every page', 'seopulse'),
+            'benefitLocalSeo'          => __('Local SEO structured data for maps and local search', 'seopulse'),
             'benefitTechnical'         => __('Technical SEO checks and monitoring', 'seopulse'),
             'metaSeoDescription'       => __('Configures how search engines see your site.', 'seopulse'),
 
@@ -562,44 +563,28 @@ class SetupWizardPage implements ExecuteHooksAdmin
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
 
-        $known_plugins = [
-            [
-                'slug'   => 'yoast',
-                'name'   => 'Yoast SEO',
-                'file'   => 'wordpress-seo/wp-seo.php',
-                'option' => 'wpseo_titles',
-            ],
-            [
-                'slug'   => 'rankmath',
-                'name'   => 'Rank Math',
-                'file'   => 'seo-by-rank-math/rank-math.php',
-                'option' => 'rank-math-options-general',
-            ],
-            [
-                'slug'   => 'seopress',
-                'name'   => 'SEOPress',
-                'file'   => 'wp-seopress/seopress.php',
-                'option' => 'seopress_activated',
-            ],
-            [
-                'slug'   => 'aioseo',
-                'name'   => 'All in One SEO',
-                'file'   => 'all-in-one-seo-pack/all_in_one_seo_pack.php',
-                'option' => 'aioseo_options',
-            ],
+        // Delegates to the real Migrator::detect() implementations instead of
+        // re-checking plugin files/option keys by hand here, so this list can
+        // never drift out of sync with what MigrationController actually supports.
+        $migrators = [
+            'yoast'    => ['name' => 'Yoast SEO', 'class' => \SEOPulse\Services\Migration\YoastMigrator::class],
+            'rankmath' => ['name' => 'Rank Math', 'class' => \SEOPulse\Services\Migration\RankMathMigrator::class],
+            'seopress' => ['name' => 'SEOPress', 'class' => \SEOPulse\Services\Migration\SeoPressMigrator::class],
+            'aioseo'   => ['name' => 'All in One SEO', 'class' => \SEOPulse\Services\Migration\AIOSeoMigrator::class],
         ];
 
         $detected = [];
-        foreach ($known_plugins as $plugin) {
-            $active   = is_plugin_active($plugin['file']);
-            $has_data = (bool) get_option($plugin['option'], false);
 
-            if ($active || $has_data) {
+        foreach ($migrators as $slug => $plugin) {
+            $migrator  = new $plugin['class']();
+            $detection = $migrator->detect();
+
+            if ($detection['active'] || $detection['has_data']) {
                 $detected[] = [
-                    'slug'      => $plugin['slug'],
+                    'slug'      => $slug,
                     'name'      => $plugin['name'],
-                    'active'    => $active,
-                    'canImport' => $has_data && in_array($plugin['slug'], ['yoast', 'rankmath', 'seopress'], true),
+                    'active'    => $detection['active'],
+                    'canImport' => $detection['has_data'],
                 ];
             }
         }

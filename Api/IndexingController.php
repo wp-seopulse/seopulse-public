@@ -26,8 +26,10 @@ if (!defined('ABSPATH')) {
 use SEOPulse\Core\Abstracts\RestController;
 use SEOPulse\Core\Constants\Options;
 use SEOPulse\Services\Indexing\GoogleIndexingSubmitter;
+use SEOPulse\Services\Indexing\IndexNowSubmitter;
 use SEOPulse\Services\IndexingLogger;
 use SEOPulse\Services\IndexingServiceRegistry;
+use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -98,7 +100,13 @@ class IndexingController extends RestController
                             'required'          => true,
                             'type'              => 'string',
                             'sanitize_callback' => 'esc_url_raw',
-                            'validate_callback' => static fn ($v): bool => filter_var($v, FILTER_VALIDATE_URL) !== false,
+                            // Only accept http(s) explicitly, rather than
+                            // relying solely on FILTER_VALIDATE_URL (which
+                            // happily validates javascript:/file:/ftp: URLs
+                            // too) or on esc_url_raw's protocol stripping.
+                            'validate_callback' => static fn ($v): bool => is_string($v)
+                                && (bool) preg_match('#^https?://#i', $v)
+                                && filter_var($v, FILTER_VALIDATE_URL) !== false,
                         ],
                         'action' => [
                             'required' => false,
@@ -188,11 +196,18 @@ class IndexingController extends RestController
 
     /**
      * POST /indexing/settings
+     *
+     * @return WP_REST_Response|WP_Error error() (inherited) returns WP_Error, not WP_REST_Response.
      */
-    public function save_settings(WP_REST_Request $request): WP_REST_Response
+    public function save_settings(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
+        $params = $request->get_json_params();
+
+        if (!is_array($params)) {
+            return $this->error('Invalid or missing JSON body.', 400);
+        }
+
         $settings = (array) get_option(Options::INDEXING, []);
-        $params   = $request->get_json_params();
 
         if (isset($params['indexnow_enabled'])) {
             $settings['indexnow_enabled'] = (bool) $params['indexnow_enabled'];
@@ -200,9 +215,15 @@ class IndexingController extends RestController
             // Auto-generate key if enabling for the first time.
             if ($settings['indexnow_enabled'] && empty($settings['indexnow_key'])) {
                 $submitter = $this->registry->get('indexnow');
-                if ($submitter instanceof \SEOPulse\Services\Indexing\IndexNowSubmitter) {
-                    $submitter->getApiKey(); // This auto-generates and saves.
-                    $settings = (array) get_option(Options::INDEXING, []);
+                if ($submitter instanceof IndexNowSubmitter) {
+                    // IMPORTANT: capture the returned key directly instead
+                    // of re-reading get_option() afterwards. getApiKey()
+                    // persists its own (slightly stale) copy of $settings
+                    // internally; re-reading it here would discard the
+                    // `indexnow_enabled = true` we just set above (which
+                    // hasn't been saved to the DB yet at this point),
+                    // silently reverting the toggle to its previous value.
+                    $settings['indexnow_key'] = $submitter->getApiKey();
                 }
             }
         }
@@ -215,7 +236,9 @@ class IndexingController extends RestController
             $settings['auto_submit_on_publish'] = (bool) $params['auto_submit_on_publish'];
         }
 
-        update_option(Options::INDEXING, $settings);
+        // This option group can hold Google's service-account private key —
+        // never autoload it on every page request.
+        update_option(Options::INDEXING, $settings, false);
 
         return $this->get_settings($request);
     }
@@ -228,26 +251,21 @@ class IndexingController extends RestController
         $url    = (string) $request->get_param('url');
         $action = (string) $request->get_param('action');
 
-        // Check cooldown.
-        if (IndexingLogger::wasRecentlySubmitted($url)) {
-            return $this->success(
-                [
-                    'results' => [],
-                    'message' => 'URL was recently submitted. Skipped to prevent duplicates.',
-                ],
-            );
-        }
+        // Cooldown is now checked per-provider inside the registry, so a
+        // provider that has never successfully submitted this URL (e.g.
+        // Google, if IndexNow already succeeded) still gets a chance.
+        $results = $this->registry->submitAllRespectingCooldown($url, $action);
 
-        $results = $this->registry->submitAll($url, $action);
-
-        // Log each result.
         foreach ($results as $serviceId => $result) {
-            IndexingLogger::log(
-                $url,
-                $serviceId,
-                $result['success'] ? 'success' : 'error',
-                $result['message'],
-            );
+            $status = 'error';
+
+            if (!empty($result['skipped'])) {
+                $status = 'skipped';
+            } elseif ($result['success']) {
+                $status = 'success';
+            }
+
+            IndexingLogger::log($url, $serviceId, $status, $result['message']);
         }
 
         return $this->success(
@@ -297,8 +315,10 @@ class IndexingController extends RestController
      * POST /indexing/upload-credentials
      *
      * Accepts a raw JSON body containing the Google service account key file contents.
+     *
+     * @return WP_REST_Response|WP_Error error() (inherited) returns WP_Error, not WP_REST_Response.
      */
-    public function upload_credentials(WP_REST_Request $request): WP_REST_Response
+    public function upload_credentials(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
         $json = $request->get_json_params();
 

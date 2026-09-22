@@ -146,6 +146,9 @@ class LocalSeoSettings implements ExecuteHooksAdmin
                 'daysOfWeek'   => LocalSeoDefaults::get_days_of_week(),
                 'use12Hour'    => $use12_hour,
                 'allowedTypes' => LocalSeoDefaults::get_allowed_types(),
+                // Same data as `allowedTypes`, grouped by business category —
+                // used to render the Business Type select as <optgroup>s.
+                'allowedTypesGrouped' => LocalSeoDefaults::get_allowed_types_grouped(),
                 'i18n'         => [
                     'settingsSaved' => __('Settings saved.', 'seopulse'),
                 ],

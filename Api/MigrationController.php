@@ -101,6 +101,17 @@ class MigrationController extends RestController
                 'permission_callback' => [$this, 'check_admin_permissions'],
             ],
         );
+
+        // Import (resumable batch, for large sites — call repeatedly until `done` is true)
+        register_rest_route(
+            $this->namespace,
+            '/' . $this->rest_base . '/(?P<plugin>' . $slug_pattern . ')/import-batch',
+            [
+                'methods'             => WP_REST_Server::CREATABLE,
+                'callback'            => [$this, 'handle_import_batch'],
+                'permission_callback' => [$this, 'check_admin_permissions'],
+            ],
+        );
     }
 
     // ──────────────────────────────────────────────
@@ -233,6 +244,89 @@ class MigrationController extends RestController
                     'options_imported'   => $result['options_imported'],
                     'post_meta_imported' => $result['post_meta_imported'],
                     'posts_processed'    => $result['posts_processed'],
+                    'warnings'           => $result['warnings'],
+                ],
+            );
+        } catch (\Throwable $e) {
+            return $this->error(
+                sprintf(
+                    /* translators: %s: plugin name */
+                    __('Failed to import %s configuration. Please try again.', 'seopulse'),
+                    $label,
+                ),
+                500,
+            );
+        }
+    }
+
+    /**
+     * Executes one bounded batch of the import (posts only past the first call).
+     *
+     * Intended to be called repeatedly by the client with an increasing `offset`
+     * (taken from the previous response's `next_offset`) until `done` is true,
+     * so a single request never has to process the entire database in one go.
+     *
+     * @param WP_REST_Request $request Request
+     * @return WP_REST_Response|WP_Error
+     */
+    public function handle_import_batch(WP_REST_Request $request)
+    {
+        $plugin = $request->get_param('plugin');
+        $label  = $this->get_label($plugin);
+
+        try {
+            $overwrite = (bool) $request->get_param('overwrite');
+            $offset    = max(0, (int) $request->get_param('offset'));
+            $limit     = (int) $request->get_param('limit');
+            $limit     = $limit > 0 ? min(500, max(50, $limit)) : 200;
+
+            $migrator = $this->resolve_migrator($plugin);
+
+            $backup_created = false;
+            if ($offset === 0) {
+                $detection = $migrator->detect();
+
+                if (!$detection['has_data']) {
+                    return $this->error(
+                        sprintf(
+                            /* translators: %s: plugin name */
+                            __('No %s data found in the database.', 'seopulse'),
+                            $label,
+                        ),
+                        404,
+                    );
+                }
+
+                // Create a backup of the current configuration before the first batch only
+                $backup_created = $this->createConfigBackup('pre_migration');
+            }
+
+            $result = $migrator->importBatch($overwrite, $offset, $limit);
+
+            if (!empty($result['errors'])) {
+                return $this->error(
+                    implode(' ', $result['errors']),
+                    500,
+                    ['partial_result' => $result],
+                );
+            }
+
+            return $this->success(
+                [
+                    'message'            => $result['done']
+                        ? sprintf(
+                            /* translators: %s: plugin name */
+                            __('%s data imported successfully.', 'seopulse'),
+                            $label,
+                        )
+                        : '',
+                    'backup_created'     => $backup_created,
+                    'options_imported'   => $result['options_imported'],
+                    'post_meta_imported' => $result['post_meta_imported'],
+                    'posts_processed'    => $result['posts_processed'],
+                    'total_posts'        => $result['total_posts'],
+                    'next_offset'        => $result['next_offset'],
+                    'done'               => $result['done'],
                     'warnings'           => $result['warnings'],
                 ],
             );

@@ -3,7 +3,7 @@
 /**
  * Trait for resolving the focus keyword of a post
  *
- * Checks SEOPulse, Yoast SEO, and Rank Math post meta in priority order.
+ * Checks SEOPulse post meta.
  * Used by MetaAnalyzer and ContentAnalyzer.
  *
  * @package SEOPulse\Core\Traits

@@ -62,8 +62,7 @@ class IndexNowSubmitter implements IndexingServiceInterface
             ];
         }
 
-        $key  = $this->getApiKey();
-        $host = wp_parse_url(home_url(), PHP_URL_HOST);
+        $key = $this->getApiKey();
 
         $response = wp_remote_get(
             add_query_arg(
@@ -103,7 +102,14 @@ class IndexNowSubmitter implements IndexingServiceInterface
     }
 
     /**
-     * Test the connection by verifying the key is set and reachable.
+     * Test the connection by actually fetching the key verification file
+     * from the site and checking that it is reachable and matches the key.
+     *
+     * Previously this only checked that a key existed locally, without any
+     * network call, despite claiming to "verify reachability" — meaning
+     * the settings page's "Test Connection" button always reported success
+     * even if the key file wasn't actually accessible (e.g. blocked by a
+     * security plugin, wrong permalink structure, etc.).
      *
      * @return array{success: bool, message: string}
      */
@@ -118,12 +124,40 @@ class IndexNowSubmitter implements IndexingServiceInterface
             ];
         }
 
-        // Verify the key-verification URL is accessible.
         $keyUrl = trailingslashit(home_url()) . $key . '.txt';
 
+        $response = wp_remote_get(
+            $keyUrl,
+            [
+                'timeout'    => 10,
+                'user-agent' => 'SEOPulse/' . SEOPULSE_VERSION,
+            ],
+        );
+
+        if (is_wp_error($response)) {
+            return [
+                'success' => false,
+                'message' => sprintf(
+                    'Could not reach the key verification file at %s: %s',
+                    $keyUrl,
+                    $response->get_error_message(),
+                ),
+            ];
+        }
+
+        $code = wp_remote_retrieve_response_code($response);
+        $body = trim((string) wp_remote_retrieve_body($response));
+
+        if ($code === 200 && $body === $key) {
+            return [
+                'success' => true,
+                'message' => "IndexNow key verified at {$keyUrl}.",
+            ];
+        }
+
         return [
-            'success' => true,
-            'message' => "IndexNow key is set. Ensure {$keyUrl} is accessible or the key is in your host's root.",
+            'success' => false,
+            'message' => "Key file not reachable or content mismatch at {$keyUrl} (HTTP {$code}).",
         ];
     }
 
@@ -144,7 +178,10 @@ class IndexNowSubmitter implements IndexingServiceInterface
         $key = wp_generate_password(32, false, false);
 
         $settings[ self::KEY_OPTION ] = $key;
-        update_option(Options::INDEXING, $settings);
+
+        // This option group can also hold Google's service-account private
+        // key — never autoload it on every page request.
+        update_option(Options::INDEXING, $settings, false);
 
         return $key;
     }

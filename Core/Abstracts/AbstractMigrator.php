@@ -39,6 +39,14 @@ abstract class AbstractMigrator
      */
     protected const BATCH_SIZE = 100;
 
+    /**
+     * Post IDs to migrate, cached per instance since importBatch() may be called
+     * once per HTTP request but always needs the same ordered list to resume from an offset.
+     *
+     * @var array<int>|null
+     */
+    private ?array $scannablePostIds = null;
+
     // ──────────────────────────────────────────────
     // ABSTRACT: Concrete migrators must implement
     // ──────────────────────────────────────────────
@@ -215,6 +223,107 @@ abstract class AbstractMigrator
         $this->importTermsMeta($result, $overwrite);
 
         return $result;
+    }
+
+    /**
+     * Resumable, cross-request variant of {@see self::import()} for large sites.
+     *
+     * Runs global options/sitemap import only on the first call (offset 0), then imports
+     * a single bounded slice of posts, and finally runs term meta import once every post
+     * has been processed. The caller (REST controller) is expected to keep invoking this
+     * with the returned `next_offset` until `done` is true, mirroring the client-driven
+     * offset loop used by SEOPress's own Rank Math importer to avoid PHP execution timeouts.
+     *
+     * @param bool $overwrite If true, overwrites existing data
+     * @param int $offset Post offset to resume from (0 on the first call)
+     * @param int $limit Max number of posts to process in this call
+     * @return array{
+     *   options_imported: array<string>,
+     *   post_meta_imported: int,
+     *   posts_processed: int,
+     *   total_posts: int,
+     *   next_offset: int,
+     *   done: bool,
+     *   warnings: array<string>,
+     *   errors: array<string>
+     * }
+     */
+    public function importBatch(bool $overwrite, int $offset = 0, int $limit = 200): array
+    {
+        $result = [
+            'options_imported'   => [],
+            'post_meta_imported' => 0,
+            'posts_processed'    => 0,
+            'total_posts'        => 0,
+            'next_offset'        => $offset,
+            'done'               => false,
+            'warnings'           => [],
+            'errors'             => [],
+        ];
+
+        if ($offset <= 0) {
+            $this->importGlobalOptions($result, $overwrite);
+            $this->importSitemapSettings($result, $overwrite);
+        }
+
+        $post_ids               = $this->getScannablePostIds();
+        $result['total_posts']  = count($post_ids);
+        $slice                  = array_slice($post_ids, max(0, $offset), max(1, $limit));
+
+        foreach ($slice as $post_id) {
+            $imported = $this->importSinglePostMeta($post_id, $overwrite);
+            $result['post_meta_imported'] += $imported;
+
+            if ($imported > 0) {
+                ++$result['posts_processed'];
+            }
+        }
+
+        if (function_exists('wp_cache_flush')) {
+            wp_cache_flush();
+        }
+
+        if ($result['posts_processed'] > 0 && !in_array('post_meta', $result['options_imported'], true)) {
+            $result['options_imported'][] = 'post_meta';
+        }
+
+        $result['next_offset'] = $offset + count($slice);
+        $posts_done            = $result['next_offset'] >= $result['total_posts'];
+
+        if ($posts_done) {
+            $this->importTermsMeta($result, $overwrite);
+        }
+
+        $result['done'] = $posts_done;
+
+        return $result;
+    }
+
+    /**
+     * Returns the ordered list of post IDs to migrate meta for.
+     *
+     * @return array<int>
+     */
+    private function getScannablePostIds(): array
+    {
+        if ($this->scannablePostIds === null) {
+            global $wpdb;
+
+            $meta_keys    = $this->getScannableMetaKeys();
+            $placeholders = implode(',', array_fill(0, count($meta_keys), '%s'));
+
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $placeholders is a hardcoded set of %s tokens; values go through prepare().
+            $ids = $wpdb->get_col(
+                $wpdb->prepare(
+                    "SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_key IN ({$placeholders}) ORDER BY post_id",
+                    ...$meta_keys,
+                ),
+            );
+
+            $this->scannablePostIds = array_map('intval', $ids);
+        }
+
+        return $this->scannablePostIds;
     }
 
     // ──────────────────────────────────────────────
@@ -504,7 +613,7 @@ abstract class AbstractMigrator
      *
      * @param int $post_id Post ID
      * @param string $redirect_url Redirect URL
-     * @param string $redirect_type Redirect type (301, 302)
+     * @param string $redirect_type Redirect type (301, 302, 307)
      * @param bool $overwrite Overwrite existing data
      * @return int Number of imported fields (0 or 2)
      */
@@ -521,7 +630,7 @@ abstract class AbstractMigrator
             update_post_meta(
                 $post_id,
                 PostMeta::REDIRECT_TYPE,
-                in_array($redirect_type, ['301', '302'], true) ? $redirect_type : '301',
+                in_array($redirect_type, ['301', '302', '307'], true) ? $redirect_type : '301',
             );
 
             return 2;

@@ -17,6 +17,7 @@ namespace SEOPulse\Modules\Content;
 
 use SEOPulse\Core\Abstracts\Module;
 use SEOPulse\Core\Traits\FocusKeywordTrait;
+use SEOPulse\Modules\Content\Checks\AnalysisContext;
 use SEOPulse\Modules\MetaSeo\Engine\ContextBag;
 use SEOPulse\Modules\MetaSeo\Engine\MetaEngine;
 
@@ -55,11 +56,11 @@ class MetaAnalyzer extends Module
     ];
 
     /**
-     * Focus keyword
+     * Focus keywords (multi-keyword support — see get_focus_keywords())
      *
-     * @var string
+     * @var array
      */
-    private string $focus_keyword = '';
+    private array $focus_keywords = [];
 
     /**
      * Constructor
@@ -92,8 +93,8 @@ class MetaAnalyzer extends Module
         $data            = [];
         $checks          = [];
 
-        // Retrieve the focus keyword
-        $this->focus_keyword = $this->get_focus_keyword($post);
+        // Retrieve the focus keywords (multi-keyword support)
+        $this->focus_keywords = $this->get_focus_keywords($post);
 
         // Retrieve meta (compatibility with Yoast, RankMath, etc.)
         // Resolve dynamic variables (e.g. %%post.title%%, %%post.excerpt%%) so
@@ -228,7 +229,7 @@ class MetaAnalyzer extends Module
             return $post->post_excerpt;
         }
 
-        return wp_trim_words(wp_strip_all_tags($post->post_content), 30);
+        return wp_trim_words(wp_strip_all_tags(AnalysisContext::resolveContent($post)), 30);
     }
 
     /**
@@ -291,14 +292,26 @@ class MetaAnalyzer extends Module
             'keyword_position' => -1,
         ];
 
-        // Check for keyword presence
-        if (!empty($this->focus_keyword)) {
-            if (self::hasKeywordIn($meta_title, $this->focus_keyword)) {
+        // Check for keyword presence (any of the focus keywords)
+        if (!empty($this->focus_keywords)) {
+            if (self::hasAnyKeywordIn($meta_title, $this->focus_keywords)) {
                 $data['has_keyword']      = true;
+                $data['keyword_position'] = 0;
                 $normTitle                = self::normalizeForMatch($meta_title);
-                $normKw                   = self::normalizeForMatch(trim(explode(',', $this->focus_keyword)[0]));
-                $pos                      = $normKw !== '' ? mb_strpos($normTitle, $normKw) : false;
-                $data['keyword_position'] = $pos !== false ? $pos : 0;
+
+                // Locate the position of whichever keyword actually
+                // matched, not just the first keyword in the list.
+                foreach ($this->focus_keywords as $kw) {
+                    $normKw = self::normalizeForMatch(trim(explode(',', $kw)[0]));
+                    if ($normKw === '') {
+                        continue;
+                    }
+                    $pos = mb_strpos($normTitle, $normKw);
+                    if ($pos !== false) {
+                        $data['keyword_position'] = $pos;
+                        break;
+                    }
+                }
             }
         }
 
@@ -438,7 +451,7 @@ class MetaAnalyzer extends Module
         }
 
         // Check: Keyword in meta title
-        if (!empty($this->focus_keyword)) {
+        if (!empty($this->focus_keywords)) {
             if ($data['has_keyword']) {
                 $checks[] = [
                     'name'    => 'keyword_in_meta_title',
@@ -460,9 +473,9 @@ class MetaAnalyzer extends Module
                     'type'             => 'keyword_meta_title',
                     'priority'         => 'high',
                     'message'          => sprintf(
-                        /* translators: %s: focus keyword */
-                        __('Your focus keyword "%s" is not in the meta title.', 'seopulse'),
-                        $this->focus_keyword,
+                        /* translators: %s: focus keyword(s) */
+                        __('None of your focus keywords ("%s") are in the meta title.', 'seopulse'),
+                        implode(', ', $this->focus_keywords),
                     ),
                     'action'           => __('Include your focus keyword in the meta title, preferably at the beginning', 'seopulse'),
                     'estimated_impact' => 12,
@@ -509,9 +522,9 @@ class MetaAnalyzer extends Module
             'has_keyword' => false,
         ];
 
-        // Check for keyword presence
-        if (!empty($this->focus_keyword)) {
-            if (self::hasKeywordIn($meta_description, $this->focus_keyword)) {
+        // Check for keyword presence (any of the focus keywords)
+        if (!empty($this->focus_keywords)) {
+            if (self::hasAnyKeywordIn($meta_description, $this->focus_keywords)) {
                 $data['has_keyword'] = true;
             }
         }
@@ -619,7 +632,7 @@ class MetaAnalyzer extends Module
         }
 
         // Check: Keyword in description
-        if (!empty($this->focus_keyword)) {
+        if (!empty($this->focus_keywords)) {
             if ($data['has_keyword']) {
                 $checks[] = [
                     'name'    => 'keyword_in_meta_description',
@@ -687,10 +700,13 @@ class MetaAnalyzer extends Module
         $recommendations = [];
         $checks          = [];
 
-        // Retrieve OG data
-        $og_title       = get_post_meta($post->ID, '_seopulse_og_title', true);
-        $og_description = get_post_meta($post->ID, '_seopulse_og_description', true);
-        $og_image       = get_post_meta($post->ID, '_seopulse_og_image', true);
+        // Retrieve OG data — stored as sub-keys of the single _seopulse_meta_seo
+        // array meta (see MetaSeoController), not as individual postmeta keys.
+        $meta_seo       = get_post_meta($post->ID, '_seopulse_meta_seo', true);
+        $meta_seo       = is_array($meta_seo) ? $meta_seo : [];
+        $og_title       = $meta_seo['og_title'] ?? '';
+        $og_description = $meta_seo['og_description'] ?? '';
+        $og_image       = $meta_seo['og_image'] ?? '';
 
         // Also check other plugins
         if (empty($og_title)) {
@@ -776,10 +792,14 @@ class MetaAnalyzer extends Module
         $recommendations = [];
         $checks          = [];
 
-        // Retrieve Twitter data
-        $twitter_title       = get_post_meta($post->ID, '_seopulse_twitter_title', true);
-        $twitter_description = get_post_meta($post->ID, '_seopulse_twitter_description', true);
-        $twitter_image       = get_post_meta($post->ID, '_seopulse_twitter_image', true);
+        // Retrieve Twitter data — stored as sub-keys of the single
+        // _seopulse_meta_seo array meta (see MetaSeoController), not as
+        // individual postmeta keys (those were never written anywhere).
+        $meta_seo            = get_post_meta($post->ID, '_seopulse_meta_seo', true);
+        $meta_seo            = is_array($meta_seo) ? $meta_seo : [];
+        $twitter_title       = $meta_seo['twitter_title'] ?? '';
+        $twitter_description = $meta_seo['twitter_description'] ?? '';
+        $twitter_image       = $meta_seo['twitter_image'] ?? '';
 
         $data = [
             'twitter_title'       => $twitter_title,

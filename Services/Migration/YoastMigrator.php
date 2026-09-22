@@ -54,6 +54,7 @@ class YoastMigrator extends AbstractMigrator
     private const YO_META_FOCUS_KWS   = '_yoast_wpseo_focuskeywords';
     private const YO_META_PRIMARY_CAT = '_yoast_wpseo_primary_category';
     private const YO_META_OG_IMG_ID   = '_yoast_wpseo_opengraph-image-id';
+    private const YO_META_TW_IMG_ID   = '_yoast_wpseo_twitter-image-id';
 
     /**
      * Yoast robots noindex values
@@ -66,6 +67,20 @@ class YoastMigrator extends AbstractMigrator
 
     /** Allowed advanced robots directives */
     private const ALLOWED_ADV_ROBOTS = ['noimageindex', 'noarchive', 'nosnippet'];
+
+    /**
+     * Decoded wpseo/wpseo_titles/wpseo_social options — cached per request
+     * to avoid repeated get_option() calls across scan/import methods.
+     *
+     * @var array<string, mixed>|null
+     */
+    private ?array $cachedMain = null;
+
+    /** @var array<string, mixed>|null */
+    private ?array $cachedTitles = null;
+
+    /** @var array<string, mixed>|null */
+    private ?array $cachedSocial = null;
 
     // ──────────────────────────────────────────────
     // ABSTRACT IMPLEMENTATIONS
@@ -87,7 +102,7 @@ class YoastMigrator extends AbstractMigrator
      */
     protected function getSourceOptionKeys(): array
     {
-        return [self::YO_MAIN, self::YO_TITLES, self::YO_SOCIAL];
+        return [self::YO_MAIN, self::YO_TITLES, self::YO_SOCIAL, self::YO_TAX_META];
     }
 
     /**
@@ -121,6 +136,7 @@ class YoastMigrator extends AbstractMigrator
             self::YO_META_TW_TITLE,
             self::YO_META_TW_DESC,
             self::YO_META_TW_IMG,
+            self::YO_META_TW_IMG_ID,
             self::YO_META_FOCUS_KW,
             self::YO_META_CANONICAL,
             self::YO_META_NOINDEX,
@@ -140,18 +156,18 @@ class YoastMigrator extends AbstractMigrator
     {
         $modules = [];
 
-        $titles = get_option(self::YO_TITLES, []);
-        if (!empty($titles) && is_array($titles)) {
+        $titles = $this->getTitles();
+        if (!empty($titles)) {
             $modules['meta_seo_global'] = count($titles);
         }
 
-        $social = get_option(self::YO_SOCIAL, []);
-        if (!empty($social) && is_array($social)) {
+        $social = $this->getSocial();
+        if (!empty($social)) {
             $modules['social'] = count($social);
         }
 
-        $main = get_option(self::YO_MAIN, []);
-        if (!empty($main) && is_array($main)) {
+        $main = $this->getMain();
+        if (!empty($main)) {
             if (!empty($main['enable_xml_sitemap'])) {
                 $modules['sitemap'] = 1;
             }
@@ -183,7 +199,7 @@ class YoastMigrator extends AbstractMigrator
      */
     protected function importSitemapSettings(array &$result, bool $overwrite): void
     {
-        $yo_main = get_option(self::YO_MAIN, []);
+        $yo_main = $this->getMain();
 
         if (empty($yo_main['enable_xml_sitemap'])) {
             return;
@@ -197,10 +213,10 @@ class YoastMigrator extends AbstractMigrator
             return;
         }
 
-        $yo_titles = get_option(self::YO_TITLES, []);
+        $yo_titles = $this->getTitles();
         $mapped    = [];
 
-        if (is_array($yo_titles)) {
+        if (!empty($yo_titles)) {
             foreach (get_post_types(['public' => true], 'names') as $cpt) {
                 $mapped['enable_' . $cpt] = empty($yo_titles['noindex-' . $cpt]) ? 1 : 0;
             }
@@ -279,8 +295,8 @@ class YoastMigrator extends AbstractMigrator
      */
     private function importMetaSeoGlobal(array &$result, bool $overwrite): void
     {
-        $yo_titles = get_option(self::YO_TITLES, []);
-        $yo_social = get_option(self::YO_SOCIAL, []);
+        $yo_titles = $this->getTitles();
+        $yo_social = $this->getSocial();
 
         if (empty($yo_titles) && empty($yo_social)) {
             return;
@@ -288,7 +304,7 @@ class YoastMigrator extends AbstractMigrator
 
         $mapped = [];
 
-        if (is_array($yo_titles)) {
+        if (!empty($yo_titles)) {
             $mapped['title']       = (string) ($yo_titles['title-home-wpseo'] ?? '');
             $mapped['description'] = (string) ($yo_titles['metadesc-home-wpseo'] ?? '');
 
@@ -319,7 +335,7 @@ class YoastMigrator extends AbstractMigrator
             }
         }
 
-        if (is_array($yo_social)) {
+        if (!empty($yo_social)) {
             if (empty($yo_social['opengraph'])) {
                 $result['warnings'][] = __('Open Graph was disabled in Yoast SEO.', 'seopulse');
             }
@@ -356,9 +372,9 @@ class YoastMigrator extends AbstractMigrator
      */
     private function importYoastVerificationCodes(array &$result, bool $overwrite): void
     {
-        $yo_main = get_option(self::YO_MAIN, []);
+        $yo_main = $this->getMain();
 
-        if (empty($yo_main) || !is_array($yo_main)) {
+        if (empty($yo_main)) {
             return;
         }
 
@@ -445,6 +461,12 @@ class YoastMigrator extends AbstractMigrator
         }
 
         $tw_img = $this->extractMeta($all_meta, self::YO_META_TW_IMG);
+        if ($tw_img === '') {
+            $tw_img_id = (int) $this->extractMeta($all_meta, self::YO_META_TW_IMG_ID);
+            if ($tw_img_id > 0) {
+                $tw_img = (string) wp_get_attachment_url($tw_img_id);
+            }
+        }
         if ($tw_img !== '') {
             $seo_data['twitter_image'] = esc_url_raw($tw_img);
         }
@@ -485,7 +507,7 @@ class YoastMigrator extends AbstractMigrator
         if ($noindex === self::YO_ROBOTS_NOINDEX) {
             $parts[] = 'noindex';
         } elseif ($noindex === self::YO_ROBOTS_INDEX || !$noindex_is_default) {
-            // '2' = forcé index, ou tout autre cas non-default
+            // '2' = forced index, or any other non-default value
             $parts[] = 'index';
         }
 
@@ -498,9 +520,9 @@ class YoastMigrator extends AbstractMigrator
     /**
      * Parses Yoast advanced robots directives into a filtered array.
      *
-     * [REFACTORING] Extrait de buildSeoData pour réutilisation dans buildTermSeoData.
+     * Extracted from buildSeoData() for reuse in buildTermSeoData().
      *
-     * @param string $adv Valeur brute (ex: 'noarchive,noimageindex' ou 'none' ou '')
+     * @param string $adv Raw value (e.g. 'noarchive,noimageindex', 'none', or '')
      * @return list<string>
      */
     private function parseAdvancedRobots(string $adv): array
@@ -518,7 +540,7 @@ class YoastMigrator extends AbstractMigrator
     /**
      * Extracts a scalar string value from the raw get_post_meta() map.
      *
-     * get_post_meta() sans clé renvoie [ 'key' => [ 0 => 'value' ] ].
+     * get_post_meta() without a key returns [ 'key' => [ 0 => 'value' ] ].
      *
      * @param array<string, array<int, mixed>> $all_meta
      * @param string $key
@@ -527,6 +549,51 @@ class YoastMigrator extends AbstractMigrator
     private function extractMeta(array $all_meta, string $key): string
     {
         return isset($all_meta[$key][0]) ? (string) $all_meta[$key][0] : '';
+    }
+
+    /**
+     * Returns the 'wpseo' option with a per-request cache.
+     *
+     * @return array<string, mixed>
+     */
+    private function getMain(): array
+    {
+        if ($this->cachedMain === null) {
+            $main              = get_option(self::YO_MAIN, []);
+            $this->cachedMain = is_array($main) ? $main : [];
+        }
+
+        return $this->cachedMain;
+    }
+
+    /**
+     * Returns the 'wpseo_titles' option with a per-request cache.
+     *
+     * @return array<string, mixed>
+     */
+    private function getTitles(): array
+    {
+        if ($this->cachedTitles === null) {
+            $titles              = get_option(self::YO_TITLES, []);
+            $this->cachedTitles = is_array($titles) ? $titles : [];
+        }
+
+        return $this->cachedTitles;
+    }
+
+    /**
+     * Returns the 'wpseo_social' option with a per-request cache.
+     *
+     * @return array<string, mixed>
+     */
+    private function getSocial(): array
+    {
+        if ($this->cachedSocial === null) {
+            $social              = get_option(self::YO_SOCIAL, []);
+            $this->cachedSocial = is_array($social) ? $social : [];
+        }
+
+        return $this->cachedSocial;
     }
 
     // ──────────────────────────────────────────────
@@ -548,7 +615,7 @@ class YoastMigrator extends AbstractMigrator
             return;
         }
 
-        // [PERF] Pré-valider les taxonomies une seule fois hors de la boucle interne
+        // Pre-validate taxonomies once, outside the inner loop
         $valid_taxonomies = array_filter(
             array_keys($yoast_terms),
             'taxonomy_exists',
@@ -568,7 +635,7 @@ class YoastMigrator extends AbstractMigrator
                     continue;
                 }
 
-                // Vérifier l'existence du terme (suppression possible depuis la migration)
+                // Verify the term still exists (could have been deleted since migration)
                 if (!get_term($term_id, $taxonomy) instanceof \WP_Term) {
                     continue;
                 }
@@ -593,8 +660,8 @@ class YoastMigrator extends AbstractMigrator
     /**
      * Converts Yoast taxonomy meta array to SEOPulse term SEO data.
      *
-     * [FIX] La version originale ignorait nofollow et les directives avancées pour les terms.
-     * Ils sont maintenant gérés via parseAdvancedRobots() et le même modèle que les posts.
+     * Handles nofollow and advanced directives for terms via
+     * parseAdvancedRobots(), using the same model as posts.
      *
      * @param array<string, mixed> $meta Yoast term meta
      * @return array<string, string>
@@ -615,9 +682,9 @@ class YoastMigrator extends AbstractMigrator
             $data['canonical'] = esc_url_raw((string) $meta['wpseo_canonical']);
         }
 
-        // [FIX] Robots : l'original ne gérait que noindex, sans nofollow ni directives avancées
+        // Robots: handles noindex, nofollow and advanced directives for terms
         $noindex = $meta['wpseo_noindex'] ?? '';
-        // Yoast stocke 'noindex' ou 'index' (string) pour les terms (différent des posts)
+        // Yoast stores 'noindex' or 'index' (string) for terms (unlike posts)
         $has_noindex = ($noindex === 'noindex');
         $adv_parts   = $this->parseAdvancedRobots((string) ($meta['wpseo_adv_robots'] ?? ''));
 

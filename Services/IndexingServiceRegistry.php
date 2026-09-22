@@ -24,13 +24,33 @@ use SEOPulse\Services\Indexing\IndexNowSubmitter;
 
 class IndexingServiceRegistry
 {
-    /** @var IndexingServiceInterface[] */
+    /**
+     * @var array<string, IndexingServiceInterface> Keyed by provider ID
+     *                                              (see IndexingServiceInterface::getId()). The shorthand
+     *                                              `IndexingServiceInterface[]` notation is deliberately NOT used
+     *                                              here — static analysers interpret it as `array<int, ...>`,
+     *                                              which made `$id` in the foreach loops below infer as `int`
+     *                                              even though it is always the string returned by getId().
+     */
     private array $services = [];
 
     public function __construct()
     {
         $this->register(new IndexNowSubmitter());
         $this->register(new GoogleIndexingSubmitter());
+
+        /**
+         * Allow third-party code to register additional indexing providers
+         * without having to modify this class.
+         *
+         * Example:
+         *   add_action('seopulse_indexing_register_services', function ($registry) {
+         *       $registry->register(new MyCustomSubmitter());
+         *   });
+         *
+         * @param IndexingServiceRegistry $registry
+         */
+        do_action('seopulse_indexing_register_services', $this);
     }
 
     /**
@@ -46,7 +66,11 @@ class IndexingServiceRegistry
     }
 
     /**
-     * Submit a URL to all configured providers.
+     * Submit a URL to all configured providers, regardless of cooldown.
+     *
+     * Prefer submitAllRespectingCooldown() for anything triggered by user
+     * action or automation — this raw variant is mainly useful for tests
+     * or explicit "force resubmit" flows.
      *
      * @param string $url Canonical URL.
      * @param string $action 'updated' | 'deleted'.
@@ -62,6 +86,49 @@ class IndexingServiceRegistry
                 $results[ $id ] = [
                     'success' => false,
                     'message' => 'Not configured.',
+                ];
+                continue;
+            }
+
+            $results[ $id ] = $service->submit($url, $action);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Submit a URL to all configured providers, skipping any provider that
+     * already has a successful submission for this exact URL within the
+     * cooldown window.
+     *
+     * Unlike the previous "global" cooldown check that used to happen
+     * before calling submitAll(), this checks the cooldown PER PROVIDER:
+     * if e.g. IndexNow succeeded five minutes ago but Google Indexing has
+     * never been tried (or failed), Google will still be attempted here.
+     *
+     * @param string $url Canonical URL.
+     * @param string $action 'updated' | 'deleted'.
+     *
+     * @return array<string, array{success: bool, message: string, skipped?: bool}> Keyed by provider ID.
+     */
+    public function submitAllRespectingCooldown(string $url, string $action = 'updated'): array
+    {
+        $results = [];
+
+        foreach ($this->services as $id => $service) {
+            if (!$service->isConfigured()) {
+                $results[ $id ] = [
+                    'success' => false,
+                    'message' => 'Not configured.',
+                ];
+                continue;
+            }
+
+            if (IndexingLogger::wasRecentlySubmitted($url, $id)) {
+                $results[ $id ] = [
+                    'success' => true,
+                    'skipped' => true,
+                    'message' => 'Skipped: already submitted successfully to this provider recently.',
                 ];
                 continue;
             }

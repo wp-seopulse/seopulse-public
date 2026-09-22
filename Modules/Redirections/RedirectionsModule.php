@@ -37,6 +37,7 @@ use WP_Post;
     label: 'Redirections',
     description: 'Advanced redirect management with regex, groups, scheduling, and import/export.',
     icon: 'dashicons-randomize',
+    pro: false,
     namespace: 'SEOPulse\\Modules\\Redirections\\',
 )]
 class RedirectionsModule extends Module implements ExecuteHooksFrontend, ModuleInterface

@@ -50,12 +50,12 @@ class LocalSeoController extends RestController
                 [
                     'methods'             => 'GET',
                     'callback'            => [$this, 'get_settings'],
-                    'permission_callback' => [$this, 'check_permissions'],
+                    'permission_callback' => [$this, 'check_admin_permissions'],
                 ],
                 [
                     'methods'             => 'POST',
                     'callback'            => [$this, 'update_settings'],
-                    'permission_callback' => [$this, 'check_permissions'],
+                    'permission_callback' => [$this, 'check_admin_permissions'],
                 ],
             ],
         );
@@ -68,7 +68,7 @@ class LocalSeoController extends RestController
                 [
                     'methods'             => 'POST',
                     'callback'            => [$this, 'test_jsonld'],
-                    'permission_callback' => [$this, 'check_permissions'],
+                    'permission_callback' => [$this, 'check_admin_permissions'],
                 ],
             ],
         );

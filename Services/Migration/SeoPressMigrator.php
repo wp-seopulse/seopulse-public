@@ -46,9 +46,11 @@ class SeoPressMigrator extends AbstractMigrator
     private const SP_META_OG_TITLE      = '_seopress_social_fb_title';
     private const SP_META_OG_DESC       = '_seopress_social_fb_desc';
     private const SP_META_OG_IMG        = '_seopress_social_fb_img';
+    private const SP_META_OG_IMG_ID     = '_seopress_social_fb_img_attachment_id';
     private const SP_META_TW_TITLE      = '_seopress_social_twitter_title';
     private const SP_META_TW_DESC       = '_seopress_social_twitter_desc';
     private const SP_META_TW_IMG        = '_seopress_social_twitter_img';
+    private const SP_META_TW_IMG_ID     = '_seopress_social_twitter_img_attachment_id';
     private const SP_META_FOCUS_KW      = '_seopress_analysis_target_kw';
     private const SP_META_REDIRECT_ON   = '_seopress_redirections_enabled';
     private const SP_META_REDIRECT_URL  = '_seopress_redirections_value';
@@ -57,6 +59,26 @@ class SeoPressMigrator extends AbstractMigrator
     private const SP_META_NOSNIPPET     = '_seopress_robots_snippet';
     private const SP_META_NOARCHIVE     = '_seopress_robots_archive';
     private const SP_META_PRIMARY_CAT   = '_seopress_robots_primary_cat';
+
+    /**
+     * Decoded seopress_*_option_name options — cached per request to avoid
+     * repeated get_option() calls across scan/import methods.
+     *
+     * @var array<string, mixed>|null
+     */
+    private ?array $cachedTitles = null;
+
+    /** @var array<string, mixed>|null */
+    private ?array $cachedSocial = null;
+
+    /** @var array<string, mixed>|null */
+    private ?array $cachedAnalytics = null;
+
+    /** @var array<string, mixed>|null */
+    private ?array $cachedSitemap = null;
+
+    /** @var array<string, mixed>|null */
+    private ?array $cachedAdvanced = null;
 
     // ──────────────────────────────────────────────
     // ABSTRACT IMPLEMENTATIONS
@@ -108,9 +130,11 @@ class SeoPressMigrator extends AbstractMigrator
             self::SP_META_OG_TITLE,
             self::SP_META_OG_DESC,
             self::SP_META_OG_IMG,
+            self::SP_META_OG_IMG_ID,
             self::SP_META_TW_TITLE,
             self::SP_META_TW_DESC,
             self::SP_META_TW_IMG,
+            self::SP_META_TW_IMG_ID,
             self::SP_META_FOCUS_KW,
             self::SP_META_CANONICAL,
             self::SP_META_NOINDEX,
@@ -132,28 +156,28 @@ class SeoPressMigrator extends AbstractMigrator
     {
         $modules = [];
 
-        $titles = get_option(self::SP_TITLES, []);
-        if (!empty($titles) && is_array($titles)) {
+        $titles = $this->getTitles();
+        if (!empty($titles)) {
             $modules['meta_seo_global'] = count($titles);
         }
 
-        $social = get_option(self::SP_SOCIAL, []);
-        if (!empty($social) && is_array($social)) {
+        $social = $this->getSocial();
+        if (!empty($social)) {
             $modules['social'] = count($social);
         }
 
-        $analytics = get_option(self::SP_ANALYTICS, []);
-        if (!empty($analytics) && is_array($analytics)) {
+        $analytics = $this->getAnalytics();
+        if (!empty($analytics)) {
             $modules['tracking'] = count($analytics);
         }
 
-        $sitemap = get_option(self::SP_SITEMAP, []);
-        if (!empty($sitemap) && is_array($sitemap)) {
+        $sitemap = $this->getSitemap();
+        if (!empty($sitemap)) {
             $modules['sitemap'] = count($sitemap);
         }
 
-        $advanced = get_option(self::SP_ADVANCED, []);
-        if (!empty($advanced) && is_array($advanced)) {
+        $advanced = $this->getAdvanced();
+        if (!empty($advanced)) {
             $verif_count = count(array_filter(
                 [
                     'seopress_advanced_advanced_google',
@@ -187,9 +211,9 @@ class SeoPressMigrator extends AbstractMigrator
      */
     protected function importSitemapSettings(array &$result, bool $overwrite): void
     {
-        $sp_sitemap = get_option(self::SP_SITEMAP, []);
+        $sp_sitemap = $this->getSitemap();
 
-        if (empty($sp_sitemap) || !is_array($sp_sitemap)) {
+        if (empty($sp_sitemap)) {
             return;
         }
 
@@ -283,8 +307,8 @@ class SeoPressMigrator extends AbstractMigrator
      */
     private function importMetaSeoGlobal(array &$result, bool $overwrite): void
     {
-        $sp_titles = get_option(self::SP_TITLES, []);
-        $sp_social = get_option(self::SP_SOCIAL, []);
+        $sp_titles = $this->getTitles();
+        $sp_social = $this->getSocial();
 
         if (empty($sp_titles) && empty($sp_social)) {
             return;
@@ -293,13 +317,13 @@ class SeoPressMigrator extends AbstractMigrator
         $mapped = [];
 
         // Titles & description
-        if (is_array($sp_titles)) {
+        if (!empty($sp_titles)) {
             $mapped['title']       = (string) ($sp_titles['seopress_titles_home_site_title'] ?? '');
             $mapped['description'] = (string) ($sp_titles['seopress_titles_home_site_desc'] ?? '');
         }
 
         // Open Graph & Twitter
-        if (is_array($sp_social)) {
+        if (!empty($sp_social)) {
             $mapped['og_title']       = (string) ($sp_social['seopress_social_facebook_og_title'] ?? '');
             $mapped['og_description'] = (string) ($sp_social['seopress_social_facebook_og_desc'] ?? '');
             $mapped['og_url']         = (string) ($sp_social['seopress_social_facebook_og_url'] ?? '');
@@ -319,7 +343,7 @@ class SeoPressMigrator extends AbstractMigrator
         }
 
         // Robots — only write when at least one directive is explicitly set
-        if (is_array($sp_titles)) {
+        if (!empty($sp_titles)) {
             $noindex  = !empty($sp_titles['seopress_titles_noindex']);
             $nofollow = !empty($sp_titles['seopress_titles_nofollow']);
 
@@ -361,9 +385,9 @@ class SeoPressMigrator extends AbstractMigrator
      */
     private function importTracking(array &$result, bool $overwrite): void
     {
-        $sp_ga = get_option(self::SP_ANALYTICS, []);
+        $sp_ga = $this->getAnalytics();
 
-        if (empty($sp_ga) || !is_array($sp_ga)) {
+        if (empty($sp_ga)) {
             return;
         }
 
@@ -455,7 +479,7 @@ class SeoPressMigrator extends AbstractMigrator
             $seo_data['og_description'] = sanitize_text_field($og_desc);
         }
 
-        $og_img = $this->extractMeta($all_meta, self::SP_META_OG_IMG);
+        $og_img = $this->extractImageUrl($all_meta, self::SP_META_OG_IMG, self::SP_META_OG_IMG_ID);
         if ($og_img !== '') {
             $seo_data['og_image'] = esc_url_raw($og_img);
         }
@@ -471,7 +495,7 @@ class SeoPressMigrator extends AbstractMigrator
             $seo_data['twitter_description'] = sanitize_text_field($tw_desc);
         }
 
-        $tw_img = $this->extractMeta($all_meta, self::SP_META_TW_IMG);
+        $tw_img = $this->extractImageUrl($all_meta, self::SP_META_TW_IMG, self::SP_META_TW_IMG_ID);
         if ($tw_img !== '') {
             $seo_data['twitter_image'] = esc_url_raw($tw_img);
         }
@@ -513,6 +537,105 @@ class SeoPressMigrator extends AbstractMigrator
         return isset($all_meta[ $key ][0]) ? (string) $all_meta[ $key ][0] : '';
     }
 
+    /**
+     * Resolves an image URL from meta, falling back to the companion
+     * attachment-ID meta key when no direct URL was stored (e.g. an image
+     * picked from the media library rather than pasted as a URL).
+     *
+     * @param array<string, array<int, mixed>> $all_meta
+     * @param string $url_key Meta key holding the direct URL
+     * @param string $id_key Meta key holding the attachment ID
+     * @return string
+     */
+    private function extractImageUrl(array $all_meta, string $url_key, string $id_key): string
+    {
+        $url = $this->extractMeta($all_meta, $url_key);
+
+        if ($url === '') {
+            $attachment_id = (int) $this->extractMeta($all_meta, $id_key);
+            if ($attachment_id > 0) {
+                $url = (string) wp_get_attachment_url($attachment_id);
+            }
+        }
+
+        return $url;
+    }
+
+    /**
+     * Returns the 'seopress_titles_option_name' option with a per-request cache.
+     *
+     * @return array<string, mixed>
+     */
+    private function getTitles(): array
+    {
+        if ($this->cachedTitles === null) {
+            $titles             = get_option(self::SP_TITLES, []);
+            $this->cachedTitles = is_array($titles) ? $titles : [];
+        }
+
+        return $this->cachedTitles;
+    }
+
+    /**
+     * Returns the 'seopress_social_option_name' option with a per-request cache.
+     *
+     * @return array<string, mixed>
+     */
+    private function getSocial(): array
+    {
+        if ($this->cachedSocial === null) {
+            $social             = get_option(self::SP_SOCIAL, []);
+            $this->cachedSocial = is_array($social) ? $social : [];
+        }
+
+        return $this->cachedSocial;
+    }
+
+    /**
+     * Returns the 'seopress_google_analytics_option_name' option with a per-request cache.
+     *
+     * @return array<string, mixed>
+     */
+    private function getAnalytics(): array
+    {
+        if ($this->cachedAnalytics === null) {
+            $analytics             = get_option(self::SP_ANALYTICS, []);
+            $this->cachedAnalytics = is_array($analytics) ? $analytics : [];
+        }
+
+        return $this->cachedAnalytics;
+    }
+
+    /**
+     * Returns the 'seopress_xml_sitemap_option_name' option with a per-request cache.
+     *
+     * @return array<string, mixed>
+     */
+    private function getSitemap(): array
+    {
+        if ($this->cachedSitemap === null) {
+            $sitemap             = get_option(self::SP_SITEMAP, []);
+            $this->cachedSitemap = is_array($sitemap) ? $sitemap : [];
+        }
+
+        return $this->cachedSitemap;
+    }
+
+    /**
+     * Returns the 'seopress_advanced_option_name' option with a per-request cache.
+     *
+     * @return array<string, mixed>
+     */
+    private function getAdvanced(): array
+    {
+        if ($this->cachedAdvanced === null) {
+            $advanced             = get_option(self::SP_ADVANCED, []);
+            $this->cachedAdvanced = is_array($advanced) ? $advanced : [];
+        }
+
+        return $this->cachedAdvanced;
+    }
+
     // ──────────────────────────────────────────────
     // VERIFICATION CODES
     // ──────────────────────────────────────────────
@@ -525,9 +648,9 @@ class SeoPressMigrator extends AbstractMigrator
      */
     private function importSeopressVerificationCodes(array &$result, bool $overwrite): void
     {
-        $sp_advanced = get_option(self::SP_ADVANCED, []);
+        $sp_advanced = $this->getAdvanced();
 
-        if (empty($sp_advanced) || !is_array($sp_advanced)) {
+        if (empty($sp_advanced)) {
             return;
         }
 
@@ -565,9 +688,11 @@ class SeoPressMigrator extends AbstractMigrator
             self::SP_META_OG_TITLE,
             self::SP_META_OG_DESC,
             self::SP_META_OG_IMG,
+            self::SP_META_OG_IMG_ID,
             self::SP_META_TW_TITLE,
             self::SP_META_TW_DESC,
             self::SP_META_TW_IMG,
+            self::SP_META_TW_IMG_ID,
         ];
 
         $placeholders = implode(',', array_fill(0, count($term_meta_keys), '%s'));
@@ -663,7 +788,7 @@ class SeoPressMigrator extends AbstractMigrator
             $data['og_description'] = sanitize_text_field($og_desc);
         }
 
-        $og_img = $this->extractMeta($all_meta, self::SP_META_OG_IMG);
+        $og_img = $this->extractImageUrl($all_meta, self::SP_META_OG_IMG, self::SP_META_OG_IMG_ID);
         if ($og_img !== '') {
             $data['og_image'] = esc_url_raw($og_img);
         }
@@ -679,7 +804,7 @@ class SeoPressMigrator extends AbstractMigrator
             $data['twitter_description'] = sanitize_text_field($tw_desc);
         }
 
-        $tw_img = $this->extractMeta($all_meta, self::SP_META_TW_IMG);
+        $tw_img = $this->extractImageUrl($all_meta, self::SP_META_TW_IMG, self::SP_META_TW_IMG_ID);
         if ($tw_img !== '') {
             $data['twitter_image'] = esc_url_raw($tw_img);
         }

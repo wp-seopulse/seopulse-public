@@ -4,8 +4,8 @@ Contributors: citrusdevlab, Alexandre Jacquin
 Donate link: https://www.seopulse.citrus-design.fr
 Tags: seo, xml sitemap, schema, local seo, google search console
 Requires at least: 6.0
-Tested up to: 7.0
-Stable tag: 1.6.0
+Tested up to: 7.1
+Stable tag: 1.7.0
 Requires PHP: 8.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -19,7 +19,7 @@ WordPress SEO plugin to boost your rankings with real-time content analysis, SEO
 SEOPulse is a complete WordPress SEO solution that helps you optimize your content, manage your metadata, generate sitemaps, handle redirections, and improve your local search visibility — all from a single, modular plugin.
 
 ✔ <strong>Real-time content analysis with SEO scoring (0–100) and actionable recommendations</strong>
-✔ <strong>Up to 5 focus keywords per post with per-keyword scoring</strong>
+✔ <strong>Unlimited focus keywords per post with per-keyword scoring</strong>
 ✔ <strong>Open Graph, Twitter Card & LinkedIn live social previews directly in the editor</strong>
 ✔ <strong>Meta Template Engine with 99+ dynamic variables for titles and descriptions</strong>
 ✔ <strong>XML sitemaps: posts, pages, taxonomies, images, and Google News</strong>
@@ -43,6 +43,7 @@ SEOPulse is a complete WordPress SEO solution that helps you optimize your conte
 <ul>
 	<li><strong>Installation wizard</strong> to quickly setup your site</li>
 	<li><strong>Content analysis</strong> with up to 5 focus keywords per post and real-time SEO scoring (0–100)</li>
+	<li><strong>Content Analysis</strong>: Compatible with page builder like Elementor, Live Composer, Kubio</li>
 	<li><strong>18+ content checks</strong>: title structure, heading hierarchy, word count, keyword density, links, images, alt text</li>
 	<li><strong>Readability analysis</strong>: Flesch Reading Ease, sentence length, passive voice, complex words, transition words</li>
 	<li><strong>Mobile / Desktop Google Preview</strong> to see how your post appears in search results</li>
@@ -58,7 +59,7 @@ SEOPulse is a complete WordPress SEO solution that helps you optimize your conte
 	<li><strong>404 monitoring</strong>: automatic logging with referrer, user agent, deduplication, and bot filtering (up to 100 entries)</li>
 	<li><strong>Redirect suggestions</strong> for 404 URLs</li>
 	<li><strong>CSV export</strong> for redirects and 404 logs</li>
-	<li><strong>Local Business SEO</strong>: single-location JSON-LD schema with address, opening hours, phone, email, social profiles, business identity, logo, ratings, and pricing</li>
+	<li><strong>Local Business SEO</strong>: multi-location support JSON-LD schema with 150+ @types, address, opening hours, phone, email, social profiles, business identity, logo, ratings</li>
 	<li><strong>JSON-LD schema</strong>: Organization, WebSite, Article, FAQ, HowTo, Product (WooCommerce)</li>
 	<li><strong>JSON-LD validator</strong> with browser preview</li>
 	<li><strong>Google Analytics 4</strong> (GA4) with Consent Mode v2 and GDPR compliance</li>
@@ -66,7 +67,7 @@ SEOPulse is a complete WordPress SEO solution that helps you optimize your conte
 	<li><strong>GDPR cookie consent banner</strong>: customizable position, theme, message, and button text</li>
 	<li><strong>Instant indexing</strong>: IndexNow protocol and Google Indexing API with submission log</li>
 	<li><strong>Google Suggest integration</strong> for keyword research in the editor</li>
-	<li><strong>WooCommerce support</strong>: Product schema auto-injection, meta template variables (price, SKU, rating…)</li>
+	<li><strong>WooCommerce support</strong>: Product schema auto-injection, meta template variables (price, SKU, rating…), content analysis</li>
 	<li><strong>SEO columns</strong> in post/page lists: sortable score, title, description, focus keywords with color-coded badges</li>
 	<li><strong>Admin bar SEO score</strong> for quick reference</li>
 	<li><strong>Image ALT auto-fill</strong> and image diagnostics</li>
@@ -345,10 +346,37 @@ Yes. All features are accessible via REST endpoints under `/wp-json/seopulse/v1/
 
 == Changelog ==
 
+= 1.7.0 =
+
+* NEW: Page Builders Integration (new togglable module) — the full Gutenberg SEO Analysis sidebar experience from SEOPulse is now available directly inside Live Composer, Kubio Builder and Elementor's Page Settings panel, without leaving the builder.
+* NEW: Migration — Rank Math SEO import now also migrates archive settings (author, date, search, 404 pages), the site Organization/Knowledge Graph and social profiles, and the IndexNow API key
+* NEW: Local SEO — 150+ schema.org `@type` values are now available in the Business Type selector (grouped by category), and a second `@type` can be added via the new "Additional Types" field (up to 3 in total), output as a multi-type array in the JSON-LD as recommended by Google
+* FIX: Content Analysis — the "Open Graph tags are not configured" and "Twitter Cards are not configured" recommendations always triggered, even when properly configured, because the checks read from individual post meta keys that were never actually written; they now read the real saved Open Graph/Twitter Card values.
+* FIX: Content Analysis — when multiple focus keywords were set on a post, the meta title and meta description checks only ever evaluated the first keyword, unfairly penalizing the SEO score whenever a secondary keyword (rather than the first one) was the one actually present; all focus keywords are now taken into account.
+* FIX: Migration — Rank Math SEO import no longer inserts raw `%tag%` placeholders into imported titles and descriptions; they are now translated to SEOPulse's own template syntax
+* FIX: Migration — Rank Math SEO import now correctly imports the primary category for WooCommerce products
+* FIX: Migration — Rank Math SEO import now includes the "Include images" sitemap setting
+* FIX: Migration — Fixed a fatal error that could prevent SEOPress from being detected during import
+* FIX: Tools — All in One SEO import panel was missing some of its styles
+* FIX: Setup Wizard — Some SEO plugins were not detected as importable
+* FIX: Tools Import Plugins Data — Change the default path of all files
+* FIX: Dashboard — The Setup Wizard card, once auto-hidden after completing the wizard, can now be re-enabled from the "Dashboard Sections" visibility panel
+* FIX: Local SEO — the selected Business Type was silently reset to `LocalBusiness` on every save because the validator read `type` while the form sends `@type`
+* FIX: Local SEO — types offered in the form (Physician, MedicalBusiness, Dentist, Pharmacy, Optician…) were rejected by the validator's outdated hard-coded list; it now uses the single source of truth in `LocalSeoDefaults`
+* FIX: Local SEO — REST routes (`GET/POST /settings`, `POST /test-jsonld`) now require `manage_options` instead of `edit_posts`, matching the settings page
+* FIX: Instant Indexing — enabling IndexNow for the first time could silently leave it marked as disabled after saving: the automatic API key generation step reloaded settings from the database before the "enabled" flag had been persisted, overwriting it back to its previous value; the toggle now persists correctly.
+* FIX: Instant Indexing — Google Indexing API submissions were skipped whenever another provider (IndexNow) had already succeeded recently for the same URL, even when Google Indexing itself had never actually been attempted; the anti-duplicate cooldown is now tracked separately per provider instead of globally.
+* FIX: Instant Indexing — IndexNow's "Test Connection" always reported success as soon as an API key existed, without ever checking that the key verification file was actually reachable on the site; it now performs a real request to the key file and reports the genuine result.
+* FIX: Instant Indexing — URLs for non-public post types could be submitted to IndexNow and the Google Indexing API on publish/update/delete; only publicly viewable post types now trigger automatic submissions.
+* FIX: Instant Indexing — Activity Log "Refresh" button triggered two separate, redundant requests and could display inconsistent results; refreshing now performs a single request, and pagination controls now display correctly on first load instead of only after a manual refresh.
+* PERFORMANCE: Setup Wizard — General performance improvements
+* PERFORMANCE: Migration — Import from SEOPress, Yoast SEO, Rank Math SEO and All in One SEO now processes posts in resumable batches with a live progress indicator instead of a single request, preventing PHP execution timeouts on large sites
+* PERFORMANCE: Instant Indexing — publishing or updating a post no longer waits on the IndexNow / Google Indexing API calls; submissions are now processed in the background via WP-Cron instead of blocking the post save request, preventing slow publishes and timeouts on bulk imports/publications.
+
 = 1.6.0 =
 
 * NEW: WooCommerce Product SEO — dedicated "SEOPulse SEO" meta box on the product edit screen
-* NEW: WooCommerce - add variables in the variables picker
+* NEW: WooCommerce — add variables in the variables picker
 * NEW: Local SEO — Opening Hours fields now use a clock-icon time picker (hour/minute steppers, with automatic AM/PM support in 12-hour mode) instead of manual text entry, for more precise and consistent time selection
 * PERFORMANCE: General — Graphical improvements and styles loading optimization
 * FIX: Meta Template Engine — `%%env.url%%` resolved to the internal REST request URL instead of the actual page/product URL when resolved for an admin-side live preview; now resolves to the post's real permalink whenever a post context is available

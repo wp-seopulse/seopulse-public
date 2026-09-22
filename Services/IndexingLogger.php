@@ -22,11 +22,20 @@ if (!defined('ABSPATH')) {
 
 class IndexingLogger
 {
-    /** Cooldown in seconds before re-submitting the same URL. */
+    /** Cooldown in seconds before re-submitting the same URL to the same provider. */
     private const COOLDOWN = 3600;
+
+    /** Table suffix (appended to $wpdb->prefix). */
+    private const TABLE_SUFFIX = 'seopulse_indexing_log';
 
     /**
      * Get the log table name (with WP prefix).
+     *
+     * Note: we intentionally do NOT store this on a dynamic $wpdb property
+     * (e.g. $wpdb->seopulse_indexing_log) — wpdb is not guaranteed to allow
+     * dynamic properties on all PHP versions, and relying on that side
+     * effect made several queries below fragile. Callers should always use
+     * the return value of this method directly.
      *
      * @return string
      */
@@ -34,12 +43,7 @@ class IndexingLogger
     {
         global $wpdb;
 
-        // Register custom table on $wpdb so it is recognised as a safe identifier.
-        if (!isset($wpdb->seopulse_indexing_log)) {
-            $wpdb->seopulse_indexing_log = $wpdb->prefix . 'seopulse_indexing_log';
-        }
-
-        return $wpdb->seopulse_indexing_log;
+        return $wpdb->prefix . self::TABLE_SUFFIX;
     }
 
     /**
@@ -56,7 +60,7 @@ class IndexingLogger
     {
         global $wpdb;
 
-        $wpdb->insert(
+        $inserted = $wpdb->insert(
             self::tableName(),
             [
                 'url'       => $url,
@@ -67,12 +71,28 @@ class IndexingLogger
             ],
             ['%s', '%s', '%s', '%s', '%s'],
         );
+
+        // Don't fail silently: an insert failure here (e.g. missing table,
+        // truncated column) would otherwise disappear without a trace.
+        if ($inserted === false && defined('WP_DEBUG') && WP_DEBUG) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Intentional, gated behind WP_DEBUG; surfaces otherwise-silent insert failures.
+            error_log(
+                sprintf(
+                    '[SEOPulse] Failed to write indexing log entry for %s (%s): %s',
+                    $url,
+                    $service,
+                    $wpdb->last_error,
+                ),
+            );
+        }
     }
 
     /**
      * Check whether a URL was successfully submitted recently (within cooldown).
      *
-     * Prevents duplicate/rapid re-submissions.
+     * Prevents duplicate/rapid re-submissions. Callers should almost always
+     * pass a specific $service — checking "any provider" can incorrectly
+     * block a provider that has never actually succeeded yet.
      *
      * @param string $url URL to check.
      * @param string $service Provider ID (empty = any provider).
@@ -87,20 +107,20 @@ class IndexingLogger
         $since = gmdate('Y-m-d H:i:s', time() - self::COOLDOWN);
 
         if ($service !== '') {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             $row = $wpdb->get_var(
                 $wpdb->prepare(
-                    "SELECT COUNT(*) FROM `{$wpdb->seopulse_indexing_log}` WHERE url = %s AND service = %s AND status = 'success' AND timestamp >= %s",
+                    "SELECT COUNT(*) FROM %i WHERE url = %s AND service = %s AND status = 'success' AND timestamp >= %s",
+                    $table,
                     $url,
                     $service,
                     $since,
                 ),
             );
         } else {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             $row = $wpdb->get_var(
                 $wpdb->prepare(
-                    "SELECT COUNT(*) FROM `{$wpdb->seopulse_indexing_log}` WHERE url = %s AND status = 'success' AND timestamp >= %s",
+                    "SELECT COUNT(*) FROM %i WHERE url = %s AND status = 'success' AND timestamp >= %s",
+                    $table,
                     $url,
                     $since,
                 ),
@@ -126,25 +146,36 @@ class IndexingLogger
         $table = self::tableName();
 
         if ($service !== '') {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-            return $wpdb->get_results(
+            $rows = $wpdb->get_results(
                 $wpdb->prepare(
-                    "SELECT * FROM `{$wpdb->seopulse_indexing_log}` WHERE service = %s ORDER BY timestamp DESC LIMIT %d OFFSET %d",
+                    'SELECT * FROM %i WHERE service = %s ORDER BY timestamp DESC LIMIT %d OFFSET %d',
+                    $table,
                     $service,
+                    $limit,
+                    $offset,
+                ),
+            );
+        } else {
+            $rows = $wpdb->get_results(
+                $wpdb->prepare(
+                    'SELECT * FROM %i ORDER BY timestamp DESC LIMIT %d OFFSET %d',
+                    $table,
                     $limit,
                     $offset,
                 ),
             );
         }
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-        return $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT * FROM `{$wpdb->seopulse_indexing_log}` ORDER BY timestamp DESC LIMIT %d OFFSET %d",
-                $limit,
-                $offset,
-            ),
-        );
+        // $wpdb returns every column as a string by default (mysqli driver
+        // behaviour), even for the bigint `id` column. Left uncast, the
+        // REST response serializes it as a JSON string ("42") instead of a
+        // number (42), silently breaking the `LogEntry.id: number` contract
+        // the React app relies on.
+        foreach ($rows as $row) {
+            $row->id = (int) $row->id;
+        }
+
+        return $rows;
     }
 
     /**
@@ -161,18 +192,17 @@ class IndexingLogger
         $table = self::tableName();
 
         if ($service !== '') {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             return (int) $wpdb->get_var(
                 $wpdb->prepare(
-                    "SELECT COUNT(*) FROM `{$wpdb->seopulse_indexing_log}` WHERE service = %s",
+                    'SELECT COUNT(*) FROM %i WHERE service = %s',
+                    $table,
                     $service,
                 ),
             );
         }
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
         return (int) $wpdb->get_var(
-            $wpdb->prepare("SELECT COUNT(*) FROM `{$wpdb->seopulse_indexing_log}` WHERE 1=%d", 1),
+            $wpdb->prepare('SELECT COUNT(*) FROM %i', $table),
         );
     }
 
@@ -190,10 +220,10 @@ class IndexingLogger
         $table  = self::tableName();
         $cutoff = gmdate('Y-m-d H:i:s', time() - ($days * DAY_IN_SECONDS));
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
         return (int) $wpdb->query(
             $wpdb->prepare(
-                "DELETE FROM `{$wpdb->seopulse_indexing_log}` WHERE timestamp < %s",
+                'DELETE FROM %i WHERE timestamp < %s',
+                $table,
                 $cutoff,
             ),
         );

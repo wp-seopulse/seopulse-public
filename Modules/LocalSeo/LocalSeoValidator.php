@@ -17,21 +17,14 @@ namespace SEOPulse\Modules\LocalSeo;
 class LocalSeoValidator
 {
     /**
-     * Allowed types
+     * Maximum number of @type values that can be combined for a single
+     * entity. Google's own multi-type example combines three
+     * (`["Electrician", "Plumber", "Locksmith"]`); this keeps the schema
+     * meaningfully specific rather than letting every category be selected.
      *
-     * @var array
+     * @var int
      */
-    private static array $allowed_types = [
-        'LocalBusiness',
-        'Person',
-        'Organization',
-        'Place',
-        'Restaurant',
-        'Hotel',
-        'Store',
-        'HealthAndBeautyBusiness',
-        'DaySpa',
-    ];
+    private const MAX_TYPES = 3;
 
     /**
      * Validates and sanitizes settings
@@ -46,14 +39,21 @@ class LocalSeoValidator
         }
 
         // Build JSON-LD Schema.org
-        $type = sanitize_text_field($input['type'] ?? 'LocalBusiness');
-        if (!in_array($type, self::$allowed_types, true)) {
-            $type = 'LocalBusiness';
-        }
+        // Accept either `type` or `@type` as the input key: the settings
+        // screen's React state mirrors the JSON-LD shape directly (see
+        // IdentityTab.tsx / App.tsx, which read and write `settings["@type"]`
+        // and send it back as-is), while the WordPress Settings API form
+        // historically posted a flat `type` field. Supporting both keeps
+        // this validator correct regardless of which REST/admin path calls it.
+        $types = self::sanitize_type($input['type'] ?? $input['@type'] ?? 'LocalBusiness');
 
         $jsonld = [
             '@context' => 'https://schema.org',
-            '@type'    => $type,
+            // Google supports (and recommends, when a business genuinely spans
+            // more than one category) declaring @type as an array instead of
+            // a single string — e.g. `["MedicalBusiness", "Physician"]`.
+            // See https://developers.google.com/search/docs/appearance/structured-data/local-business
+            '@type'    => count($types) === 1 ? $types[0] : $types,
         ];
 
         // Simple fields
@@ -290,6 +290,48 @@ class LocalSeoValidator
         $jsonld = self::clean_empty_values($jsonld);
 
         return $jsonld;
+    }
+
+    /**
+     * Sanitizes the raw `type` input into a list of valid Schema.org `@type` values.
+     *
+     * Accepts either a single type (string) or several (array), so a
+     * business that spans more than one category can be marked up with a
+     * multi-type array, e.g. `["MedicalBusiness", "Physician"]` or
+     * `["Electrician", "Plumber", "Locksmith"]`. Unknown or duplicate
+     * values are dropped, and the list is capped at self::MAX_TYPES.
+     * Falls back to `["LocalBusiness"]` if nothing valid remains.
+     *
+     * @param mixed $raw_type Raw @type input: a string, or an array of strings.
+     * @return string[] One or more valid, deduplicated Schema.org type names.
+     */
+    private static function sanitize_type($raw_type): array
+    {
+        $allowed_types = LocalSeoDefaults::get_allowed_type_keys();
+        $candidates    = is_array($raw_type) ? $raw_type : [$raw_type];
+
+        $types = [];
+        foreach ($candidates as $candidate) {
+            if (!is_string($candidate)) {
+                continue;
+            }
+
+            $candidate = sanitize_text_field($candidate);
+
+            if ($candidate === '' || !in_array($candidate, $allowed_types, true)) {
+                continue;
+            }
+
+            if (!in_array($candidate, $types, true)) {
+                $types[] = $candidate;
+            }
+        }
+
+        if (empty($types)) {
+            return ['LocalBusiness'];
+        }
+
+        return array_slice($types, 0, self::MAX_TYPES);
     }
 
     /**

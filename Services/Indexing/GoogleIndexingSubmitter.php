@@ -172,11 +172,19 @@ class GoogleIndexingSubmitter implements IndexingServiceInterface
             'project_id'   => sanitize_text_field($credentials['project_id'] ?? ''),
         ];
 
-        update_option(Options::INDEXING, $settings);
+        // This settings blob holds a private key — never let WordPress
+        // autoload it into memory on every single page request.
+        update_option(Options::INDEXING, $settings, false);
     }
 
     /**
      * Validate a service account JSON structure.
+     *
+     * Beyond just checking the two required fields are present, this now
+     * also checks the document looks like an actual Google service-account
+     * key (type, email domain, PEM markers) so a malformed/unrelated JSON
+     * fails fast with a clear error instead of being accepted and only
+     * failing later at JWT-signing time.
      *
      * @param array $json Parsed JSON data.
      *
@@ -184,9 +192,27 @@ class GoogleIndexingSubmitter implements IndexingServiceInterface
      */
     public static function validateCredentials(array $json): bool
     {
-        return !empty($json['client_email'])
-            && !empty($json['private_key'])
-            && str_starts_with($json['private_key'], '-----BEGIN');
+        if (empty($json['client_email']) || !is_string($json['client_email'])) {
+            return false;
+        }
+
+        if (empty($json['private_key']) || !is_string($json['private_key'])) {
+            return false;
+        }
+
+        if (($json['type'] ?? '') !== 'service_account') {
+            return false;
+        }
+
+        if (!str_ends_with($json['client_email'], '.iam.gserviceaccount.com')) {
+            return false;
+        }
+
+        if (!str_starts_with($json['private_key'], '-----BEGIN') || !str_contains($json['private_key'], '-----END')) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -231,12 +257,18 @@ class GoogleIndexingSubmitter implements IndexingServiceInterface
         );
 
         if (is_wp_error($response)) {
+            $this->logTokenError('HTTP error: ' . $response->get_error_message());
+
             return null;
         }
 
         $body = json_decode(wp_remote_retrieve_body($response), true);
 
         if (empty($body['access_token'])) {
+            $this->logTokenError(
+                'No access_token in response: ' . ($body['error_description'] ?? wp_remote_retrieve_body($response)),
+            );
+
             return null;
         }
 
@@ -247,6 +279,23 @@ class GoogleIndexingSubmitter implements IndexingServiceInterface
         set_transient('seopulse_google_idx_token', $token, max($expires - 300, 60));
 
         return $token;
+    }
+
+    /**
+     * Log a token-retrieval failure when WP_DEBUG is enabled, since these
+     * failures were previously swallowed entirely, making it very hard to
+     * diagnose bad credentials vs. transient network issues.
+     *
+     * @param string $reason
+     *
+     * @return void
+     */
+    private function logTokenError(string $reason): void
+    {
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Intentional, gated behind WP_DEBUG; not leftover debug code (see method docblock).
+            error_log('[SEOPulse] Google Indexing token request failed: ' . $reason);
+        }
     }
 
     /**
@@ -287,12 +336,16 @@ class GoogleIndexingSubmitter implements IndexingServiceInterface
         $key = openssl_pkey_get_private($privateKey);
 
         if ($key === false) {
+            $this->logTokenError('openssl_pkey_get_private() failed — private key may be malformed.');
+
             return null;
         }
 
         $signature = '';
 
         if (!openssl_sign($unsigned, $signature, $key, OPENSSL_ALGO_SHA256)) {
+            $this->logTokenError('openssl_sign() failed.');
+
             return null;
         }
 

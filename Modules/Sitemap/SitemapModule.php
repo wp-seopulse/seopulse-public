@@ -32,6 +32,7 @@ use WP_Post;
     label: 'Sitemap',
     description: 'XML Sitemap generation, robots.txt and Google News.',
     icon: 'dashicons-networking',
+    pro: false,
     namespace: 'SEOPulse\\Modules\\Sitemap\\',
 )]
 class SitemapModule extends Module implements ModuleInterface

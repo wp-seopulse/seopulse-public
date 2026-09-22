@@ -17,9 +17,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOPulse\Services\RankMathMigrator;
-use SEOPulse\Services\SeoPressMigrator;
-use SEOPulse\Services\YoastMigrator;
+use SEOPulse\Services\Migration\AIOSeoMigrator;
+use SEOPulse\Services\Migration\RankMathMigrator;
+use SEOPulse\Services\Migration\SeoPressMigrator;
+use SEOPulse\Services\Migration\YoastMigrator;
 use WP_CLI;
 
 /**
@@ -36,6 +37,7 @@ class MigrateCommand extends BaseCommand
         'yoast'    => YoastMigrator::class,
         'rankmath' => RankMathMigrator::class,
         'seopress' => SeoPressMigrator::class,
+        'aioseo'   => AIOSeoMigrator::class,
     ];
 
     /**
@@ -47,6 +49,7 @@ class MigrateCommand extends BaseCommand
         'yoast'    => 'Yoast SEO',
         'rankmath' => 'Rank Math SEO',
         'seopress' => 'SEOPress',
+        'aioseo'   => 'All in One SEO',
     ];
 
     /**

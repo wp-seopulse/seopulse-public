@@ -346,9 +346,10 @@ class SetupWizardController extends RestController
         $plugin = sanitize_text_field($data['plugin'] ?? '');
 
         $migrator_map = [
-            'yoast'    => \SEOPulse\Services\YoastMigrator::class,
-            'rankmath' => \SEOPulse\Services\RankMathMigrator::class,
-            'seopress' => \SEOPulse\Services\SeoPressMigrator::class,
+            'yoast'    => \SEOPulse\Services\Migration\YoastMigrator::class,
+            'rankmath' => \SEOPulse\Services\Migration\RankMathMigrator::class,
+            'seopress' => \SEOPulse\Services\Migration\SeoPressMigrator::class,
+            'aioseo'   => \SEOPulse\Services\Migration\AIOSeoMigrator::class,
         ];
 
         if (!isset($migrator_map[ $plugin ])) {
@@ -386,49 +387,28 @@ class SetupWizardController extends RestController
      */
     private function detect_seo_plugins(): array
     {
-        if (!function_exists('is_plugin_active')) {
-            require_once ABSPATH . 'wp-admin/includes/plugin.php';
-        }
-
-        $known = [
-            [
-                'slug'   => 'yoast',
-                'name'   => 'Yoast SEO',
-                'file'   => 'wordpress-seo/wp-seo.php',
-                'option' => 'wpseo_titles',
-            ],
-            [
-                'slug'   => 'rankmath',
-                'name'   => 'Rank Math',
-                'file'   => 'seo-by-rank-math/rank-math.php',
-                'option' => 'rank-math-options-general',
-            ],
-            [
-                'slug'   => 'seopress',
-                'name'   => 'SEOPress',
-                'file'   => 'wp-seopress/seopress.php',
-                'option' => 'seopress_activated',
-            ],
-            [
-                'slug'   => 'aioseo',
-                'name'   => 'All in One SEO',
-                'file'   => 'all-in-one-seo-pack/all_in_one_seo_pack.php',
-                'option' => 'aioseo_options',
-            ],
+        // Delegates to the real Migrator::detect() implementations instead of
+        // re-checking plugin files/option keys by hand here, so this list can
+        // never drift out of sync with what MigrationController actually supports.
+        $migrators = [
+            'yoast'    => ['name' => 'Yoast SEO', 'class' => \SEOPulse\Services\Migration\YoastMigrator::class],
+            'rankmath' => ['name' => 'Rank Math', 'class' => \SEOPulse\Services\Migration\RankMathMigrator::class],
+            'seopress' => ['name' => 'SEOPress', 'class' => \SEOPulse\Services\Migration\SeoPressMigrator::class],
+            'aioseo'   => ['name' => 'All in One SEO', 'class' => \SEOPulse\Services\Migration\AIOSeoMigrator::class],
         ];
 
         $detected = [];
 
-        foreach ($known as $plugin) {
-            $active   = is_plugin_active($plugin['file']);
-            $has_data = (bool) get_option($plugin['option'], false);
+        foreach ($migrators as $slug => $plugin) {
+            $migrator  = new $plugin['class']();
+            $detection = $migrator->detect();
 
-            if ($active || $has_data) {
+            if ($detection['active'] || $detection['has_data']) {
                 $detected[] = [
-                    'slug'      => $plugin['slug'],
+                    'slug'      => $slug,
                     'name'      => $plugin['name'],
-                    'active'    => $active,
-                    'canImport' => $has_data && in_array($plugin['slug'], ['yoast', 'rankmath', 'seopress'], true),
+                    'active'    => $detection['active'],
+                    'canImport' => $detection['has_data'],
                 ];
             }
         }

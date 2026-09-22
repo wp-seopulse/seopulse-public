@@ -89,4 +89,7 @@ final class Options
 
     /** @var string Instant Indexing settings (IndexNow + Google) */
     public const INDEXING = 'seopulse_indexing_settings';
+
+    /** @var string Page Builders Integration per-builder sub-toggles */
+    public const PAGE_BUILDERS_SETTINGS = 'seopulse_page_builders_settings';
 }

@@ -109,6 +109,11 @@ abstract class Kernel
         self::buildClasses($root . '/Modules/LocalSeo', 'actions', 'Modules\\LocalSeo\\');
         self::buildClasses($root . '/Modules/I18n', 'actions', 'Modules\\I18n\\');
         self::buildClasses($root . '/Modules/Monitor404', 'actions', 'Modules\\Monitor404\\');
+        self::buildClasses($root . '/Modules/PageBuilders', 'actions', 'Modules\\PageBuilders\\');
+        self::buildClasses($root . '/Modules/PageBuilders/Elementor', 'actions', 'Modules\\PageBuilders\\Elementor\\');
+        //self::buildClasses($root . '/Modules/PageBuilders/Divi', 'actions', 'Modules\\PageBuilders\\Divi\\');
+        self::buildClasses($root . '/Modules/PageBuilders/LiveComposer', 'actions', 'Modules\\PageBuilders\\LiveComposer\\');
+        self::buildClasses($root . '/Modules/PageBuilders/Kubio', 'actions', 'Modules\\PageBuilders\\Kubio\\');
         self::buildClasses($root . '/Admin', 'actions', 'Admin\\');
         self::buildClasses($root . '/Admin/Settings', 'actions', 'Admin\\Settings\\');
         self::buildClasses($root . '/Admin/Notifications', 'actions', 'Admin\\Notifications\\');
@@ -120,6 +125,7 @@ abstract class Kernel
         self::buildClasses($root . '/Api/MetaSeo', 'actions', 'Api\\MetaSeo\\');
         self::buildClasses($root . '/Api/Content', 'actions', 'Api\\Content\\');
         self::buildClasses($root . '/Api/Images', 'actions', 'Api\\Images\\');
+        self::buildClasses($root . '/Api/PageBuilders', 'actions', 'Api\\PageBuilders\\');
 
         // Register WP-CLI commands when running in CLI context
         if (defined('WP_CLI') && \WP_CLI) {
@@ -256,6 +262,7 @@ abstract class Kernel
                 'Api\\MetaSeo\\ArchiveSettingsController'  => 'meta_seo',
                 'Api\\MetaSeo\\TaxonomySettingsController' => 'meta_seo',
                 'Api\\MetaSeo\\FAQController'              => 'meta_seo',
+                'Api\\PageBuilders\\PageBuildersController' => 'page_builders',
                 'Api\\RedirectionsController'              => 'redirections',
                 'Api\\SitemapController'                   => 'sitemap',
                 'Api\\Content\\AnalysisController'         => 'content_analysis',

@@ -33,6 +33,7 @@ use WP_Post;
     label: 'Meta SEO',
     description: 'Meta tags, Open Graph, Twitter Cards and tracking codes.',
     icon: 'dashicons-search',
+    pro: false,
     namespace: 'SEOPulse\\Modules\\MetaSeo\\',
 )]
 class MetaSeoModule extends Module implements ModuleInterface

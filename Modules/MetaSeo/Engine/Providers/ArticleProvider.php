@@ -248,6 +248,11 @@ final class ArticleProvider implements SchemaProvider
      */
     private function get_publisher_schema(): array
     {
+        $reference = OrgSchemaProvider::reference();
+        if ($reference !== null) {
+            return $reference;
+        }
+
         $org_name = get_bloginfo('name');
         $org_logo = $this->get_site_logo();
 

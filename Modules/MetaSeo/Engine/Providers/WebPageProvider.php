@@ -90,8 +90,8 @@ final class WebPageProvider implements SchemaProvider
             $schema['inLanguage'] = $language;
         }
 
-        // Add breadcrumb if available
-        $breadcrumb = $this->get_breadcrumb_schema($post);
+        // The standalone BreadcrumbList from BreadcrumbRenderer replaces this inline one
+        $breadcrumb = \SEOPulse\Modules\MetaSeo\BreadcrumbRenderer::is_enabled() ? [] : $this->get_breadcrumb_schema($post);
         if (!empty($breadcrumb)) {
             $schema['breadcrumb'] = $breadcrumb;
         }

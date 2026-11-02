@@ -1,0 +1,40 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "seopulse/toc",
+	"version": "3.0.0",
+	"title": "SEOPulse Table of Contents",
+	"category": "text",
+	"description": "Auto-generate Table of Contents from post headings with internal anchor links.",
+	"keywords": [ "toc", "table of contents", "headings", "navigation", "seo" ],
+	"textdomain": "seopulse",
+	"attributes": {
+		"includeH1": {
+			"type": "boolean",
+			"default": false
+		},
+		"minHeadings": {
+			"type": "number",
+			"default": 3
+		},
+		"collapsible": {
+			"type": "boolean",
+			"default": false
+		},
+		"showNumbers": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"anchor": true,
+		"className": true,
+		"multiple": false
+	},
+	"editorScript": "file:../../../build/toc-block.js",
+	"editorStyle": "file:../../../build/toc-block.css",
+	"style": "file:../../../build/toc-block.css",
+	"viewScript": "file:../../../build/toc-frontend.js"
+}

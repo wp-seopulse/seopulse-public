@@ -1,0 +1,35 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "seopulse/schema",
+	"version": "3.0.0",
+	"title": "SEOPulse Custom Schema",
+	"category": "text",
+	"description": "Custom JSON-LD structured data block. Validates and outputs arbitrary schema.org markup.",
+	"keywords": [ "schema", "json-ld", "structured data", "seo" ],
+	"textdomain": "seopulse",
+	"attributes": {
+		"schemaType": {
+			"type": "string",
+			"default": "Thing"
+		},
+		"schemaJson": {
+			"type": "string",
+			"default": "{}"
+		},
+		"isValidated": {
+			"type": "boolean",
+			"default": false
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"anchor": true,
+		"className": true,
+		"multiple": true
+	},
+	"editorScript": "file:../../../build/schema-block.js",
+	"editorStyle": "file:../../../build/schema-block.css",
+	"style": "file:../../../build/schema-block.css"
+}

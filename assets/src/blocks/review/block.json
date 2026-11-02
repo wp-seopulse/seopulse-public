@@ -1,0 +1,53 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "seopulse/review",
+	"version": "3.0.0",
+	"title": "SEOPulse Review",
+	"category": "text",
+	"description": "Review snippet block with star rating and automatic Review structured data (JSON-LD).",
+	"keywords": [
+		"review",
+		"rating",
+		"stars",
+		"schema",
+		"structured data",
+		"seo"
+	],
+	"textdomain": "seopulse",
+	"attributes": {
+		"itemName": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingValue": {
+			"type": "number",
+			"default": 5
+		},
+		"bestRating": {
+			"type": "number",
+			"default": 5
+		},
+		"summary": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewBody": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewerName": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"anchor": true,
+		"className": true
+	},
+	"editorScript": "file:../../../build/review-block.js",
+	"editorStyle": "file:../../../build/review-block.css",
+	"style": "file:../../../build/review-block.css"
+}

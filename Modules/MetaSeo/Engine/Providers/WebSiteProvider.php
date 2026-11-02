@@ -95,7 +95,8 @@ final class WebSiteProvider implements SchemaProvider
         // Build @graph combining WebSite + Organization
         $graph = [$website];
 
-        if (!empty($org)) {
+        // Local SEO prints its own Organization/LocalBusiness node (same @id) in wp_head
+        if (!empty($org) && !\SEOPulse\Modules\LocalSeo\LocalSeoRenderer::is_output_active()) {
             // Add @id to org for cross-referencing
             $org['@id'] = $site_url . '#organization';
             $graph[]    = $org;

@@ -67,8 +67,10 @@ class LocalSeoModule extends Module implements ModuleInterface
      */
     public function hooks(): void
     {
-        // Frontend: JSON-LD injection
-        add_action('wp_head', [$this->renderer, 'inject_jsonld'], 10);
+        // Frontend: JSON-LD injection (skipped when another SEO plugin prints schema)
+        if (!\SEOPulse\Modules\MetaSeo\Engine\Providers\SchemaInjector::has_existing_schema()) {
+            add_action('wp_head', [$this->renderer, 'inject_jsonld'], 10);
+        }
 
         // Admin only
         if (is_admin()) {

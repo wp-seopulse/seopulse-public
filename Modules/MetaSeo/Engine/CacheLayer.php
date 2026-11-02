@@ -24,6 +24,7 @@ final class CacheLayer
 {
     private const TTL_DEFAULT = 3600; // 1 hour
     private const PREFIX      = 'seopulse_me_';
+    private const POST_INDEX  = 'post_idx_';
 
     /** @var array<string, mixed> L1 in-memory cache */
     private array $memory = [];
@@ -58,11 +59,17 @@ final class CacheLayer
 
     /**
      * Set a value into all cache layers.
+     *
+     * @param int|null $postId When given, the key is indexed so invalidatePost() can find it.
      */
-    public function set(string $key, mixed $value, int $ttl = self::TTL_DEFAULT): void
+    public function set(string $key, mixed $value, int $ttl = self::TTL_DEFAULT, ?int $postId = null): void
     {
         $this->memory[ $key ] = $value;
         set_transient(self::PREFIX . $key, $value, $ttl);
+
+        if ($postId !== null && $postId > 0) {
+            $this->indexKey($postId, $key, $ttl);
+        }
     }
 
     /**
@@ -79,11 +86,33 @@ final class CacheLayer
      */
     public function invalidatePost(int $postId): void
     {
-        $suffixes = ['title', 'description', 'og', 'twitter', 'full'];
+        $indexName = self::PREFIX . self::POST_INDEX . $postId;
+        $keys      = get_transient($indexName);
 
-        foreach ($suffixes as $suffix) {
-            $this->delete("post_{$postId}_{$suffix}");
+        if (is_array($keys)) {
+            foreach ($keys as $key) {
+                $this->delete((string) $key);
+            }
         }
+
+        delete_transient($indexName);
+    }
+
+    /**
+     * Records a cache key in the post's index; the index outlives its entries.
+     */
+    private function indexKey(int $postId, string $key, int $ttl): void
+    {
+        $indexName = self::PREFIX . self::POST_INDEX . $postId;
+        $keys      = get_transient($indexName);
+        $keys      = is_array($keys) ? $keys : [];
+
+        if (!in_array($key, $keys, true)) {
+            $keys[] = $key;
+        }
+
+        // Rewritten on every set so its expiry never precedes that of its newest entry.
+        set_transient($indexName, $keys, $ttl);
     }
 
     /**

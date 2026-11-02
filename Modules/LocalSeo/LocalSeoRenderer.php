@@ -17,6 +17,46 @@ namespace SEOPulse\Modules\LocalSeo;
 class LocalSeoRenderer
 {
     /**
+     * Whether the Local SEO JSON-LD is (or will be) printed on the frontend.
+     *
+     * Other providers use it to avoid emitting a second Organization node.
+     *
+     * @return bool
+     */
+    public static function is_output_active(): bool
+    {
+        if (!\SEOPulse\Core\Module\ModuleManager::instance()->isModuleEnabled('local_seo')
+            || \SEOPulse\Modules\MetaSeo\Engine\Providers\SchemaInjector::has_existing_schema()
+        ) {
+            return false;
+        }
+
+        $settings = get_option('seopulse_local_seo_settings', []);
+
+        return !empty($settings) && isset($settings['@context']);
+    }
+
+    /**
+     * The Local SEO JSON-LD node, with the @id other schemas use to reference the Organization.
+     *
+     * @return array<string, mixed>|null Null when nothing should be printed.
+     */
+    public static function get_node(): ?array
+    {
+        if (!self::is_output_active()) {
+            return null;
+        }
+
+        $settings = get_option('seopulse_local_seo_settings', []);
+
+        if (!isset($settings['@id'])) {
+            $settings['@id'] = home_url('/') . '#organization';
+        }
+
+        return $settings;
+    }
+
+    /**
      * Injects JSON-LD LocalBusiness into the <head>.
      *
      * The Local SEO module is the sole authority for LocalBusiness schema injection.
@@ -25,9 +65,9 @@ class LocalSeoRenderer
      */
     public function inject_jsonld(): void
     {
-        $settings = get_option('seopulse_local_seo_settings', []);
+        $settings = self::get_node();
 
-        if (empty($settings) || !isset($settings['@context'])) {
+        if ($settings === null) {
             return;
         }
 

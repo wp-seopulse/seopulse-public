@@ -316,10 +316,17 @@ class Assets implements ExecuteHooks
         $css_path = SEOPULSE_PLUGIN_DIR . 'assets/build/editor-sidebar.css';
 
         if (file_exists($css_path)) {
+            // seopulse-admin-global is only registered on post.php/post-new.php, not in the Site Editor (FSE).
+            $css_deps = ['wp-components'];
+
+            if (wp_style_is('seopulse-admin-global', 'registered')) {
+                $css_deps[] = 'seopulse-admin-global';
+            }
+
             wp_enqueue_style(
                 'seopulse-editor-sidebar',
                 SEOPULSE_PLUGIN_URL . 'assets/build/editor-sidebar.css',
-                ['wp-components', 'seopulse-admin-global'],
+                $css_deps,
                 $asset['version'],
             );
         }

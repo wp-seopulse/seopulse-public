@@ -38,7 +38,9 @@ class BreadcrumbRenderer implements ExecuteHooks
             return;
         }
 
-        add_action('wp_head', [$this, 'render_json_ld'], 5);
+        if (!Engine\Providers\SchemaInjector::has_existing_schema()) {
+            add_action('wp_head', [$this, 'render_json_ld'], 5);
+        }
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_styles']);
         add_shortcode('seopulse_breadcrumbs', [$this, 'shortcode_handler']);
 
@@ -347,10 +349,29 @@ class BreadcrumbRenderer implements ExecuteHooks
      */
     public function render_json_ld(): void
     {
+        $schema = $this->build_json_ld();
+
+        if (empty($schema)) {
+            return;
+        }
+
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode applies JSON_HEX_TAG|JSON_HEX_AMP; esc_html would break JSON-LD.
+        echo '<script type="application/ld+json">' . wp_json_encode($schema) . '</script>' . "\n";
+    }
+
+    /**
+     * Builds the BreadcrumbList JSON-LD for the current query.
+     *
+     * Does not check the "breadcrumbs_enabled" setting: callers decide.
+     *
+     * @return array<string, mixed> Schema with @context, or an empty array when there is no usable trail.
+     */
+    public function build_json_ld(): array
+    {
         $crumbs = $this->build_trail();
 
         if (count($crumbs) < 2) {
-            return;
+            return [];
         }
 
         $items = [];
@@ -367,17 +388,14 @@ class BreadcrumbRenderer implements ExecuteHooks
         }
 
         if (empty($items)) {
-            return;
+            return [];
         }
 
-        $schema = [
+        return [
             '@context'        => 'https://schema.org',
             '@type'           => 'BreadcrumbList',
             'itemListElement' => $items,
         ];
-
-        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode applies JSON_HEX_TAG|JSON_HEX_AMP; esc_html would break JSON-LD.
-        echo '<script type="application/ld+json">' . wp_json_encode($schema) . '</script>' . "\n";
     }
 
     // ──────────────────────────────────────────────────

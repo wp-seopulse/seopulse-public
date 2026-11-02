@@ -120,13 +120,7 @@ final class ContextBag
         $post = null;
         if (isset($data['post_id'])) {
             $candidate = get_post((int) $data['post_id']);
-            if (
-                $candidate instanceof WP_Post
-                && (
-                    is_post_publicly_viewable($candidate)
-                    || current_user_can('read_post', $candidate->ID)
-                )
-            ) {
+            if ($candidate instanceof WP_Post && self::isExposable($candidate)) {
                 $post = $candidate;
             }
         }
@@ -152,5 +146,17 @@ final class ContextBag
             totalPages: (int) ($data['total_pages'] ?? 1),
             extra: $data['extra'] ?? [],
         );
+    }
+
+    /**
+     * Password-protected posts are editor-only: read_post is true for anyone once published.
+     */
+    private static function isExposable(WP_Post $post): bool
+    {
+        if ('' !== $post->post_password) {
+            return current_user_can('edit_post', $post->ID);
+        }
+
+        return is_post_publicly_viewable($post) || current_user_can('read_post', $post->ID);
     }
 }

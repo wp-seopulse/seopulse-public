@@ -56,6 +56,11 @@ final class BlockHowToProvider implements SchemaProvider
             return false;
         }
 
+        // A seopulse/schema block already prints a HowTo: it wins over the automatic provider
+        if (SchemaBlockDetector::has_type((string) ($post->post_content ?? ''), 'HowTo')) {
+            return false;
+        }
+
         return self::has_howto_blocks($post->post_content ?? '');
     }
 

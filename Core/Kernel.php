@@ -102,6 +102,7 @@ abstract class Kernel
         // Register actions (hook controllers) — includes module sub-classes
         self::buildClasses($root . '/Modules/MetaSeo', 'actions', 'Modules\\MetaSeo\\');
         self::buildClasses($root . '/Modules/MetaSeo/Archives', 'actions', 'Modules\\MetaSeo\\Archives\\');
+        self::buildClasses($root . '/Modules/MetaSeo/Headless', 'actions', 'Modules\\MetaSeo\\Headless\\');
         self::buildClasses($root . '/Modules/Redirections', 'actions', 'Modules\\Redirections\\');
         self::buildClasses($root . '/Modules/Sitemap', 'actions', 'Modules\\Sitemap\\');
         self::buildClasses($root . '/Modules/Content', 'actions', 'Modules\\Content\\');
@@ -262,6 +263,7 @@ abstract class Kernel
                 'Api\\MetaSeo\\ArchiveSettingsController'  => 'meta_seo',
                 'Api\\MetaSeo\\TaxonomySettingsController' => 'meta_seo',
                 'Api\\MetaSeo\\FAQController'              => 'meta_seo',
+                'Api\\MetaSeo\\HeadController'             => 'meta_seo',
                 'Api\\PageBuilders\\PageBuildersController' => 'page_builders',
                 'Api\\RedirectionsController'              => 'redirections',
                 'Api\\SitemapController'                   => 'sitemap',

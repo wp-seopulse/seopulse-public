@@ -94,14 +94,26 @@ class RedirectionsManager
             return;
         }
 
+        $match = $this->find_sql_match($this->getRequestUri());
+
+        if (null !== $match) {
+            $this->resolveRedirect($match['rule'], $this->getRequestUriFull(), $match['target']);
+        }
+    }
+
+    /**
+     * Finds the SQL rule matching a path, without executing it.
+     *
+     * @param string $request_uri Path without query string, with leading slash.
+     * @return array{rule: object, target: string|null}|null Target is set for pattern rules (regex back-references applied).
+     */
+    private function find_sql_match(string $request_uri): ?array
+    {
         global $wpdb;
 
         if (!isset($wpdb->seopulse_redirects)) {
             $wpdb->seopulse_redirects = $wpdb->prefix . 'seopulse_redirects';
         }
-
-        $request_uri      = $this->getRequestUri();
-        $request_uri_full = $this->getRequestUriFull();
 
         // ── 1. Exact match (case-sensitive, indexed) ──────────────────
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter
@@ -133,9 +145,7 @@ class RedirectionsManager
         }
 
         if ($redirect) {
-            $this->resolveRedirect($redirect, $request_uri_full);
-
-            return;
+            return ['rule' => $redirect, 'target' => null];
         }
 
         // ── 2. Pattern-based rules (contains / starts_with / ends_with / regex)
@@ -165,11 +175,55 @@ class RedirectionsManager
                     }
                 }
 
-                $this->resolveRedirect($rule, $request_uri_full, $target);
-
-                return;
+                return ['rule' => $rule, 'target' => (string) $target];
             }
         }
+
+        return null;
+    }
+
+    /**
+     * Finds the redirect matching a path without executing it (no hit is counted).
+     *
+     * Query-string passthrough and the admin debugger are not applied.
+     *
+     * @param string $path Request path as the web server sees it, without query string.
+     * @return array{to: string|null, status: int}|null "to" is null for maintenance codes (410, 451).
+     */
+    public function lookup(string $path): ?array
+    {
+        $path = '/' . ltrim($path, '/');
+
+        if ($this->has_redirect_table()) {
+            $match = $this->find_sql_match($path);
+
+            if (null === $match) {
+                return null;
+            }
+
+            $rule        = $match['rule'];
+            $maintenance = (int) ($rule->maintenance_code ?? 0);
+
+            if (in_array($maintenance, RedirectionsModule::MAINTENANCE_CODES, true)) {
+                return ['to' => null, 'status' => $maintenance];
+            }
+
+            return [
+                'to'     => (string) ($match['target'] ?? $rule->target_url),
+                'status' => $this->resolveStatusCode($rule),
+            ];
+        }
+
+        foreach ($this->get_all_redirects() as $redirect) {
+            if ($this->is_redirect_active($redirect) && $this->url_matches($path, $redirect['source'])) {
+                return [
+                    'to'     => (string) $redirect['destination'],
+                    'status' => (int) ($redirect['type'] ?? 301),
+                ];
+            }
+        }
+
+        return null;
     }
 
     /**

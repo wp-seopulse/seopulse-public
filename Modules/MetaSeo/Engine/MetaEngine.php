@@ -97,7 +97,7 @@ final class MetaEngine
         $result = $this->security->sanitize($result, $escaping);
 
         // Store in L2 cache
-        $this->cache->set($cacheKey, $result);
+        $this->cache->set($cacheKey, $result, postId: $context->getPost()?->ID);
 
         return $result;
     }

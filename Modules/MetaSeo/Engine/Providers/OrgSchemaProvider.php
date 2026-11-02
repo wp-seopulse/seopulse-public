@@ -36,6 +36,28 @@ final class OrgSchemaProvider implements SchemaProvider
     private ?string $error = null;
 
     /**
+     * Reference to the page's Organization node, or null when none is printed.
+     *
+     * @return array{'@id': string}|null
+     */
+    public static function reference(): ?array
+    {
+        $ref = ['@id' => home_url('/') . '#organization'];
+
+        if (\SEOPulse\Modules\LocalSeo\LocalSeoRenderer::is_output_active()) {
+            return $ref;
+        }
+
+        $provider = SchemaFactory::get('organization');
+
+        if ($provider instanceof self && $provider->should_inject() && !empty($provider->build())) {
+            return $ref;
+        }
+
+        return null;
+    }
+
+    /**
      * Get the schema type
      *
      * @return string
@@ -55,6 +77,11 @@ final class OrgSchemaProvider implements SchemaProvider
     {
         // Organization is already embedded in WebSiteProvider on the homepage
         if (is_front_page()) {
+            return false;
+        }
+
+        // Local SEO already prints the Organization/LocalBusiness node in wp_head
+        if (\SEOPulse\Modules\LocalSeo\LocalSeoRenderer::is_output_active()) {
             return false;
         }
 

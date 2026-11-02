@@ -25,7 +25,7 @@ class SchemaInjector
      *
      * @return bool
      */
-    private static function has_existing_schema(): bool
+    public static function has_existing_schema(): bool
     {
         // Check for common schema plugins
         return (

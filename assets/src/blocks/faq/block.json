@@ -1,0 +1,34 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "seopulse/faq",
+	"version": "3.0.0",
+	"title": "SEOPulse FAQ",
+	"category": "text",
+	"description": "FAQ block with automatic FAQPage structured data (JSON-LD).",
+	"keywords": [ "faq", "schema", "structured data", "seo" ],
+	"textdomain": "seopulse",
+	"attributes": {
+		"items": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object"
+			}
+		},
+		"schemaType": {
+			"type": "string",
+			"default": "FAQPage",
+			"enum": [ "FAQPage", "QAPage" ]
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"anchor": true,
+		"className": true
+	},
+	"editorScript": "file:../../../build/faq-block.js",
+	"editorStyle": "file:../../../build/faq-block.css",
+	"style": "file:../../../build/faq-block.css"
+}

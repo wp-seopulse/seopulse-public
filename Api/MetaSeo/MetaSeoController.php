@@ -163,7 +163,8 @@ class MetaSeoController extends RestController
         // The React SPA sends { settings: { ... } }
         $data = isset($json['settings']) && is_array($json['settings']) ? $json['settings'] : $json;
 
-        if (!is_array($data) || empty($data)) {
+        // An empty array is valid: the option is empty until the wizard has run.
+        if (!is_array($data)) {
             return $this->error(__('No settings provided.', 'seopulse'), 400);
         }
 
@@ -177,7 +178,7 @@ class MetaSeoController extends RestController
             'twitter_card', 'twitter_title', 'twitter_site', 'twitter_creator',
             'separator', 'schema_type', 'schema_name',
             'breadcrumb_separator', 'image_alt_format', 'image_title_format',
-            'image_diagnostic_size_threshold',
+            'image_diagnostic_size_threshold', 'headless_webhook_secret',
         ];
 
         foreach ($text_fields as $field) {
@@ -195,7 +196,7 @@ class MetaSeoController extends RestController
         }
 
         // URL fields
-        $url_fields = ['canonical', 'og_url', 'og_image', 'twitter_image', 'schema_logo_url'];
+        $url_fields = ['canonical', 'og_url', 'og_image', 'twitter_image', 'schema_logo_url', 'headless_frontend_url', 'headless_webhook_url'];
         foreach ($url_fields as $field) {
             if (isset($data[ $field ])) {
                 $sanitized[ $field ] = esc_url_raw((string) $data[ $field ]);
@@ -212,6 +213,7 @@ class MetaSeoController extends RestController
             'schema_product_enabled', 'schema_event_enabled',
             'enable_schema', 'enable_image_seo', 'image_auto_rename',
             'enable_image_diagnostic',
+            'headless_endpoint_enabled', 'headless_field_enabled', 'headless_not_found_head',
         ];
 
         foreach ($bool_fields as $field) {

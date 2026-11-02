@@ -36,6 +36,7 @@ $seopulse_options_to_delete = [
     'seopulse_analytics_settings',
     'seopulse_meta_templates',
     'seopulse_archive_settings',
+    'seopulse_head_cache_version',
     'seopulse_taxonomy_settings',
 ];
 

@@ -1,0 +1,43 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "seopulse/product-grid",
+	"version": "3.0.0",
+	"title": "SEOPulse Product Grid",
+	"category": "widgets",
+	"description": "Responsive product grid for WooCommerce showcases with up to 12 products.",
+	"keywords": [ "product", "grid", "woocommerce", "showcase", "seo" ],
+	"textdomain": "seopulse",
+	"attributes": {
+		"productIds": {
+			"type": "array",
+			"default": [],
+			"items": { "type": "number" }
+		},
+		"columns": {
+			"type": "number",
+			"default": 3
+		},
+		"showPrice": {
+			"type": "boolean",
+			"default": true
+		},
+		"showRating": {
+			"type": "boolean",
+			"default": true
+		},
+		"showButton": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"anchor": true,
+		"className": true
+	},
+	"editorScript": "file:../../../build/product-grid-block.js",
+	"editorStyle": "file:../../../build/product-grid-block.css",
+	"style": "file:../../../build/product-grid-block.css"
+}

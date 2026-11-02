@@ -94,6 +94,11 @@ final class HowToFallbackProvider implements SchemaProvider
             return false;
         }
 
+        // A seopulse/schema block already prints a HowTo
+        if (SchemaBlockDetector::has_type($content, 'HowTo')) {
+            return false;
+        }
+
         // Quick check: must contain step-like headings
         if (!preg_match('/(?:step|étape|paso|schritt)\s+\d/i', $content)) {
             return false;
@@ -193,7 +198,7 @@ final class HowToFallbackProvider implements SchemaProvider
     {
         // Render blocks/shortcodes to get final HTML
         $html = do_blocks($content);
-        $html = do_shortcodes_in_html_tags($html);
+        $html = do_shortcode($html);
         $html = wpautop($html);
 
         // Split on heading tags (h2-h4)

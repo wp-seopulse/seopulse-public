@@ -1,0 +1,47 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "seopulse/howto",
+	"version": "3.0.0",
+	"title": "SEOPulse HowTo",
+	"category": "text",
+	"description": "HowTo block with automatic HowTo structured data (JSON-LD).",
+	"keywords": [ "howto", "schema", "structured data", "seo", "steps" ],
+	"textdomain": "seopulse",
+	"attributes": {
+		"name": {
+			"type": "string",
+			"default": ""
+		},
+		"description": {
+			"type": "string",
+			"default": ""
+		},
+		"steps": {
+			"type": "array",
+			"default": [],
+			"items": { "type": "object" }
+		},
+		"estimatedTime": {
+			"type": "string",
+			"default": ""
+		},
+		"totalTime": {
+			"type": "string",
+			"default": ""
+		},
+		"yield": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"anchor": true,
+		"className": true
+	},
+	"editorScript": "file:../../../build/howto-block.js",
+	"editorStyle": "file:../../../build/howto-block.css",
+	"style": "file:../../../build/howto-block.css"
+}

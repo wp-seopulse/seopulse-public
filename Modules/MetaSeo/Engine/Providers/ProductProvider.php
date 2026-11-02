@@ -318,7 +318,10 @@ final class ProductProvider implements SchemaProvider
 
         // Seller
         $site_name = get_bloginfo('name');
-        if (!empty($site_name)) {
+        $reference = OrgSchemaProvider::reference();
+        if ($reference !== null) {
+            $offer['seller'] = $reference;
+        } elseif (!empty($site_name)) {
             $offer['seller'] = [
                 '@type' => 'Organization',
                 'name'  => $site_name,

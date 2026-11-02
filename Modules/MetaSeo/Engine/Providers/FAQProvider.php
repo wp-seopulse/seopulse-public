@@ -66,6 +66,11 @@ final class FAQProvider implements SchemaProvider
             return false;
         }
 
+        // A seopulse/schema block already prints an FAQPage: it wins over the automatic provider
+        if (SchemaBlockDetector::has_type((string) $post->post_content, 'FAQPage')) {
+            return false;
+        }
+
         // Check for custom FAQs in post_meta
         $custom_faqs = get_post_meta($post->ID, '_seopulse_faqs', true);
         if (!empty($custom_faqs) && is_array($custom_faqs)) {

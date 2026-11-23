@@ -22,6 +22,7 @@ if (!defined('ABSPATH')) {
 // phpcs:disable WordPress.DB.DirectDatabaseQuery -- DashboardSummary: direct DB access is intentional; caching is handled at the service/caller layer.
 // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- All interpolated vars are safe prefixed table names ($wpdb->postmeta, $wpdb->posts).
 
+use SEOPulse\Core\Cache\ObjectCache;
 use SEOPulse\Core\Constants\Options;
 use SEOPulse\Core\Kernel;
 use SEOPulse\Core\Module\ModuleManager;
@@ -33,8 +34,9 @@ use SEOPulse\Modules\Monitor404\Monitor404Repository;
  */
 final class DashboardSummary
 {
-    /** Transient key for cached summary data. */
-    private const CACHE_KEY = 'seopulse_dashboard_summary_v1';
+    /** Cache key and group for the summary. */
+    private const CACHE_KEY   = 'summary_v1';
+    private const CACHE_GROUP = 'dashboard';
 
     /** Cache TTL in seconds (5 minutes). */
     private const CACHE_TTL = 5 * MINUTE_IN_SECONDS;
@@ -47,7 +49,7 @@ final class DashboardSummary
      */
     public static function invalidate(): void
     {
-        delete_transient(self::CACHE_KEY);
+        ObjectCache::delete(self::CACHE_KEY, self::CACHE_GROUP);
     }
 
     /**
@@ -68,7 +70,7 @@ final class DashboardSummary
      */
     public function get(): array
     {
-        $cached = get_transient(self::CACHE_KEY);
+        $cached = ObjectCache::get(self::CACHE_KEY, self::CACHE_GROUP);
         if (is_array($cached) && $cached !== []) {
             return $cached;
         }
@@ -130,7 +132,7 @@ final class DashboardSummary
             'score_history'       => $this->get_score_history((int) $content_stats['avg_score']),
         ];
 
-        set_transient(self::CACHE_KEY, $data, self::CACHE_TTL);
+        ObjectCache::set(self::CACHE_KEY, $data, self::CACHE_GROUP, self::CACHE_TTL);
 
         return $data;
     }

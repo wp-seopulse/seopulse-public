@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace SEOPulse\Modules\MetaSeo\Headless;
 
+use SEOPulse\Core\Cache\ObjectCache;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -43,8 +45,8 @@ class ImageSize
             return [null, null];
         }
 
-        $key    = 'seopulse_head_img_' . md5($url);
-        $cached = get_transient($key);
+        $key    = 'head_img_' . md5($url);
+        $cached = ObjectCache::get($key, 'images');
 
         if (is_array($cached)) {
             return [($cached[0] ?? 0) ?: null, ($cached[1] ?? 0) ?: null];
@@ -53,7 +55,7 @@ class ImageSize
         $size = $this->fetch($url);
 
         // Failures are retried after an hour, successes kept for a week.
-        set_transient($key, [(int) $size[0], (int) $size[1]], null === $size[0] ? HOUR_IN_SECONDS : WEEK_IN_SECONDS);
+        ObjectCache::set($key, [(int) $size[0], (int) $size[1]], 'images', null === $size[0] ? HOUR_IN_SECONDS : WEEK_IN_SECONDS);
 
         return $size;
     }

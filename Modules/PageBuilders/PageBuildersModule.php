@@ -28,6 +28,7 @@ use SEOPulse\Core\Attributes\AsModule;
 use SEOPulse\Core\Constants\Options;
 use SEOPulse\Core\Contracts\ExecuteHooks;
 use SEOPulse\Core\Contracts\ModuleInterface;
+use SEOPulse\Modules\PageBuilders\Bricks\BricksIntegration;
 use SEOPulse\Modules\PageBuilders\Divi\DiviIntegration;
 use SEOPulse\Modules\PageBuilders\Elementor\ElementorIntegration;
 use SEOPulse\Modules\PageBuilders\Kubio\KubioIntegration;
@@ -39,7 +40,7 @@ use SEOPulse\Modules\PageBuilders\LiveComposer\LiveComposerIntegration;
 #[AsModule(
     key: 'page_builders',
     label: 'Page Builders Integration',
-    description: 'Edit all SEO directly inside Elementor, Live Composer, Kubio — without leaving the page builder.',
+    description: 'Edit all SEO directly inside Elementor, Bricks, Live Composer, Kubio — without leaving the page builder.',
     icon: 'dashicons-layout',
     pro: false,
     requires: ['meta_seo'],
@@ -66,6 +67,7 @@ class PageBuildersModule implements ExecuteHooks, ModuleInterface
         //(new DiviIntegration())->hooks();
         (new LiveComposerIntegration())->hooks();
         (new KubioIntegration())->hooks();
+        (new BricksIntegration())->hooks();
     }
 
     /**

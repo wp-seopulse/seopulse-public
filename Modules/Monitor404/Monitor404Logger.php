@@ -90,6 +90,8 @@ class Monitor404Logger
 
     private string $table;
 
+    private ?Monitor404Repository $repo = null;
+
     public function __construct()
     {
         global $wpdb;
@@ -210,22 +212,14 @@ class Monitor404Logger
         array $botInfo,
         bool $loggedIn,
     ): int {
-        global $wpdb;
+        $repo = $this->repository();
+        $now  = current_time('mysql');
 
-        $now = current_time('mysql');
-
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-        $existing = $wpdb->get_row(
-            $wpdb->prepare(
-                "SELECT id, hits FROM {$wpdb->seopulse_404_logs} WHERE url = %s AND status != 'ignored' LIMIT 1",
-                $url,
-            ),
-        );
+        $existing = $repo->findTrackedByUrl($url);
 
         if ($existing) {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-            $wpdb->update(
-                $this->table,
+            $repo->updateHit(
+                (int) $existing->id,
                 [
                     'hits'           => (int) $existing->hits + 1,
                     'last_hit'       => $now,
@@ -236,17 +230,13 @@ class Monitor404Logger
                     'bot_name'       => $botInfo['bot_name'],
                     'user_logged_in' => (int) $loggedIn,
                 ],
-                ['id' => (int) $existing->id],
                 ['%d', '%s', '%s', '%s', '%s', '%d', '%s', '%d'],
-                ['%d'],
             );
 
             return 0;
         }
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-        $wpdb->insert(
-            $this->table,
+        return $repo->insertHit(
             [
                 'url'            => $url,
                 'referrer'       => $referrer,
@@ -262,8 +252,14 @@ class Monitor404Logger
             ],
             ['%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%d', '%s', '%d'],
         );
+    }
 
-        return (int) $wpdb->insert_id;
+    /**
+     * Returns the shared repository (created on first use).
+     */
+    private function repository(): Monitor404Repository
+    {
+        return $this->repo ??= new Monitor404Repository();
     }
 
     /**
@@ -295,7 +291,7 @@ class Monitor404Logger
             $best   = $engine->suggest($url);
 
             if ($best) {
-                $repo = new Monitor404Repository();
+                $repo = $this->repository();
                 $repo->storeSuggestion($id, $best['url'], $best['score']);
             }
         } catch (\Throwable $e) {

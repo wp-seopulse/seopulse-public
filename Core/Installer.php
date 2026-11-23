@@ -14,6 +14,8 @@ namespace SEOPulse\Core;
 use SEOPulse\Core\Constants\Options;
 use SEOPulse\Core\Contracts\ActivationHook;
 use SEOPulse\Core\Contracts\DeactivationHook;
+use SEOPulse\Core\Database\UrlHash;
+use SEOPulse\Core\Database\UrlHashSchema;
 
 /**
  * Installer class
@@ -83,6 +85,9 @@ class Installer implements ActivationHook, DeactivationHook
      */
     public static function maybe_upgrade(): void
     {
+        // Cheap when done: two autoloaded option reads.
+        UrlHashSchema::maybe_migrate();
+
         $stored_version = get_option(Options::VERSION, '0.0.0');
 
         if (version_compare($stored_version, SEOPULSE_VERSION, '>=')) {
@@ -217,8 +222,10 @@ class Installer implements ActivationHook, DeactivationHook
             status varchar(20) NOT NULL DEFAULT 'active',
             created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
             updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            url_hash char(32) NOT NULL DEFAULT '',
             PRIMARY KEY (id),
             KEY idx_source_url (source_url(191)),
+            KEY url_hash (url_hash),
             KEY idx_status (status),
             KEY idx_group (group_name(191)),
             KEY idx_category (category(191)),
@@ -240,14 +247,19 @@ class Installer implements ActivationHook, DeactivationHook
             last_hit datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
             status varchar(20) NOT NULL DEFAULT 'active',
             redirect_id bigint(20) UNSIGNED DEFAULT NULL,
+            url_hash char(32) NOT NULL DEFAULT '',
             PRIMARY KEY (id),
             KEY idx_url (url(191)),
+            KEY url_hash (url_hash),
             KEY idx_last_hit (last_hit),
             KEY idx_status (status),
             KEY idx_hits (hits)
         ) {$charset_collate};";
 
         dbDelta($sql_404);
+
+        // Existing installs: add url_hash + index if dbDelta could not, record the schema level.
+        UrlHashSchema::maybe_migrate();
 
         // Migrate any existing wp_options data into the fresh tables.
         self::migrateRedirectionsToSql();
@@ -300,26 +312,30 @@ class Installer implements ActivationHook, DeactivationHook
                 ? str_replace('\*', '.*', preg_quote($source, '@'))
                 : $source;
 
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-            $wpdb->insert(
-                $table,
-                [
-                    'source_url'    => $sql_source,
-                    'target_url'    => $target,
-                    'redirect_type' => (int) ($redirect['type'] ?? 301),
-                    'regex'         => $is_wildcard ? 1 : 0,
-                    'group_name'    => 'free_import',
-                    'hits'          => (int) ($redirect['hits'] ?? 0),
-                    'last_accessed' => !empty($redirect['last_hit'])
-                        ? sanitize_text_field($redirect['last_hit'])
-                        : null,
-                    'status'        => sanitize_text_field($redirect['status'] ?? 'active'),
-                    'created_at'    => !empty($redirect['created_at'])
-                        ? sanitize_text_field($redirect['created_at'])
-                        : current_time('mysql'),
-                ],
+            $row = [
+                'source_url'    => $sql_source,
+                'target_url'    => $target,
+                'redirect_type' => (int) ($redirect['type'] ?? 301),
+                'regex'         => $is_wildcard ? 1 : 0,
+                'group_name'    => 'free_import',
+                'hits'          => (int) ($redirect['hits'] ?? 0),
+                'last_accessed' => !empty($redirect['last_hit'])
+                    ? sanitize_text_field($redirect['last_hit'])
+                    : null,
+                'status'        => sanitize_text_field($redirect['status'] ?? 'active'),
+                'created_at'    => !empty($redirect['created_at'])
+                    ? sanitize_text_field($redirect['created_at'])
+                    : current_time('mysql'),
+            ];
+
+            [$row, $formats] = UrlHash::withHash(
+                $row,
                 ['%s', '%s', '%d', '%d', '%s', '%d', '%s', '%s', '%s'],
+                $sql_source,
             );
+
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+            $wpdb->insert($table, $row, $formats);
         }
     }
 
@@ -363,21 +379,25 @@ class Installer implements ActivationHook, DeactivationHook
             $first_hit = sanitize_text_field($log['timestamp'] ?? current_time('mysql'));
             $last_hit  = sanitize_text_field($log['last_seen'] ?? $first_hit);
 
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-            $wpdb->insert(
-                $table,
-                [
-                    'url'        => $url,
-                    'referrer'   => sanitize_text_field($log['referer'] ?? ''),
-                    'user_agent' => sanitize_text_field($log['user_agent'] ?? ''),
-                    'ip_hash'    => md5(sanitize_text_field($log['ip'] ?? '')),
-                    'hits'       => (int) ($log['count'] ?? 1),
-                    'first_hit'  => $first_hit,
-                    'last_hit'   => $last_hit,
-                    'status'     => 'active',
-                ],
+            $row = [
+                'url'        => $url,
+                'referrer'   => sanitize_text_field($log['referer'] ?? ''),
+                'user_agent' => sanitize_text_field($log['user_agent'] ?? ''),
+                'ip_hash'    => md5(sanitize_text_field($log['ip'] ?? '')),
+                'hits'       => (int) ($log['count'] ?? 1),
+                'first_hit'  => $first_hit,
+                'last_hit'   => $last_hit,
+                'status'     => 'active',
+            ];
+
+            [$row, $formats] = UrlHash::withHash(
+                $row,
                 ['%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s'],
+                $url,
             );
+
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+            $wpdb->insert($table, $row, $formats);
         }
     }
 

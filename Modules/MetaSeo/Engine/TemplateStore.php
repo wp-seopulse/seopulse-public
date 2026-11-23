@@ -197,6 +197,11 @@ final class TemplateStore
             }
         }
 
+        // Cart, checkout and account pages are never indexable, whatever the templates say.
+        if ($context->getPost() !== null && \SEOPulse\Services\WooCommerceSystemPages::isSystemPage($context->getPost()->ID)) {
+            $templates['robots'] = 'noindex,follow';
+        }
+
         // Pagination suffix for titles
         if ($context->getPage() > 1) {
             $templates['title'] .= ' %%sep%% %%page.label%%';

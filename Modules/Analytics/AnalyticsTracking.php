@@ -28,6 +28,62 @@ use SEOPulse\Core\Constants\Options;
 class AnalyticsTracking
 {
     /**
+     * Normalizes a Matomo base URL (https/http, no query/fragment, trailing slash).
+     *
+     * @param string $url Raw user input
+     * @return string Empty string when invalid
+     */
+    public static function normalizeMatomoUrl(string $url): string
+    {
+        $url = trim($url);
+        if ($url === '') {
+            return '';
+        }
+
+        if (!preg_match('#^https?://#i', $url)) {
+            $url = 'https://' . $url;
+        }
+
+        $parts = wp_parse_url($url);
+        if (!is_array($parts) || empty($parts['host']) || !in_array($parts['scheme'] ?? '', ['http', 'https'], true)) {
+            return '';
+        }
+
+        if (!preg_match('/^[A-Za-z0-9.\-]+$/', (string) $parts['host'])) {
+            return '';
+        }
+
+        $clean = $parts['scheme'] . '://' . $parts['host'];
+        if (!empty($parts['port'])) {
+            $clean .= ':' . (int) $parts['port'];
+        }
+
+        $path = isset($parts['path']) ? preg_replace('#[^A-Za-z0-9._~/\-]#', '', (string) $parts['path']) : '';
+
+        return $clean . rtrim((string) $path, '/') . '/';
+    }
+
+    /**
+     * Matomo site IDs are positive integers.
+     */
+    public static function normalizeMatomoSiteId(string $id): string
+    {
+        $id = trim($id);
+
+        return preg_match('/^[1-9][0-9]{0,9}$/', $id) === 1 ? $id : '';
+    }
+
+    /**
+     * Microsoft Clarity project IDs are short alphanumeric strings.
+     */
+    public static function normalizeClarityId(string $id): string
+    {
+        $id = trim($id);
+
+        return preg_match('/^[A-Za-z0-9]{6,20}$/', $id) === 1 ? $id : '';
+    }
+
+    /**
      * Get tracking settings from the analytics option
      *
      * @return array<string, mixed>
@@ -37,6 +93,11 @@ class AnalyticsTracking
         $settings = get_option(Options::ANALYTICS, []);
 
         return [
+            'matomo_enabled' => !empty($settings['matomo_enabled']),
+            'matomo_url'     => (string) ($settings['matomo_url'] ?? ''),
+            'matomo_site_id' => (string) ($settings['matomo_site_id'] ?? ''),
+            'clarity_enabled' => !empty($settings['clarity_enabled']),
+            'clarity_id'     => (string) ($settings['clarity_id'] ?? ''),
             'gtm_enabled' => !empty($settings['gtm_enabled']),
             'gtm_id'      => $settings['gtm_id'] ?? '',
             'ga4_enabled' => !empty($settings['ga4_enabled']),
@@ -46,8 +107,9 @@ class AnalyticsTracking
             'ga4_track_outbound'      => !empty($settings['ga4_track_outbound']),
             'ga4_track_downloads'     => !empty($settings['ga4_track_downloads']),
             'ga4_download_extensions' => $settings['ga4_download_extensions'] ?? 'pdf,zip,doc,docx,xls,xlsx',
-            'ga4_custom_head_code'    => $settings['ga4_custom_head_code'] ?? '',
-            'ga4_custom_footer_code'  => $settings['ga4_custom_footer_code'] ?? '',
+            // Custom code (legacy ga4_custom_* keys kept as fallback until the next save)
+            'custom_head_code'        => $settings['custom_head_code'] ?? $settings['ga4_custom_head_code'] ?? '',
+            'custom_footer_code'      => $settings['custom_footer_code'] ?? $settings['ga4_custom_footer_code'] ?? '',
         ];
     }
 
@@ -157,13 +219,28 @@ class AnalyticsTracking
     }
 
     /**
-     * Inject custom tracking code — head
+     * Inject custom code (head and footer) server-side.
+     *
+     * Independent of GA4: does not require gtag nor any tracking provider.
+     * Only hooked when the consent module is disabled; otherwise the code is
+     * run by seopulse-consent.js after consent (see AnalyticsModule).
+     *
+     * @return void
+     */
+    public function inject_custom_code(): void
+    {
+        $this->inject_custom_head_code();
+        $this->inject_custom_footer_code();
+    }
+
+    /**
+     * Inject custom code — head
      */
     public function inject_custom_head_code(): void
     {
         $settings = $this->getTrackingSettings();
 
-        if (empty($settings['ga4_custom_head_code'])) {
+        if (empty($settings['custom_head_code'])) {
             return;
         }
 
@@ -171,19 +248,19 @@ class AnalyticsTracking
             return;
         }
 
-        wp_register_script('seopulse-ga4-custom-head', false, ['google-analytics-gtag'], SEOPULSE_VERSION, false);
-        wp_enqueue_script('seopulse-ga4-custom-head');
-        wp_add_inline_script('seopulse-ga4-custom-head', $settings['ga4_custom_head_code']);
+        wp_register_script('seopulse-custom-head', false, [], SEOPULSE_VERSION, false);
+        wp_enqueue_script('seopulse-custom-head');
+        wp_add_inline_script('seopulse-custom-head', $settings['custom_head_code']);
     }
 
     /**
-     * Inject custom tracking code — footer
+     * Inject custom code — footer
      */
     public function inject_custom_footer_code(): void
     {
         $settings = $this->getTrackingSettings();
 
-        if (empty($settings['ga4_custom_footer_code'])) {
+        if (empty($settings['custom_footer_code'])) {
             return;
         }
 
@@ -191,9 +268,85 @@ class AnalyticsTracking
             return;
         }
 
-        wp_register_script('seopulse-ga4-custom-footer', false, ['google-analytics-gtag'], SEOPULSE_VERSION, true);
-        wp_enqueue_script('seopulse-ga4-custom-footer');
-        wp_add_inline_script('seopulse-ga4-custom-footer', $settings['ga4_custom_footer_code']);
+        wp_register_script('seopulse-custom-footer', false, [], SEOPULSE_VERSION, true);
+        wp_enqueue_script('seopulse-custom-footer');
+        wp_add_inline_script('seopulse-custom-footer', $settings['custom_footer_code']);
+    }
+
+    /**
+     * Injects the Matomo tracker (self-hosted or cloud, URL provided by the site owner)
+     *
+     * @return void
+     */
+    public function inject_matomo(): void
+    {
+        $tracking = $this->getTrackingSettings();
+
+        if (empty($tracking['matomo_enabled'])) {
+            return;
+        }
+
+        $base    = self::normalizeMatomoUrl($tracking['matomo_url']);
+        $site_id = self::normalizeMatomoSiteId($tracking['matomo_site_id']);
+
+        if ($base === '' || $site_id === '' || $this->should_exclude_current_user()) {
+            return;
+        }
+
+        wp_register_script('seopulse-matomo', false, [], SEOPULSE_VERSION, false);
+        wp_enqueue_script('seopulse-matomo');
+        wp_add_inline_script('seopulse-matomo', self::matomoSnippet($base, $site_id));
+    }
+
+    /**
+     * Injects Microsoft Clarity
+     *
+     * @return void
+     */
+    public function inject_clarity(): void
+    {
+        $tracking = $this->getTrackingSettings();
+
+        if (empty($tracking['clarity_enabled'])) {
+            return;
+        }
+
+        $clarity_id = self::normalizeClarityId($tracking['clarity_id']);
+
+        if ($clarity_id === '' || $this->should_exclude_current_user()) {
+            return;
+        }
+
+        wp_register_script('seopulse-clarity', false, [], SEOPULSE_VERSION, false);
+        wp_enqueue_script('seopulse-clarity');
+        wp_add_inline_script('seopulse-clarity', self::claritySnippet($clarity_id));
+    }
+
+    /**
+     * Matomo JS snippet for already validated inputs.
+     */
+    public static function matomoSnippet(string $base_url, string $site_id): string
+    {
+        $base = wp_json_encode($base_url, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP);
+        $id   = wp_json_encode($site_id);
+
+        return 'var _paq=window._paq=window._paq||[];'
+            . "_paq.push(['trackPageView']);_paq.push(['enableLinkTracking']);"
+            . '(function(){var u=' . $base . ';'
+            . "_paq.push(['setTrackerUrl',u+'matomo.php']);_paq.push(['setSiteId'," . $id . ']);'
+            . "var d=document,g=d.createElement('script'),s=d.getElementsByTagName('script')[0];"
+            . "g.async=true;g.src=u+'matomo.js';s.parentNode.insertBefore(g,s);})();";
+    }
+
+    /**
+     * Clarity JS snippet for an already validated project ID.
+     */
+    public static function claritySnippet(string $project_id): string
+    {
+        return '(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};'
+            . 't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;'
+            . 'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})'
+            . '(window,document,"clarity","script",' . wp_json_encode($project_id) . ');';
     }
 
     /**
@@ -307,8 +460,6 @@ class AnalyticsTracking
 
         // Event tracking (depends on gtag being loaded)
         $this->inject_event_tracking();
-        $this->inject_custom_head_code();
-        $this->inject_custom_footer_code();
     }
 }
 ?>

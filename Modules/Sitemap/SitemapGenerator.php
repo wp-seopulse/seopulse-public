@@ -13,6 +13,10 @@ declare(strict_types=1);
 
 namespace SEOPulse\Modules\Sitemap;
 
+use SEOPulse\Core\Cache\ObjectCache;
+use SEOPulse\Modules\I18n\Multilingual;
+use SEOPulse\Modules\MetaSeo\Headless\AlternatesProvider;
+
 /**
  * SitemapGenerator class
  */
@@ -21,7 +25,7 @@ class SitemapGenerator
     /**
      * Cache key
      */
-    private const CACHE_KEY = 'seopulse_sitemap_cache';
+    private const CACHE_KEY = 'sitemap_cache';
 
     /**
      * Cache duration (24 hours)
@@ -34,6 +38,40 @@ class SitemapGenerator
      * @var array|null
      */
     private static ?array $options = null;
+
+    /**
+     * Media extractor (images and videos)
+     *
+     * @var SitemapMedia|null
+     */
+    private ?SitemapMedia $media = null;
+
+    /**
+     * Returns the media extractor
+     *
+     * @return SitemapMedia
+     */
+    private function media(): SitemapMedia
+    {
+        return $this->media ??= new SitemapMedia();
+    }
+
+    /**
+     * Language alternates provider
+     *
+     * @var AlternatesProvider|null
+     */
+    private ?AlternatesProvider $alternates = null;
+
+    /**
+     * Returns the language alternates provider
+     *
+     * @return AlternatesProvider
+     */
+    private function alternates(): AlternatesProvider
+    {
+        return $this->alternates ??= new AlternatesProvider();
+    }
 
     /**
      * Returns the XSL stylesheet URL
@@ -101,7 +139,7 @@ class SitemapGenerator
         $allowed_types   = $this->get_allowed_sitemap_types();
         $allowed_types[] = 'index';
 
-        if (!in_array($sitemap_type, $allowed_types, true)) {
+        if (!in_array($this->split_language((string) $sitemap_type)[0], $allowed_types, true)) {
             return;
         }
 
@@ -176,9 +214,9 @@ class SitemapGenerator
     public function generate_sitemap_index(): string
     {
         $cache_key = self::CACHE_KEY . '_index';
-        $cached    = get_transient($cache_key);
+        $cached    = ObjectCache::get($cache_key, 'sitemap');
 
-        if ($cached && !$this->is_debug_mode()) {
+        if (is_string($cached) && $cached !== '' && !$this->is_debug_mode()) {
             return $cached;
         }
 
@@ -199,7 +237,7 @@ class SitemapGenerator
 
         $xml .= '</sitemapindex>';
 
-        set_transient($cache_key, $xml, self::CACHE_DURATION);
+        ObjectCache::set($cache_key, $xml, 'sitemap', self::CACHE_DURATION);
 
         return $xml;
     }
@@ -214,9 +252,9 @@ class SitemapGenerator
     public function generate_sitemap(string $type, int $paged = 1): string
     {
         $cache_key = self::CACHE_KEY . "_{$type}_{$paged}";
-        $cached    = get_transient($cache_key);
+        $cached    = ObjectCache::get($cache_key, 'sitemap');
 
-        if ($cached && !$this->is_debug_mode()) {
+        if (is_string($cached) && $cached !== '' && !$this->is_debug_mode()) {
             return $cached;
         }
 
@@ -227,6 +265,14 @@ class SitemapGenerator
         $options = $this->get_options();
         if (!empty($options['include_images'])) {
             $xml .= "\n" . '        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"';
+        }
+
+        if ($type === 'videos') {
+            $xml .= "\n" . '        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"';
+        }
+
+        if (Multilingual::is_active()) {
+            $xml .= "\n" . '        xmlns:xhtml="http://www.w3.org/1999/xhtml"';
         }
 
         $xml .= '>' . "\n";
@@ -249,6 +295,10 @@ class SitemapGenerator
                 $xml .= '  <priority>' . esc_xml($url_data['priority']) . '</priority>' . "\n";
             }
 
+            foreach ($url_data['alternates'] ?? [] as $alternate) {
+                $xml .= '  <xhtml:link rel="alternate" hreflang="' . esc_attr($alternate['hreflang']) . '" href="' . esc_url($alternate['url']) . '" />' . "\n";
+            }
+
             // Images
             if (!empty($url_data['images']) && !empty($options['include_images'])) {
                 foreach ($url_data['images'] as $image) {
@@ -267,12 +317,17 @@ class SitemapGenerator
                 }
             }
 
+            // Videos
+            foreach ($url_data['videos'] ?? [] as $video) {
+                $xml .= $this->render_video($video);
+            }
+
             $xml .= '</url>' . "\n";
         }
 
         $xml .= '</urlset>';
 
-        set_transient($cache_key, $xml, self::CACHE_DURATION);
+        ObjectCache::set($cache_key, $xml, 'sitemap', self::CACHE_DURATION);
 
         return $xml;
     }
@@ -286,7 +341,7 @@ class SitemapGenerator
     {
         $options = $this->get_options();
 
-        // If custom_robots is set, it holds the full robots.txt content — use it verbatim.
+        // If custom_robots is set, it holds the full robots.txt content â€” use it verbatim.
         if (!empty($options['custom_robots'])) {
             $content = trim($options['custom_robots']) . "\n";
 
@@ -334,19 +389,7 @@ class SitemapGenerator
      */
     public function clear_cache(): void
     {
-        global $wpdb;
-
-        // Clear all sitemap-related transients
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->query(
-            $wpdb->prepare(
-                "DELETE FROM {$wpdb->options}
-                 WHERE option_name LIKE %s
-                 OR option_name LIKE %s",
-                '_transient_seopulse_sitemap_cache%',
-                '_transient_timeout_seopulse_sitemap_cache%',
-            ),
-        );
+        ObjectCache::flush_group('sitemap');
 
         // Reset static cache
         self::$options = null;
@@ -386,7 +429,7 @@ class SitemapGenerator
      */
     private function get_allowed_sitemap_types(): array
     {
-        $allowed = ['posts', 'pages', 'categories', 'tags', 'images'];
+        $allowed = ['posts', 'pages', 'categories', 'tags', 'images', 'videos'];
 
         // Add custom post types
         $post_types = get_post_types(
@@ -413,20 +456,26 @@ class SitemapGenerator
         $sitemaps = [];
         $home_url = home_url();
 
+        // One entry per language on multilingual sites, so each sitemap only lists one language.
+        $add = static function (string $slug, string $lastmod) use (&$sitemaps, $home_url): void {
+            $languages = Multilingual::is_active() ? array_keys(Multilingual::languages()) : [''];
+
+            foreach ($languages as $lang) {
+                $sitemaps[] = [
+                    'loc'     => $home_url . '/sitemap-' . $slug . ('' !== $lang ? '-' . $lang : '') . '-1.xml',
+                    'lastmod' => $lastmod,
+                ];
+            }
+        };
+
         // Posts sitemap
         if ($this->is_enabled('post', $options)) {
-            $sitemaps[] = [
-                'loc'     => $home_url . '/sitemap-posts-1.xml',
-                'lastmod' => $this->get_last_modified('post'),
-            ];
+            $add('posts', $this->get_last_modified('post'));
         }
 
         // Pages sitemap
         if ($this->is_enabled('page', $options)) {
-            $sitemaps[] = [
-                'loc'     => $home_url . '/sitemap-pages-1.xml',
-                'lastmod' => $this->get_last_modified('page'),
-            ];
+            $add('pages', $this->get_last_modified('page'));
         }
 
         // Custom post types
@@ -438,27 +487,18 @@ class SitemapGenerator
         );
         foreach ($post_types as $pt) {
             if ($this->is_enabled($pt, $options)) {
-                $sitemaps[] = [
-                    'loc'     => $home_url . '/sitemap-' . sanitize_key($pt) . '-1.xml',
-                    'lastmod' => $this->get_last_modified($pt),
-                ];
+                $add(sanitize_key($pt), $this->get_last_modified($pt));
             }
         }
 
         // Categories
         if ($this->is_enabled('category', $options)) {
-            $sitemaps[] = [
-                'loc'     => $home_url . '/sitemap-categories-1.xml',
-                'lastmod' => gmdate('Y-m-d'),
-            ];
+            $add('categories', gmdate('Y-m-d'));
         }
 
         // Tags
         if ($this->is_enabled('post_tag', $options)) {
-            $sitemaps[] = [
-                'loc'     => $home_url . '/sitemap-tags-1.xml',
-                'lastmod' => gmdate('Y-m-d'),
-            ];
+            $add('tags', gmdate('Y-m-d'));
         }
 
         // Images
@@ -467,6 +507,18 @@ class SitemapGenerator
                 'loc'     => $home_url . '/sitemap-images-1.xml',
                 'lastmod' => gmdate('Y-m-d'),
             ];
+        }
+
+        // Videos: one entry per page of posts, only when some post embeds a video
+        if ($this->is_enabled('videos', $options)) {
+            $video_pages = (int) ceil($this->media()->countVideoPosts($this->get_video_post_types($options)) / SitemapMedia::VIDEO_POSTS_PER_PAGE);
+
+            for ($page = 1; $page <= $video_pages; $page++) {
+                $sitemaps[] = [
+                    'loc'     => $home_url . '/sitemap-videos-' . $page . '.xml',
+                    'lastmod' => gmdate('Y-m-d'),
+                ];
+            }
         }
 
         return apply_filters('seopulse_sitemap_list', $sitemaps);
@@ -483,25 +535,50 @@ class SitemapGenerator
     {
         $options = $this->get_options();
 
+        [$type, $lang] = $this->split_language($type);
+
         switch ($type) {
             case 'posts':
-                return $this->get_post_urls('post', $paged, $options);
+                return $this->get_post_urls('post', $paged, $options, $lang);
             case 'pages':
-                return $this->get_post_urls('page', $paged, $options);
+                return $this->get_post_urls('page', $paged, $options, $lang);
             case 'categories':
-                return $this->get_taxonomy_urls('category', $paged, $options);
+                return $this->get_taxonomy_urls('category', $paged, $options, $lang);
             case 'tags':
-                return $this->get_taxonomy_urls('post_tag', $paged, $options);
+                return $this->get_taxonomy_urls('post_tag', $paged, $options, $lang);
             case 'images':
                 return $this->get_image_urls($paged, $options);
+            case 'videos':
+                return $this->get_video_urls($paged, $options);
             default:
                 // Custom post types
                 if (post_type_exists($type)) {
-                    return $this->get_post_urls($type, $paged, $options);
+                    return $this->get_post_urls($type, $paged, $options, $lang);
                 }
 
                 return [];
         }
+    }
+
+    /**
+     * Splits a sitemap type such as "posts-fr" into its base type and language.
+     *
+     * @param string $type Sitemap type
+     * @return array{0: string, 1: string} Base type, then language slug (empty when none)
+     */
+    private function split_language(string $type): array
+    {
+        if (Multilingual::is_active()) {
+            foreach (array_keys(Multilingual::languages()) as $slug) {
+                $suffix = '-' . $slug;
+
+                if (str_ends_with($type, $suffix)) {
+                    return [substr($type, 0, -strlen($suffix)), (string) $slug];
+                }
+            }
+        }
+
+        return [$type, ''];
     }
 
     /**
@@ -510,9 +587,24 @@ class SitemapGenerator
      * @param string $post_type Post type
      * @param int $paged Page number
      * @param array $options Settings
+     * @param string $lang Language slug, empty for all
      * @return array URLs
      */
-    private function get_post_urls(string $post_type, int $paged, array $options): array
+    private function get_post_urls(string $post_type, int $paged, array $options, string $lang = ''): array
+    {
+        return Multilingual::with_language($lang, fn (): array => $this->collect_post_urls($post_type, $paged, $options, $lang));
+    }
+
+    /**
+     * Collects post URLs (runs with the sitemap language active)
+     *
+     * @param string $post_type Post type
+     * @param int $paged Page number
+     * @param array $options Settings
+     * @param string $lang Language slug, empty for all
+     * @return array URLs
+     */
+    private function collect_post_urls(string $post_type, int $paged, array $options, string $lang): array
     {
         $urls           = [];
         $posts_per_page = 500;
@@ -527,7 +619,12 @@ class SitemapGenerator
             'no_found_rows'          => true,
             'update_post_meta_cache' => true,
             'update_post_term_cache' => false,
+            'post__not_in'           => \SEOPulse\Services\WooCommerceSystemPages::ids(),
         ];
+
+        if ('' !== $lang) {
+            $args = array_merge($args, Multilingual::query_args($lang));
+        }
 
         $posts = get_posts($args);
 
@@ -566,6 +663,11 @@ class SitemapGenerator
                 }
             }
 
+            $alternates = $this->alternates()->for_post($post);
+            if ([] !== $alternates) {
+                $url_data['alternates'] = $alternates;
+            }
+
             $urls[] = $url_data;
         }
 
@@ -578,21 +680,39 @@ class SitemapGenerator
      * @param string $taxonomy Taxonomy name
      * @param int $paged Page number
      * @param array $options Settings
+     * @param string $lang Language slug, empty for all
      * @return array URLs
      */
-    private function get_taxonomy_urls(string $taxonomy, int $paged, array $options): array
+    private function get_taxonomy_urls(string $taxonomy, int $paged, array $options, string $lang = ''): array
+    {
+        return Multilingual::with_language($lang, fn (): array => $this->collect_taxonomy_urls($taxonomy, $paged, $options, $lang));
+    }
+
+    /**
+     * Collects taxonomy URLs (runs with the sitemap language active)
+     *
+     * @param string $taxonomy Taxonomy name
+     * @param int $paged Page number
+     * @param array $options Settings
+     * @param string $lang Language slug, empty for all
+     * @return array URLs
+     */
+    private function collect_taxonomy_urls(string $taxonomy, int $paged, array $options, string $lang): array
     {
         $urls   = [];
         $number = 500;
         $offset = ($paged - 1) * $number;
 
         $terms = get_terms(
-            [
-                'taxonomy'   => $taxonomy,
-                'hide_empty' => true,
-                'number'     => $number,
-                'offset'     => $offset,
-            ],
+            array_merge(
+                [
+                    'taxonomy'   => $taxonomy,
+                    'hide_empty' => true,
+                    'number'     => $number,
+                    'offset'     => $offset,
+                ],
+                '' !== $lang ? Multilingual::query_args($lang) : [],
+            ),
         );
 
         if (is_wp_error($terms)) {
@@ -606,16 +726,27 @@ class SitemapGenerator
                 continue;
             }
 
+            if ('' !== $lang) {
+                $term_link = Multilingual::localize_url($term_link, $lang);
+            }
+
             if ($this->is_excluded($term_link, $options)) {
                 continue;
             }
 
-            $urls[] = [
+            $url_data = [
                 'loc'        => $term_link,
                 'lastmod'    => gmdate('Y-m-d'),
                 'changefreq' => 'weekly',
                 'priority'   => '0.4',
             ];
+
+            $alternates = $this->alternates()->for_term($term);
+            if ([] !== $alternates) {
+                $url_data['alternates'] = $alternates;
+            }
+
+            $urls[] = $url_data;
         }
 
         return $urls;
@@ -665,6 +796,103 @@ class SitemapGenerator
     }
 
     /**
+     * Post types scanned for videos (enabled in the sitemap settings)
+     *
+     * @param array $options Settings
+     * @return string[] Post types
+     */
+    private function get_video_post_types(array $options): array
+    {
+        $types = get_post_types(['public' => true], 'names');
+        unset($types['attachment']);
+
+        return array_values(array_filter($types, fn (string $pt): bool => $this->is_enabled($pt, $options)));
+    }
+
+    /**
+     * Retrieves URLs of posts embedding videos
+     *
+     * @param int $paged Page number
+     * @param array $options Settings
+     * @return array URLs
+     */
+    private function get_video_urls(int $paged, array $options): array
+    {
+        $types = $this->get_video_post_types($options);
+        $ids   = $this->media()->videoPostIds($types, $paged);
+
+        if ($ids === []) {
+            return [];
+        }
+
+        $posts = get_posts(
+            [
+                'post__in'       => $ids,
+                'post_type'      => $types,
+                'post_status'    => 'publish',
+                'orderby'        => 'post__in',
+                'posts_per_page' => count($ids),
+                'no_found_rows'  => true,
+            ],
+        );
+
+        $urls = [];
+
+        foreach ($posts as $post) {
+            $permalink = get_permalink($post);
+
+            if ($this->is_excluded($permalink, $options) || get_post_meta($post->ID, '_seopulse_exclude_sitemap', true) || \SEOPulse\Services\WooCommerceSystemPages::isSystemPage($post->ID)) {
+                continue;
+            }
+
+            $videos = $this->media()->videos($post);
+
+            if ($videos !== []) {
+                $urls[] = [
+                    'loc'     => $permalink,
+                    'lastmod' => get_the_modified_time('Y-m-d', $post),
+                    'videos'  => $videos,
+                ];
+            }
+        }
+
+        return $urls;
+    }
+
+    /**
+     * Renders a <video:video> block
+     *
+     * @param array $video Video data
+     * @return string XML
+     */
+    private function render_video(array $video): string
+    {
+        $xml = '  <video:video>' . "\n";
+
+        $xml .= '    <video:thumbnail_loc>' . esc_url($video['thumbnail_loc']) . '</video:thumbnail_loc>' . "\n";
+        $xml .= '    <video:title>' . esc_xml($video['title']) . '</video:title>' . "\n";
+        $xml .= '    <video:description>' . esc_xml($video['description']) . '</video:description>' . "\n";
+
+        if (!empty($video['content_loc'])) {
+            $xml .= '    <video:content_loc>' . esc_url($video['content_loc']) . '</video:content_loc>' . "\n";
+        }
+
+        if (!empty($video['player_loc'])) {
+            $xml .= '    <video:player_loc>' . esc_url($video['player_loc']) . '</video:player_loc>' . "\n";
+        }
+
+        if (!empty($video['duration'])) {
+            $xml .= '    <video:duration>' . (int) $video['duration'] . '</video:duration>' . "\n";
+        }
+
+        if (!empty($video['publication_date'])) {
+            $xml .= '    <video:publication_date>' . esc_xml($video['publication_date']) . '</video:publication_date>' . "\n";
+        }
+
+        return $xml . '  </video:video>' . "\n";
+    }
+
+    /**
      * Retrieves images from a post
      *
      * @param int $post_id Post ID
@@ -672,47 +900,20 @@ class SitemapGenerator
      */
     private function get_post_images(int $post_id): array
     {
-        $images = [];
-
-        // Featured image
-        if (has_post_thumbnail($post_id)) {
-            $thumb_id  = get_post_thumbnail_id($post_id);
-            $thumb_url = wp_get_attachment_url($thumb_id);
-
-            if ($thumb_url) {
-                $images[] = [
-                    'loc'     => $thumb_url,
-                    'title'   => get_the_title($thumb_id),
-                    'caption' => wp_get_attachment_caption($thumb_id),
-                ];
-            }
-        }
-
-        // Images in content
         $post = get_post($post_id);
-        if ($post && !empty($post->post_content)) {
-            preg_match_all('/<img[^>]+src=[\'"]([^\'"]+)[\'"][^>]*>/i', $post->post_content, $matches);
 
-            if (!empty($matches[1])) {
-                foreach ($matches[1] as $img_url) {
-                    // Validate URL
-                    if (!filter_var($img_url, FILTER_VALIDATE_URL)) {
-                        continue;
-                    }
-
-                    $attachment_id = attachment_url_to_postid($img_url);
-
-                    $images[] = [
-                        'loc'     => $img_url,
-                        'title'   => $attachment_id ? get_the_title($attachment_id) : '',
-                        'caption' => $attachment_id ? wp_get_attachment_caption($attachment_id) : '',
-                    ];
-                }
-            }
+        if (!$post) {
+            return [];
         }
 
-        // Limit to 10 images per post (Google recommendation)
-        return array_slice($images, 0, 10);
+        $options = $this->get_options();
+
+        return array_values(
+            array_filter(
+                $this->media()->images($post),
+                fn (array $image): bool => !$this->is_excluded($image['loc'], $options),
+            ),
+        );
     }
 
     /**

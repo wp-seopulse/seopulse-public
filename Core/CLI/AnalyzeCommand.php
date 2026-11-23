@@ -206,6 +206,9 @@ class AnalyzeCommand extends BaseCommand
         $images_without_alt = (int) ($content_data['images']['images_without_alt'] ?? 0);
         update_post_meta($post_id, '_seopulse_images_without_alt', $images_without_alt);
 
-        delete_transient('seopulse_dashboard_seo_overview');
+        \SEOPulse\Core\Cache\ObjectCache::delete(
+            \SEOPulse\Api\DashboardWidgetController::CACHE_KEY,
+            \SEOPulse\Api\DashboardWidgetController::CACHE_GROUP,
+        );
     }
 }

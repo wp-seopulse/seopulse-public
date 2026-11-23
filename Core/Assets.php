@@ -46,6 +46,44 @@ class Assets implements ExecuteHooks
         if (is_admin()) {
             add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
             add_action('enqueue_block_editor_assets', [$this, 'enqueue_sidebar_assets']);
+            add_action('enqueue_block_editor_assets', [$this, 'enqueue_schema_editor_assets']);
+        }
+    }
+
+    /**
+     * Enqueues the advanced Schema.org editing panel (block editor, Meta SEO module only).
+     *
+     * @return void
+     */
+    public function enqueue_schema_editor_assets(): void
+    {
+        $asset_path = SEOPULSE_PLUGIN_DIR . 'assets/build/schema-editor.asset.php';
+
+        if (!file_exists($asset_path) || !Module\ModuleManager::instance()->isModuleEnabled('meta_seo')) {
+            return;
+        }
+
+        $asset = require $asset_path;
+
+        wp_enqueue_script(
+            'seopulse-schema-editor',
+            SEOPULSE_PLUGIN_URL . 'assets/build/schema-editor.js',
+            $asset['dependencies'],
+            $asset['version'],
+            true,
+        );
+
+        wp_set_script_translations('seopulse-schema-editor', 'seopulse', SEOPULSE_PLUGIN_DIR . 'languages');
+
+        $css_path = SEOPULSE_PLUGIN_DIR . 'assets/build/schema-editor.css';
+
+        if (file_exists($css_path)) {
+            wp_enqueue_style(
+                'seopulse-schema-editor',
+                SEOPULSE_PLUGIN_URL . 'assets/build/schema-editor.css',
+                ['wp-components'],
+                $asset['version'],
+            );
         }
     }
 
@@ -171,7 +209,9 @@ class Assets implements ExecuteHooks
      */
     private function is_seopulse_page(string $hook): bool
     {
-        return str_contains($hook, 'seopulse');
+        return $hook === 'toplevel_page_seopulse'
+            || str_starts_with($hook, 'seopulse_page_')
+            || str_starts_with($hook, 'admin_page_seopulse');
     }
 
     /**
@@ -530,6 +570,8 @@ class Assets implements ExecuteHooks
                     ['label' => __('Image Diagnostic', 'seopulse'),  'icon' => 'format-image',  'url' => admin_url('admin.php?page=seopulse-meta-seo#tab=image-diagnostic')],
                     ['label' => __('Logs', 'seopulse'),              'icon' => 'list-view',     'url' => admin_url('admin.php?page=seopulse-logs')],
                     ['label' => __('Refresh KPI data', 'seopulse'),  'icon' => 'update',        'type' => 'action', 'action' => 'refresh-kpis'],
+                    // Per-user dashboard layout (block order + section visibility), saved in user meta.
+                    'layout'    => \SEOPulse\Api\DashboardController::get_layout(get_current_user_id()),
                 ],
             ],
         );

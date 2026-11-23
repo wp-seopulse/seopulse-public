@@ -47,6 +47,11 @@ final class ArticleProvider implements SchemaProvider
             return false;
         }
 
+        // The editor panel configuration replaces the automatic provider
+        if (SchemaCatalog::overrides('Article')) {
+            return false;
+        }
+
         // Only inject for single posts (not pages)
         return is_singular('post') && !is_page();
     }

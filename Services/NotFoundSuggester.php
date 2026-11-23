@@ -131,35 +131,11 @@ class NotFoundSuggester
      */
     private static function getRedirectSources(): array
     {
-        global $wpdb;
+        $repository = new \SEOPulse\Modules\Redirections\RedirectRepository();
 
-        $table = $wpdb->prefix . 'seopulse_redirects';
-
-        if (!isset($wpdb->seopulse_redirects)) {
-            $wpdb->seopulse_redirects = $table;
-        }
-
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-        $exists = (bool) $wpdb->get_var(
-            $wpdb->prepare('SHOW TABLES LIKE %s', $table),
-        );
-
-        if ($exists) {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-            $rows = $wpdb->get_results(
-                $wpdb->prepare(
-                    "SELECT source_url, target_url FROM `{$wpdb->seopulse_redirects}`
-                     WHERE status = %s AND regex = %d
-                     LIMIT %d",
-                    'active',
-                    0,
-                    500,
-                ),
-                ARRAY_A,
-            );
-
+        if ($repository->tableExists()) {
             $map = [];
-            foreach ((array) $rows as $row) {
+            foreach ($repository->getActiveExactRoutes(500) as $row) {
                 $map[ self::normalizePath($row['source_url']) ] = $row['target_url'];
             }
 

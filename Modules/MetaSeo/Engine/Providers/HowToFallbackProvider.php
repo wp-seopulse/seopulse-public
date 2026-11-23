@@ -83,6 +83,11 @@ final class HowToFallbackProvider implements SchemaProvider
             return false;
         }
 
+        // The editor panel configuration replaces the automatic provider
+        if (SchemaCatalog::overrides('HowTo')) {
+            return false;
+        }
+
         $content = $post->post_content ?? '';
 
         if (empty($content)) {

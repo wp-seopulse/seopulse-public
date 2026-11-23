@@ -26,6 +26,8 @@
 	--sp-consent-z-overlay: 99999;
 	--sp-consent-z-modal: 100000;
 	--sp-consent-z-reopen: 99997;
+	--sp-consent-z-backdrop: 99996;
+	--sp-consent-backdrop: rgba(0, 0, 0, 0.5);
 	--sp-consent-radius: 16px;
 	--sp-consent-radius-sm: 10px;
 	--sp-consent-shadow: 0 -4px 32px rgba(0, 0, 0, 0.08);
@@ -231,7 +233,7 @@
 
 .seopulse-consent-banner__privacy-link {
 	font-size: 13px;
-	color: var(--sp-consent-primary);
+	color: var(--sp-consent-link, var(--sp-consent-primary));
 	text-decoration: underline;
 	text-underline-offset: 3px;
 	text-decoration-thickness: 1px;
@@ -239,7 +241,7 @@
 }
 
 .seopulse-consent-banner__privacy-link:hover {
-	color: var(--sp-consent-primary-hover);
+	color: var(--sp-consent-link-hover, var(--sp-consent-primary-hover));
 }
 
 /* Banner actions */
@@ -309,27 +311,29 @@
 }
 
 .seopulse-consent-btn--accept {
-	background: var(--sp-consent-primary);
-	color: var(--sp-consent-primary-text);
-	border: 2px solid var(--sp-consent-primary);
+	background: var(--sp-consent-btn-primary-bg, var(--sp-consent-primary));
+	color: var(--sp-consent-btn-primary-text, var(--sp-consent-primary-text));
+	border: 2px solid var(--sp-consent-btn-primary-bg, var(--sp-consent-primary));
 	box-shadow: 0 2px 8px rgba(10, 132, 255, 0.25);
 }
 
 .seopulse-consent-btn--accept:hover {
-	background: var(--sp-consent-primary-hover);
-	border-color: var(--sp-consent-primary-hover);
+	background: var(--sp-consent-btn-primary-bg-hover, var(--sp-consent-btn-primary-bg, var(--sp-consent-primary-hover)));
+	border-color: var(--sp-consent-btn-primary-bg-hover, var(--sp-consent-btn-primary-bg, var(--sp-consent-primary-hover)));
+	color: var(--sp-consent-btn-primary-text-hover, var(--sp-consent-btn-primary-text, var(--sp-consent-primary-text)));
 	box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
 	transform: translateY(-1px);
 }
 
 .seopulse-consent-btn--reject {
-	background: var(--sp-consent-reject-bg);
-	color: var(--sp-consent-reject-text);
+	background: var(--sp-consent-btn-secondary-bg, var(--sp-consent-reject-bg));
+	color: var(--sp-consent-btn-secondary-text, var(--sp-consent-reject-text));
 	border: 2px solid var(--sp-consent-reject-border);
 }
 
 .seopulse-consent-btn--reject:hover {
-	background: var(--sp-consent-reject-hover);
+	background: var(--sp-consent-btn-secondary-bg-hover, var(--sp-consent-btn-secondary-bg, var(--sp-consent-reject-hover)));
+	color: var(--sp-consent-btn-secondary-text-hover, var(--sp-consent-btn-secondary-text, var(--sp-consent-reject-text)));
 }
 
 .seopulse-consent-btn--customize {
@@ -346,16 +350,17 @@
 }
 
 .seopulse-consent-btn--save {
-	background: var(--sp-consent-primary);
-	color: var(--sp-consent-primary-text);
-	border: 2px solid var(--sp-consent-primary);
+	background: var(--sp-consent-btn-primary-bg, var(--sp-consent-primary));
+	color: var(--sp-consent-btn-primary-text, var(--sp-consent-primary-text));
+	border: 2px solid var(--sp-consent-btn-primary-bg, var(--sp-consent-primary));
 	flex: 1;
 	box-shadow: 0 2px 8px rgba(10, 132, 255, 0.25);
 }
 
 .seopulse-consent-btn--save:hover {
-	background: var(--sp-consent-primary-hover);
-	border-color: var(--sp-consent-primary-hover);
+	background: var(--sp-consent-btn-primary-bg-hover, var(--sp-consent-btn-primary-bg, var(--sp-consent-primary-hover)));
+	border-color: var(--sp-consent-btn-primary-bg-hover, var(--sp-consent-btn-primary-bg, var(--sp-consent-primary-hover)));
+	color: var(--sp-consent-btn-primary-text-hover, var(--sp-consent-btn-primary-text, var(--sp-consent-primary-text)));
 	box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
 	transform: translateY(-1px);
 }
@@ -363,6 +368,23 @@
 .seopulse-consent-btn--sm {
 	padding: 8px 18px;
 	font-size: 13px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BACKDROP — dims the page while the banner is displayed (optional)
+   ══════════════════════════════════════════════════════════════════ */
+
+.seopulse-consent-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: var(--sp-consent-z-backdrop);
+	background: var(--sp-consent-backdrop);
+	opacity: 0;
+	transition: opacity var(--sp-consent-transition);
+}
+
+.seopulse-consent-backdrop--visible {
+	opacity: 1;
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -694,6 +716,7 @@
 @media print {
 
 	.seopulse-consent-banner,
+	.seopulse-consent-backdrop,
 	.seopulse-consent-modal,
 	.seopulse-consent-overlay,
 	.seopulse-consent-reopen {
@@ -708,6 +731,7 @@
 @media (prefers-reduced-motion: reduce) {
 
 	.seopulse-consent-banner,
+	.seopulse-consent-backdrop,
 	.seopulse-consent-modal,
 	.seopulse-consent-overlay,
 	.seopulse-consent-reopen,

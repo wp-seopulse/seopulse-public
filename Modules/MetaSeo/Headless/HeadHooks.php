@@ -43,6 +43,7 @@ class HeadHooks implements ExecuteHooks
      */
     private const WATCHED_POST_META = [
         PostMeta::META_SEO,
+        PostMeta::SCHEMA_DATA,
         '_seopulse_faqs',
         '_thumbnail_id',
         '_wp_attachment_image_alt',
@@ -343,10 +344,9 @@ class HeadHooks implements ExecuteHooks
 
         $cache = new HeadCache();
         $cache->touch_post($post->ID);
+        $cache->flush_content();
 
-        if ($cache->flush_content()) {
-            (new MetaEngine())->flushCache();
-        }
+        (new MetaEngine())->invalidatePost($post->ID);
 
         (new HeadWebhook())->queue('content', $this->permalink($post));
 

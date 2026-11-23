@@ -58,6 +58,14 @@ class ConsentBanner
      */
     private function renderBanner(): void
     {
+        $settings = (new ConsentManager())->getSettings();
+
+        if (!empty($settings['backdrop_enabled'])) {
+            ?>
+<!-- SEOPulse Cookie Consent Backdrop -->
+<div id="seopulse-consent-backdrop" class="seopulse-consent-backdrop" style="display:none;" aria-hidden="true"></div>
+<?php
+        }
         ?>
 <!-- SEOPulse Cookie Consent Banner -->
 <div id="seopulse-consent-banner" class="seopulse-consent-banner" role="dialog" aria-modal="false"

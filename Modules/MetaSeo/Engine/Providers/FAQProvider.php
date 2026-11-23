@@ -66,6 +66,11 @@ final class FAQProvider implements SchemaProvider
             return false;
         }
 
+        // The editor panel configuration replaces the automatic provider
+        if (SchemaCatalog::overrides('FAQPage')) {
+            return false;
+        }
+
         // A seopulse/schema block already prints an FAQPage: it wins over the automatic provider
         if (SchemaBlockDetector::has_type((string) $post->post_content, 'FAQPage')) {
             return false;

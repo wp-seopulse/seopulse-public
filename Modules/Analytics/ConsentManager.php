@@ -55,10 +55,47 @@ class ConsentManager
      */
     public function getSettings(): array
     {
+        $stored = get_option(self::OPTION_KEY, []);
+        $stored = is_array($stored) ? $stored : [];
+
         return wp_parse_args(
-            get_option(self::OPTION_KEY, []),
+            self::migrateLegacyKeys($stored),
             self::getDefaults(),
         );
+    }
+
+    /**
+     * Legacy option keys renamed when custom code was decoupled from GA4
+     *
+     * @var array<string, string> old key => new key
+     */
+    private const LEGACY_KEYS = [
+        'ga4_custom_head_code'   => 'custom_head_code',
+        'ga4_custom_footer_code' => 'custom_footer_code',
+    ];
+
+    /**
+     * Map legacy keys (ga4_custom_*) to their new names.
+     *
+     * Non-destructive for the database: the legacy keys disappear from the
+     * stored option on the next save, since saveSettings() only writes
+     * sanitized (new) keys.
+     *
+     * @param array<string, mixed> $stored
+     * @return array<string, mixed>
+     */
+    private static function migrateLegacyKeys(array $stored): array
+    {
+        foreach (self::LEGACY_KEYS as $old => $new) {
+            if (array_key_exists($old, $stored)) {
+                if (!array_key_exists($new, $stored)) {
+                    $stored[ $new ] = $stored[ $old ];
+                }
+                unset($stored[ $old ]);
+            }
+        }
+
+        return $stored;
     }
 
     /**
@@ -72,6 +109,52 @@ class ConsentManager
         $sanitized = $this->sanitizeSettings($settings);
 
         return update_option(self::OPTION_KEY, $sanitized);
+    }
+
+    /**
+     * Settings keys holding a CSS color (cookie bar customization)
+     *
+     * @var string[]
+     */
+    public const COLOR_KEYS = [
+        'backdrop_bg_color',
+        'main_bg_color',
+        'main_text_color',
+        'main_link_color',
+        'primary_btn_bg_color',
+        'primary_btn_bg_color_hover',
+        'primary_btn_text_color',
+        'primary_btn_text_color_hover',
+        'secondary_btn_bg_color',
+        'secondary_btn_bg_color_hover',
+        'secondary_btn_text_color',
+        'secondary_btn_text_color_hover',
+    ];
+
+    /**
+     * Sanitize a CSS color: hex (#rgb, #rgba, #rrggbb, #rrggbbaa), rgb()/rgba() or hsl()/hsla().
+     * Anything else is dropped (empty string = default color).
+     *
+     * @param string $color
+     * @return string
+     */
+    public static function sanitizeColor(string $color): string
+    {
+        $color = trim($color);
+
+        if ($color === '') {
+            return '';
+        }
+
+        if (preg_match('/^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i', $color) === 1) {
+            return strtolower($color);
+        }
+
+        if (preg_match('/^(?:rgb|hsl)a?\(\s*[0-9.%\s,\/-]+\)$/i', $color) === 1) {
+            return $color;
+        }
+
+        return '';
     }
 
     /**
@@ -101,6 +184,21 @@ class ConsentManager
             'privacy_policy_text' => '',
             'privacy_policy_url'  => '',
 
+            // Cookie bar customization (empty color = default, shown as placeholder in the admin)
+            'backdrop_enabled'               => false,
+            'backdrop_bg_color'              => '',
+            'main_bg_color'                  => '',
+            'main_text_color'                => '',
+            'main_link_color'                => '',
+            'primary_btn_bg_color'           => '',
+            'primary_btn_bg_color_hover'     => '',
+            'primary_btn_text_color'         => '',
+            'primary_btn_text_color_hover'   => '',
+            'secondary_btn_bg_color'         => '',
+            'secondary_btn_bg_color_hover'   => '',
+            'secondary_btn_text_color'       => '',
+            'secondary_btn_text_color_hover' => '',
+
             // Google Consent Mode v2
             'gcm_v2_enabled'      => true,
 
@@ -110,14 +208,23 @@ class ConsentManager
             'ga4_enabled'         => false,
             'ga4_id'              => '',
 
+            // Matomo / Microsoft Clarity
+            'matomo_enabled'      => false,
+            'matomo_url'          => '',
+            'matomo_site_id'      => '',
+            'clarity_enabled'     => false,
+            'clarity_id'          => '',
+
             // GA4 advanced
             'ga4_exclude_admins'      => false,
             'ga4_exclude_roles'       => [],
             'ga4_track_outbound'      => false,
             'ga4_track_downloads'     => false,
             'ga4_download_extensions' => 'pdf,zip,doc,docx,xls,xlsx,ppt,pptx',
-            'ga4_custom_head_code'    => '',
-            'ga4_custom_footer_code'  => '',
+
+            // Custom code (independent of any tracking provider)
+            'custom_head_code'    => '',
+            'custom_footer_code'  => '',
 
             // Consent logging (structure ready)
             'log_consents'        => false,
@@ -135,7 +242,7 @@ class ConsentManager
         $sanitized = [];
 
         // Booleans
-        $booleans = ['enabled', 'gcm_v2_enabled', 'log_consents', 'gtm_enabled', 'ga4_enabled', 'ga4_exclude_admins', 'ga4_track_outbound', 'ga4_track_downloads'];
+        $booleans = ['enabled', 'gcm_v2_enabled', 'log_consents', 'gtm_enabled', 'ga4_enabled', 'ga4_exclude_admins', 'ga4_track_outbound', 'ga4_track_downloads', 'matomo_enabled', 'clarity_enabled', 'backdrop_enabled'];
         foreach ($booleans as $key) {
             $sanitized[ $key ] = !empty($input[ $key ]);
         }
@@ -162,11 +269,21 @@ class ConsentManager
             }
         }
 
-        // Google Analytics (admin-only, stored as-is)
-        foreach (['ga4_custom_head_code', 'ga4_custom_footer_code'] as $key) {
+        // Matomo / Clarity identifiers (strictly validated; invalid values are dropped)
+        $sanitized['matomo_url']     = AnalyticsTracking::normalizeMatomoUrl((string) ($input['matomo_url'] ?? ''));
+        $sanitized['matomo_site_id'] = AnalyticsTracking::normalizeMatomoSiteId((string) ($input['matomo_site_id'] ?? ''));
+        $sanitized['clarity_id']     = AnalyticsTracking::normalizeClarityId((string) ($input['clarity_id'] ?? ''));
+
+        // Custom code (admin-only, stored as-is)
+        foreach (['custom_head_code', 'custom_footer_code'] as $key) {
             if (isset($input[$key])) {
                 $sanitized[$key] = wp_unslash((string) $input[$key]);
             }
+        }
+
+        // Cookie bar colors (empty string = default)
+        foreach (self::COLOR_KEYS as $key) {
+            $sanitized[ $key ] = self::sanitizeColor((string) ($input[ $key ] ?? ''));
         }
 
         // Roles array
@@ -203,7 +320,7 @@ class ConsentManager
     public function getConsentFromCookie(): ?array
     {
         $cookieValue = isset($_COOKIE[ $this->cookieName ])
-            ? sanitize_text_field(wp_unslash($_COOKIE[ $this->cookieName ]))
+            ? sanitize_text_field(wp_unslash($_COOKIE[ $this->cookieName ] ?? ''))
             : null;
 
         if ($cookieValue === null) {

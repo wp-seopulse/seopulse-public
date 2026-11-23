@@ -473,6 +473,9 @@ class AnalysisController extends RestController
 
         // Invalidate dashboard caches (React dashboard + PHP WP dashboard widget)
         DashboardSummary::invalidate();
-        delete_transient('seopulse_dashboard_seo_overview');
+        \SEOPulse\Core\Cache\ObjectCache::delete(
+            \SEOPulse\Api\DashboardWidgetController::CACHE_KEY,
+            \SEOPulse\Api\DashboardWidgetController::CACHE_GROUP,
+        );
     }
 }

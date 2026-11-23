@@ -273,6 +273,7 @@ class SitemapSettings
             'enable_category',
             'enable_post_tag',
             'enable_images',
+            'enable_videos',
             'include_images',
             'disable_wp_core_sitemaps',
             'enable_news_sitemap',

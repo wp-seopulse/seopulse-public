@@ -21,13 +21,15 @@ if (!defined('ABSPATH')) {
 }
 
 use SEOPulse\Core\Abstracts\RestController;
+use SEOPulse\Core\Cache\ObjectCache;
 use SEOPulse\Core\Constants\PostMeta;
 use WP_REST_Request;
 use WP_REST_Response;
 
 class DashboardWidgetController extends RestController
 {
-    private const CACHE_KEY = 'seopulse_dashboard_widget_overview';
+    public const CACHE_KEY   = 'widget_overview';
+    public const CACHE_GROUP = 'dashboard';
     private const CACHE_TTL = 3600; // 1 hour
 
     public function __construct()
@@ -67,13 +69,13 @@ class DashboardWidgetController extends RestController
      */
     public function get_data(WP_REST_Request $request): WP_REST_Response
     {
-        $cached = get_transient(self::CACHE_KEY);
+        $cached = ObjectCache::get(self::CACHE_KEY, self::CACHE_GROUP);
         if (is_array($cached)) {
             return $this->success($cached);
         }
 
         $data = $this->compute_data();
-        set_transient(self::CACHE_KEY, $data, self::CACHE_TTL);
+        ObjectCache::set(self::CACHE_KEY, $data, self::CACHE_GROUP, self::CACHE_TTL);
 
         return $this->success($data);
     }
@@ -83,9 +85,9 @@ class DashboardWidgetController extends RestController
      */
     public function refresh_data(WP_REST_Request $request): WP_REST_Response
     {
-        delete_transient(self::CACHE_KEY);
+        ObjectCache::delete(self::CACHE_KEY, self::CACHE_GROUP);
         $data = $this->compute_data();
-        set_transient(self::CACHE_KEY, $data, self::CACHE_TTL);
+        ObjectCache::set(self::CACHE_KEY, $data, self::CACHE_GROUP, self::CACHE_TTL);
 
         return $this->success($data);
     }

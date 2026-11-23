@@ -211,6 +211,12 @@ class MetaSeoModule extends Module implements ModuleInterface
             'howto-fallback',
             new Engine\Providers\HowToFallbackProvider(),
         );
+
+        // Register editor-driven advanced schema provider (Recipe, Course, VideoObject, SoftwareApplication, ...)
+        Engine\Providers\SchemaFactory::register(
+            'advanced',
+            new Engine\Providers\AdvancedSchemaProvider(),
+        );
     }
 
     /**

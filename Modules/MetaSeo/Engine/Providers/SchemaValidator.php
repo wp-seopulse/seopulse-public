@@ -92,7 +92,9 @@ class SchemaValidator
         $type = (string) $schema['@type'];
 
         return match ($type) {
-            'BlogPosting', 'Article' => $this->validate_article($schema),
+            'BlogPosting', 'Article', 'NewsArticle' => $this->validate_article($schema),
+            'Recipe', 'Course', 'SoftwareApplication' => $this->validate_named($schema),
+            'VideoObject'            => $this->validate_video($schema),
             'WebPage'                => $this->validate_webpage($schema),
             'WebSite'                => $this->validate_website($schema),
             'Organization'           => $this->validate_organization($schema),
@@ -124,6 +126,44 @@ class SchemaValidator
             $this->error = 'Article requires datePublished';
 
             return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validate schemas that only require a name (Recipe, Course, SoftwareApplication)
+     *
+     * @param array<string, mixed> $schema Schema array
+     *
+     * @return bool
+     */
+    private function validate_named(array $schema): bool
+    {
+        if (empty($schema['name'])) {
+            $this->error = (string) $schema['@type'] . ' requires name';
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validate VideoObject schema
+     *
+     * @param array<string, mixed> $schema Schema array
+     *
+     * @return bool
+     */
+    private function validate_video(array $schema): bool
+    {
+        foreach (['name', 'thumbnailUrl', 'uploadDate'] as $field) {
+            if (empty($schema[ $field ])) {
+                $this->error = 'VideoObject requires ' . $field;
+
+                return false;
+            }
         }
 
         return true;
@@ -258,13 +298,16 @@ class SchemaValidator
             return false;
         }
 
-        // Location should have either a name or address
-        if (!empty($schema['location'])) {
-            $loc = $schema['location'];
-            if (empty($loc['name']) && empty($loc['address'])) {
-                $this->error = 'Event location must have name or address';
+        // Each location (single node or list) should have a name, an address or a URL (VirtualLocation)
+        if (!empty($schema['location']) && is_array($schema['location'])) {
+            $locations = isset($schema['location']['@type']) ? [$schema['location']] : $schema['location'];
 
-                return false;
+            foreach ($locations as $loc) {
+                if (is_array($loc) && empty($loc['name']) && empty($loc['address']) && empty($loc['url'])) {
+                    $this->error = 'Event location must have name or address';
+
+                    return false;
+                }
             }
         }
 

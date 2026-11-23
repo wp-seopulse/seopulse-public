@@ -48,6 +48,9 @@ final class PostMeta
     /** @var string Post Meta SEO data (title, desc, OG, Twitter, etc.) */
     public const META_SEO = '_seopulse_meta_seo';
 
+    /** @var string Advanced Schema.org data edited per post (type + fields) */
+    public const SCHEMA_DATA = '_seopulse_schema_data';
+
     // ── Redirections Module ──────────────────────────────────
     /** @var string Redirect URL */
     public const REDIRECT_URL = '_seopulse_redirect_url';

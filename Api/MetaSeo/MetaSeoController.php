@@ -213,7 +213,7 @@ class MetaSeoController extends RestController
             'schema_product_enabled', 'schema_event_enabled',
             'enable_schema', 'enable_image_seo', 'image_auto_rename',
             'enable_image_diagnostic',
-            'headless_endpoint_enabled', 'headless_field_enabled', 'headless_not_found_head',
+            'headless_endpoint_enabled', 'headless_field_enabled', 'headless_not_found_head', 'headless_abilities_enabled',
         ];
 
         foreach ($bool_fields as $field) {

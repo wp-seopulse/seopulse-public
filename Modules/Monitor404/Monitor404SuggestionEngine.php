@@ -21,6 +21,8 @@ declare(strict_types=1);
 
 namespace SEOPulse\Modules\Monitor404;
 
+use SEOPulse\Core\Cache\ObjectCache;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -53,9 +55,9 @@ class Monitor404SuggestionEngine
         }
 
         $cacheKey = 'sp404_sugg_' . md5($url);
-        $cached   = wp_cache_get($cacheKey, 'seopulse_404');
+        $cached   = ObjectCache::get($cacheKey, 'seopulse_404', $found);
 
-        if ($cached !== false) {
+        if ($found) {
             return $cached ?: null;
         }
 
@@ -83,7 +85,7 @@ class Monitor404SuggestionEngine
             ];
         }
 
-        wp_cache_set($cacheKey, $result ?? false, 'seopulse_404', 3600);
+        ObjectCache::set($cacheKey, $result ?? false, 'seopulse_404', 3600);
 
         return $result;
     }

@@ -42,6 +42,18 @@ abstract class Kernel
     private static ?Container $container = null;
 
     /**
+     * Option holding the compiled classmap (list of [type, FQCN] pairs).
+     */
+    private const CLASSMAP_OPTION = 'seopulse_classmap';
+
+    /**
+     * Registrations recorded while scanning, persisted as the classmap.
+     *
+     * @var list<array{0: string, 1: string}>
+     */
+    private static array $scanned = [];
+
+    /**
      * Plugin configuration data
      *
      * @var array{file: string, slug: string, main_file: string, root: string}
@@ -82,6 +94,113 @@ abstract class Kernel
      */
     public static function buildContainer(): void
     {
+        $classmap = self::loadClassmap();
+
+        if ($classmap !== null) {
+            foreach ($classmap as [$type, $className]) {
+                self::register($type, $className);
+            }
+        } else {
+            self::$scanned = [];
+            self::scanContainer();
+            self::saveClassmap(self::$scanned);
+        }
+
+        // Register the centralized logger as a service (not an action)
+        self::getContainer()->setService(Logger::class);
+
+        // Register WP-CLI commands when running in CLI context
+        if (defined('WP_CLI') && \WP_CLI) {
+            self::registerCliCommands();
+        }
+    }
+
+    /**
+     * Reads the compiled classmap; null forces a filesystem scan.
+     *
+     * Bypassed in debug mode so new classes are picked up without a version bump.
+     *
+     * @return list<array{0: string, 1: string}>|null
+     */
+    private static function loadClassmap(): ?array
+    {
+        if ((defined('WP_DEBUG') && WP_DEBUG) || (defined('SEOPULSE_DISABLE_CLASSMAP') && SEOPULSE_DISABLE_CLASSMAP)) {
+            return null;
+        }
+
+        $stored = get_option(self::CLASSMAP_OPTION);
+
+        if (!is_array($stored) || ($stored['version'] ?? null) !== SEOPULSE_VERSION || !is_array($stored['classes'] ?? null)) {
+            return null;
+        }
+
+        $classes = [];
+
+        foreach ($stored['classes'] as $entry) {
+            if (
+                !is_array($entry)
+                || !isset($entry[0], $entry[1])
+                || !in_array($entry[0], ['services', 'actions'], true)
+                || !is_string($entry[1])
+                || !str_starts_with($entry[1], '\\SEOPulse\\')
+            ) {
+                return null;
+            }
+
+            $classes[] = [$entry[0], $entry[1]];
+        }
+
+        return $classes === [] ? null : $classes;
+    }
+
+    /**
+     * Persists the classmap (autoloaded: a few KB, avoids a dedicated query).
+     *
+     * @param list<array{0: string, 1: string}> $classes
+     * @return void
+     */
+    private static function saveClassmap(array $classes): void
+    {
+        if ($classes === [] || (defined('WP_DEBUG') && WP_DEBUG)) {
+            return;
+        }
+
+        update_option(self::CLASSMAP_OPTION, ['version' => SEOPULSE_VERSION, 'classes' => $classes], true);
+    }
+
+    /**
+     * Drops the compiled classmap so the next boot rescans the filesystem.
+     *
+     * @return void
+     */
+    public static function flushClassmap(): void
+    {
+        delete_option(self::CLASSMAP_OPTION);
+    }
+
+    /**
+     * Registers a class in the container.
+     *
+     * @param string $type 'services' or 'actions'
+     * @param string $className Fully qualified class name
+     * @return void
+     */
+    private static function register(string $type, string $className): void
+    {
+        match ($type) {
+            'services' => self::getContainer()->setService($className),
+            'actions'  => self::getContainer()->setAction($className),
+            default    => null,
+        };
+    }
+
+    /**
+     * Scans class directories (reflection-based; slow path).
+     *
+     * @return void
+     */
+    private static function scanContainer(): void
+    {
         $root = rtrim(self::$data['root'], '/\\');
 
         // Register services (business logic / data access)
@@ -91,9 +210,6 @@ abstract class Kernel
 
         // Register core actions (Assets, Installer)
         self::buildClasses($root . '/Core', 'actions', 'Core\\');
-
-        // Register the centralized logger as a service (not an action)
-        self::getContainer()->setService(Logger::class);
 
         // Register Meta Engine services (variable engine)
         self::buildClasses($root . '/Modules/MetaSeo/Engine', 'services', 'Modules\\MetaSeo\\Engine\\');
@@ -115,6 +231,7 @@ abstract class Kernel
         //self::buildClasses($root . '/Modules/PageBuilders/Divi', 'actions', 'Modules\\PageBuilders\\Divi\\');
         self::buildClasses($root . '/Modules/PageBuilders/LiveComposer', 'actions', 'Modules\\PageBuilders\\LiveComposer\\');
         self::buildClasses($root . '/Modules/PageBuilders/Kubio', 'actions', 'Modules\\PageBuilders\\Kubio\\');
+        self::buildClasses($root . '/Modules/PageBuilders/Bricks', 'actions', 'Modules\\PageBuilders\\Bricks\\');
         self::buildClasses($root . '/Admin', 'actions', 'Admin\\');
         self::buildClasses($root . '/Admin/Settings', 'actions', 'Admin\\Settings\\');
         self::buildClasses($root . '/Admin/Notifications', 'actions', 'Admin\\Notifications\\');
@@ -127,11 +244,6 @@ abstract class Kernel
         self::buildClasses($root . '/Api/Content', 'actions', 'Api\\Content\\');
         self::buildClasses($root . '/Api/Images', 'actions', 'Api\\Images\\');
         self::buildClasses($root . '/Api/PageBuilders', 'actions', 'Api\\PageBuilders\\');
-
-        // Register WP-CLI commands when running in CLI context
-        if (defined('WP_CLI') && \WP_CLI) {
-            self::registerCliCommands();
-        }
     }
 
     /**
@@ -199,11 +311,8 @@ abstract class Kernel
                     continue;
                 }
 
-                match ($type) {
-                    'services' => self::getContainer()->setService($className),
-                    'actions'  => self::getContainer()->setAction($className),
-                    default    => null,
-                };
+                self::register($type, $className);
+                self::$scanned[] = [$type, $className];
             }
         } catch (\Throwable $e) {
             // Silently ignore scan errors
@@ -264,6 +373,7 @@ abstract class Kernel
                 'Api\\MetaSeo\\TaxonomySettingsController' => 'meta_seo',
                 'Api\\MetaSeo\\FAQController'              => 'meta_seo',
                 'Api\\MetaSeo\\HeadController'             => 'meta_seo',
+                'Api\\MetaSeo\\SchemaController'           => 'meta_seo',
                 'Api\\PageBuilders\\PageBuildersController' => 'page_builders',
                 'Api\\RedirectionsController'              => 'redirections',
                 'Api\\SitemapController'                   => 'sitemap',
@@ -414,6 +524,8 @@ abstract class Kernel
      */
     public static function onActivation(): void
     {
+        self::flushClassmap();
+
         foreach (self::getContainer()->getActions() as $className) {
             try {
                 if (!is_string($className) || !class_exists($className)) {

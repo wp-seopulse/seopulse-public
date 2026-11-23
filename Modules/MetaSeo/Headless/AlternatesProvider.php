@@ -14,6 +14,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use SEOPulse\Modules\I18n\Multilingual;
 use WP_Post;
 use WP_Term;
 
@@ -49,20 +50,9 @@ class AlternatesProvider
      */
     public function for_current_query(): array
     {
-        $entries = [];
-        $default = '';
+        $entries = !is_paged() && Multilingual::is_active() ? $this->entries_for_queried_object() : [];
 
-        if (!is_paged()) {
-            if (function_exists('pll_languages_list')) {
-                $default = (string) pll_default_language('slug');
-                $entries = $this->polylang();
-            } elseif (defined('ICL_SITEPRESS_VERSION')) {
-                $default = (string) apply_filters('wpml_default_language', null);
-                $entries = $this->wpml();
-            }
-        }
-
-        $alternates = self::format($entries, $default);
+        $alternates = self::format($entries, Multilingual::default_language());
 
         /**
          * Filters the language alternates of a headless payload.
@@ -75,9 +65,39 @@ class AlternatesProvider
     }
 
     /**
+     * Lists the translations of a post, for sitemaps.
+     *
+     * @param WP_Post $post Post.
+     * @return array<int, array{hreflang: string, url: string}> Empty when the site is not multilingual or the post has no translation.
+     */
+    public function for_post(WP_Post $post): array
+    {
+        if (!Multilingual::is_active()) {
+            return [];
+        }
+
+        return self::format($this->post_entries($post), Multilingual::default_language());
+    }
+
+    /**
+     * Lists the translations of a term, for sitemaps.
+     *
+     * @param WP_Term $term Term.
+     * @return array<int, array{hreflang: string, url: string}> Empty when the site is not multilingual or the term has no translation.
+     */
+    public function for_term(WP_Term $term): array
+    {
+        if (!Multilingual::is_active()) {
+            return [];
+        }
+
+        return self::format($this->term_entries($term), Multilingual::default_language());
+    }
+
+    /**
      * Turns a language map into hreflang entries.
      *
-     * @param array<string, array{locale: string, url: string}> $entries Entries keyed by language slug.
+     * @param array<string, array{locale?: string, hreflang?: string, url: string}> $entries Entries keyed by language slug.
      * @param string $default Slug of the default language, used for "x-default".
      * @return array<int, array{hreflang: string, url: string}> Empty below two languages.
      */
@@ -95,9 +115,9 @@ class AlternatesProvider
         $alternates = [];
 
         foreach ($entries as $slug => $entry) {
-            $locale       = (string) ($entry['locale'] ?? '');
+            $tag          = (string) ($entry['hreflang'] ?? '');
             $alternates[] = [
-                'hreflang' => '' !== $locale ? str_replace('_', '-', $locale) : (string) $slug,
+                'hreflang' => '' !== $tag ? $tag : Multilingual::hreflang((string) ($entry['locale'] ?? ''), (string) $slug),
                 'url'      => (string) $entry['url'],
             ];
         }
@@ -108,54 +128,58 @@ class AlternatesProvider
 
         return $alternates;
     }
-
     /**
-     * Collects translations through the Polylang API.
+     * Collects the translations of the queried object.
      *
-     * @return array<string, array{locale: string, url: string}>
+     * @return array<string, array{hreflang: string, url: string}>
      */
-    private function polylang(): array
+    private function entries_for_queried_object(): array
     {
-        $object  = get_queried_object();
+        $object = get_queried_object();
+
+        if ($object instanceof WP_Post) {
+            return $this->post_entries($object);
+        }
+
+        if ($object instanceof WP_Term) {
+            return $this->term_entries($object);
+        }
+
+        if (!is_front_page()) {
+            return [];
+        }
+
         $entries = [];
 
-        if ($object instanceof WP_Post && function_exists('pll_get_post_translations')) {
-            foreach ((array) pll_get_post_translations($object->ID) as $slug => $translation_id) {
-                $post = get_post((int) $translation_id);
+        foreach (Multilingual::languages() as $slug => $language) {
+            $entries[ $slug ] = ['hreflang' => $language['hreflang'], 'url' => Multilingual::home_url($slug)];
+        }
 
-                if (!$post instanceof WP_Post || !$this->resolver->is_post_exposable($post)) {
-                    continue;
-                }
+        return $entries;
+    }
 
-                $url = get_permalink($post);
+    /**
+     * Published, exposable translations of a post.
+     *
+     * @param WP_Post $post Post.
+     * @return array<string, array{hreflang: string, url: string}>
+     */
+    private function post_entries(WP_Post $post): array
+    {
+        $languages = Multilingual::languages();
+        $entries   = [];
 
-                if (is_string($url)) {
-                    $entries[ (string) $slug ] = [
-                        'locale' => (string) pll_get_post_language($post->ID, 'locale'),
-                        'url'    => $url,
-                    ];
-                }
+        foreach (Multilingual::post_translations($post->ID) as $slug => $translation_id) {
+            $translation = get_post($translation_id);
+
+            if (!isset($languages[ $slug ]) || !$translation instanceof WP_Post || !$this->resolver->is_post_exposable($translation)) {
+                continue;
             }
-        } elseif ($object instanceof WP_Term && function_exists('pll_get_term_translations')) {
-            foreach ((array) pll_get_term_translations($object->term_id) as $slug => $translation_id) {
-                $url = get_term_link((int) $translation_id, $object->taxonomy);
 
-                if (is_string($url)) {
-                    $entries[ (string) $slug ] = [
-                        'locale' => (string) pll_get_term_language((int) $translation_id, 'locale'),
-                        'url'    => $url,
-                    ];
-                }
-            }
-        } elseif (is_front_page() && function_exists('pll_home_url')) {
-            $slugs   = (array) pll_languages_list(['fields' => 'slug']);
-            $locales = (array) pll_languages_list(['fields' => 'locale']);
+            $url = get_permalink($translation);
 
-            foreach (array_values($slugs) as $index => $slug) {
-                $entries[ (string) $slug ] = [
-                    'locale' => (string) ($locales[ $index ] ?? ''),
-                    'url'    => (string) pll_home_url((string) $slug),
-                ];
+            if (is_string($url) && '' !== $url) {
+                $entries[ $slug ] = ['hreflang' => $languages[ $slug ]['hreflang'], 'url' => $url];
             }
         }
 
@@ -163,43 +187,24 @@ class AlternatesProvider
     }
 
     /**
-     * Collects translations through the WPML API.
+     * Translations of a term.
      *
-     * @return array<string, array{locale: string, url: string}>
+     * @param WP_Term $term Term.
+     * @return array<string, array{hreflang: string, url: string}>
      */
-    private function wpml(): array
+    private function term_entries(WP_Term $term): array
     {
-        $languages = apply_filters('wpml_active_languages', null, ['skip_missing' => 0]);
+        $languages = Multilingual::languages();
+        $entries   = [];
 
-        if (!is_array($languages)) {
-            return [];
-        }
+        foreach (Multilingual::term_translations($term->term_id, $term->taxonomy) as $slug => $translation_id) {
+            $link = isset($languages[ $slug ]) ? get_term_link($translation_id, $term->taxonomy) : null;
 
-        $object  = get_queried_object();
-        $entries = [];
-
-        foreach ($languages as $code => $language) {
-            $code   = (string) $code;
-            $locale = is_array($language) ? (string) ($language['default_locale'] ?? '') : '';
-            $url    = null;
-
-            if ($object instanceof WP_Post) {
-                $translation_id = apply_filters('wpml_object_id', $object->ID, $object->post_type, false, $code);
-                $post           = $translation_id ? get_post((int) $translation_id) : null;
-
-                if ($post instanceof WP_Post && $this->resolver->is_post_exposable($post)) {
-                    $url = get_permalink($post);
-                }
-            } elseif ($object instanceof WP_Term) {
-                $translation_id = apply_filters('wpml_object_id', $object->term_id, $object->taxonomy, false, $code);
-                $link           = $translation_id ? get_term_link((int) $translation_id, $object->taxonomy) : null;
-                $url            = is_string($link) ? $link : null;
-            } elseif (is_front_page()) {
-                $url = apply_filters('wpml_permalink', home_url('/'), $code);
-            }
-
-            if (is_string($url) && '' !== $url) {
-                $entries[ $code ] = ['locale' => $locale, 'url' => $url];
+            if (is_string($link) && '' !== $link) {
+                $entries[ $slug ] = [
+                    'hreflang' => $languages[ $slug ]['hreflang'],
+                    'url'      => Multilingual::localize_url($link, $slug),
+                ];
             }
         }
 

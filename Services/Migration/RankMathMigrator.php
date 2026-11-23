@@ -20,6 +20,7 @@ if (!defined('ABSPATH')) {
 
 use SEOPulse\Core\Abstracts\AbstractMigrator;
 use SEOPulse\Core\Constants\Options;
+use SEOPulse\Core\Database\UrlHash;
 use SEOPulse\Modules\LocalSeo\LocalSeoValidator;
 
 /**
@@ -424,9 +425,7 @@ class RankMathMigrator extends AbstractMigrator
                         continue;
                     }
 
-                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-                    $wpdb->update(
-                        $seopulse_table,
+                    [$update_row, $update_formats] = UrlHash::withHash(
                         [
                             'target_url'    => $target,
                             'redirect_type' => $type,
@@ -435,14 +434,20 @@ class RankMathMigrator extends AbstractMigrator
                             'status'        => 'active',
                             'updated_at'    => $now,
                         ],
-                        ['id' => $by_source[$pattern]],
                         ['%s', '%d', '%d', '%s', '%s', '%s'],
+                        $pattern,
+                    );
+
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                    $wpdb->update(
+                        $seopulse_table,
+                        $update_row,
+                        ['id' => $by_source[$pattern]],
+                        $update_formats,
                         ['%d'],
                     );
                 } else {
-                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-                    $wpdb->insert(
-                        $seopulse_table,
+                    [$insert_row, $insert_formats] = UrlHash::withHash(
                         [
                             'source_url'         => $pattern,
                             'target_url'         => $target,
@@ -458,7 +463,11 @@ class RankMathMigrator extends AbstractMigrator
                             'updated_at'         => $now,
                         ],
                         ['%s', '%s', '%d', '%d', '%s', '%d', '%s', '%s', '%d', '%s', '%s', '%s'],
+                        $pattern,
                     );
+
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                    $wpdb->insert($seopulse_table, $insert_row, $insert_formats);
 
                     $by_source[$pattern] = (int) $wpdb->insert_id;
                 }

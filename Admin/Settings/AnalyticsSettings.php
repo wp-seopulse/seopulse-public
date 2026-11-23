@@ -192,8 +192,13 @@ class AnalyticsSettings implements ExecuteHooksAdmin
 
             // Tabs
             'tabGeneral'                 => __('General', 'seopulse'),
-            'tabAppearance'              => __('Appearance', 'seopulse'),
-            'tabTexts'                   => __('Texts', 'seopulse'),
+            'tabCookie'                  => __('Cookie', 'seopulse'),
+            'tabAppearance'              => __('Appearance', 'seopulse'),       // Cookie sub-tab
+            'tabTexts'                   => __('Texts', 'seopulse'),            // Cookie sub-tab
+            'tabBackdrop'                => __('Backdrop', 'seopulse'),         // Cookie sub-tab
+            'tabMainSettings'            => __('Main settings', 'seopulse'),    // Cookie sub-tab
+            'tabPrimaryButton'           => __('Primary button', 'seopulse'),   // Cookie sub-tab
+            'tabSecondaryButton'         => __('Secondary button', 'seopulse'), // Cookie sub-tab
             'tabAdvanced'                => __('Advanced', 'seopulse'),
 
             // General tab
@@ -228,6 +233,20 @@ class AnalyticsSettings implements ExecuteHooksAdmin
             'privacyPolicyUrl'           => __('Privacy policy URL', 'seopulse'),
             'leaveEmptyDefault'          => __('Leave empty to use default text.', 'seopulse'),
 
+            // Cookie bar customization (Cookie sub-tabs)
+            'backdropDesc'               => __('Customize the cookie bar backdrop.', 'seopulse'),
+            'backdropEnabled'            => __('Display a backdrop with the cookie bar', 'seopulse'),
+            'mainSettingsDesc'           => __('Customize the general settings of the cookie bar.', 'seopulse'),
+            'primaryButtonDesc'          => __('Customize the Accept button.', 'seopulse'),
+            'secondaryButtonDesc'        => __('Customize the Close button.', 'seopulse'),
+            'colorBg'                    => __('Background color', 'seopulse'),
+            'colorBgHover'               => __('Background color on hover', 'seopulse'),
+            'colorText'                  => __('Text color', 'seopulse'),
+            'colorTextHover'             => __('Text color on hover', 'seopulse'),
+            'colorLink'                  => __('Link color', 'seopulse'),
+            'colorClear'                 => __('Clear', 'seopulse'),
+            'colorPick'                  => __('Pick a color', 'seopulse'),
+
             // Tracking scripts
             'detectedScripts'            => __('Tracking Scripts', 'seopulse'),
             'detectedScriptsDesc'        => __('Configure your Google Tag Manager and Google Analytics 4 tracking scripts. They will be automatically blocked until the user gives consent when the consent banner is enabled.', 'seopulse'),
@@ -255,11 +274,24 @@ class AnalyticsSettings implements ExecuteHooksAdmin
             'ga4Id'                      => __('GA4 Measurement ID', 'seopulse'),
             'ga4IdDesc'                  => __('Your Google Analytics 4 Measurement ID (e.g., G-XXXXXXXXXX).', 'seopulse'),
             'ga4IdHelp'                  => __('Where to find it?', 'seopulse'),
+            'matomoName'                 => __('Matomo', 'seopulse'),
+            'enableMatomo'               => __('Enable Matomo', 'seopulse'),
+            'enableMatomoDesc'           => __('Track visits with your own Matomo instance (self-hosted or cloud).', 'seopulse'),
+            'matomoUrl'                  => __('Matomo URL', 'seopulse'),
+            'matomoUrlDesc'              => __('Base URL of your Matomo instance (e.g., https://analytics.example.com/).', 'seopulse'),
+            'matomoSiteId'               => __('Matomo Site ID', 'seopulse'),
+            'matomoSiteIdDesc'           => __('Numeric ID of the website in Matomo.', 'seopulse'),
+            'clarityName'                => __('Microsoft Clarity', 'seopulse'),
+            'enableClarity'              => __('Enable Microsoft Clarity', 'seopulse'),
+            'enableClarityDesc'          => __('Heatmaps and session recordings with Microsoft Clarity.', 'seopulse'),
+            'clarityId'                  => __('Clarity Project ID', 'seopulse'),
+            'clarityIdDesc'              => __('Your Clarity project ID (e.g., abcdefghij).', 'seopulse'),
             'logConsents'                => __('Log consents', 'seopulse'),
             'logConsentsDesc'            => __('Store consent records in the database for compliance auditing. (Coming soon)', 'seopulse'),
 
-            // Google Analytics tab
-            'tabGoogleAnalytics'         => __('Google Analytics', 'seopulse'),
+            // Analytics tab
+            'tabAnalytics'               => __('Analytics', 'seopulse'),
+            'tabCustomCode'              => __('Custom Code', 'seopulse'),
             'ga4TrackingExclusions'      => __('Tracking Exclusions', 'seopulse'),
             'ga4ExcludeAdmins'           => __('Exclude administrators', 'seopulse'),
             'ga4ExcludeAdminsDesc'       => __('Do not track users with the Administrator role. Recommended to keep analytics data clean.', 'seopulse'),
@@ -272,11 +304,13 @@ class AnalyticsSettings implements ExecuteHooksAdmin
             'ga4TrackDownloadsDesc'      => __('Automatically send a GA4 event when a visitor downloads a file matching the configured extensions.', 'seopulse'),
             'ga4DownloadExtensions'      => __('Tracked file extensions', 'seopulse'),
             'ga4DownloadExtensionsDesc'  => __('Comma-separated list of file extensions to track as downloads (e.g. pdf,zip,doc).', 'seopulse'),
-            'ga4CustomCode'              => __('Custom Tracking Code', 'seopulse'),
-            'ga4CustomHeadCode'          => __('Custom code — head', 'seopulse'),
-            'ga4CustomHeadCodeDesc'      => __('JavaScript injected in <head> after the tracking scripts. Do not include <script> tags.', 'seopulse'),
-            'ga4CustomFooterCode'        => __('Custom code — footer', 'seopulse'),
-            'ga4CustomFooterCodeDesc'    => __('JavaScript injected before </body>. Do not include <script> tags.', 'seopulse'),
+
+            // Custom Code tab
+            'customCode'                 => __('Custom Code', 'seopulse'),
+            'customHeadCode'             => __('Custom code — head', 'seopulse'),
+            'customHeadCodeDesc'         => __('JavaScript added to the <head> after the tracking scripts. When the cookie consent banner is enabled, it only runs once the visitor has accepted the Statistics category, shortly after the page has loaded. Do not include <script> tags.', 'seopulse'),
+            'customFooterCode'           => __('Custom code — footer', 'seopulse'),
+            'customFooterCodeDesc'       => __('JavaScript added at the end of the page, before </body>. When the cookie consent banner is enabled, it only runs once the visitor has accepted the Statistics category. Do not include <script> tags.', 'seopulse'),
 
             // Categories
             'catEssential'               => __('Essential', 'seopulse'),

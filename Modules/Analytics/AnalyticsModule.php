@@ -75,6 +75,13 @@ class AnalyticsModule implements ExecuteHooksFrontend, ModuleInterface
         // Register tracking script hooks
         $this->registerTrackingHooks($settings);
 
+        // Custom code: when the consent module is disabled there is no JS loader,
+        // so it is injected server-side. When enabled, seopulse-consent.js runs it
+        // (after consent) so that no consent-dependent code ends up in cached HTML.
+        if (empty($settings['enabled'])) {
+            add_action('wp_enqueue_scripts', [$this->tracking, 'inject_custom_code'], 23);
+        }
+
         // Only activate consent module if enabled
         if (!empty($settings['enabled'])) {
             // Conditionally block tracking based on consent
@@ -94,7 +101,7 @@ class AnalyticsModule implements ExecuteHooksFrontend, ModuleInterface
     }
 
     /**
-     * Register tracking script hooks (GTM/GA4)
+     * Register tracking script hooks (GTM/GA4/Matomo/Clarity)
      *
      * @param array<string, mixed> $settings
      * @return void
@@ -104,6 +111,8 @@ class AnalyticsModule implements ExecuteHooksFrontend, ModuleInterface
         add_action('wp_enqueue_scripts', [$this->tracking, 'inject_gtm_head'], 5);
         add_action('wp_footer', [$this->tracking, 'inject_gtm_noscript'], 10);
         add_action('wp_enqueue_scripts', [$this->tracking, 'inject_analytics'], 20);
+        add_action('wp_enqueue_scripts', [$this->tracking, 'inject_matomo'], 21);
+        add_action('wp_enqueue_scripts', [$this->tracking, 'inject_clarity'], 22);
     }
 
     /**
@@ -147,6 +156,8 @@ class AnalyticsModule implements ExecuteHooksFrontend, ModuleInterface
         remove_action('wp_enqueue_scripts', [$this->tracking, 'inject_gtm_head'], 5);
         remove_action('wp_footer', [$this->tracking, 'inject_gtm_noscript'], 10);
         remove_action('wp_enqueue_scripts', [$this->tracking, 'inject_analytics'], 20);
+        remove_action('wp_enqueue_scripts', [$this->tracking, 'inject_matomo'], 21);
+        remove_action('wp_enqueue_scripts', [$this->tracking, 'inject_clarity'], 22);
     }
 
     /**
@@ -177,6 +188,11 @@ class AnalyticsModule implements ExecuteHooksFrontend, ModuleInterface
             $version,
         );
 
+        $custom_css = $this->buildCustomCss($this->consentManager->getSettings());
+        if ($custom_css !== '') {
+            wp_add_inline_style('seopulse-consent', $custom_css);
+        }
+
         wp_enqueue_script(
             'seopulse-consent',
             SEOPULSE_PLUGIN_URL . 'assets/js/seopulse-consent.js',
@@ -203,6 +219,16 @@ class AnalyticsModule implements ExecuteHooksFrontend, ModuleInterface
                         ? sanitize_text_field($settings['gtm_id']) : '',
                     'ga4_id' => (!empty($settings['ga4_enabled']) && !empty($settings['ga4_id']))
                         ? sanitize_text_field($settings['ga4_id']) : '',
+                    'matomo' => (!empty($settings['matomo_enabled'])
+                        && AnalyticsTracking::normalizeMatomoUrl((string) ($settings['matomo_url'] ?? '')) !== ''
+                        && AnalyticsTracking::normalizeMatomoSiteId((string) ($settings['matomo_site_id'] ?? '')) !== '')
+                        ? [
+                            'url'     => AnalyticsTracking::normalizeMatomoUrl((string) $settings['matomo_url']),
+                            'site_id' => AnalyticsTracking::normalizeMatomoSiteId((string) $settings['matomo_site_id']),
+                        ] : null,
+                    'clarity_id' => !empty($settings['clarity_enabled'])
+                        ? AnalyticsTracking::normalizeClarityId((string) ($settings['clarity_id'] ?? '')) : '',
+                    'custom_code' => $this->getCustomCodeForJs($settings),
                 ],
                 'i18n'     => [
                     'bannerTitle'        => $settings['banner_title'] ?: __('We respect your privacy', 'seopulse'),
@@ -231,6 +257,100 @@ class AnalyticsModule implements ExecuteHooksFrontend, ModuleInterface
                 ],
             ],
         );
+    }
+
+    /**
+     * Settings key => CSS custom properties (see seopulse-consent.css).
+     * Every color is optional: when empty, the stylesheet default applies.
+     *
+     * @var array<string, string[]>
+     */
+    private const COLOR_CSS_VARS = [
+        'main_bg_color'                  => ['--sp-consent-bg', '--sp-consent-bg-solid'],
+        'main_text_color'                => ['--sp-consent-text', '--sp-consent-text-muted'],
+        'main_link_color'                => ['--sp-consent-link', '--sp-consent-link-hover', '--sp-consent-customize-text'],
+        'primary_btn_bg_color'           => ['--sp-consent-btn-primary-bg'],
+        'primary_btn_bg_color_hover'     => ['--sp-consent-btn-primary-bg-hover'],
+        'primary_btn_text_color'         => ['--sp-consent-btn-primary-text'],
+        'primary_btn_text_color_hover'   => ['--sp-consent-btn-primary-text-hover'],
+        'secondary_btn_bg_color'         => ['--sp-consent-btn-secondary-bg'],
+        'secondary_btn_bg_color_hover'   => ['--sp-consent-btn-secondary-bg-hover'],
+        'secondary_btn_text_color'       => ['--sp-consent-btn-secondary-text'],
+        'secondary_btn_text_color_hover' => ['--sp-consent-btn-secondary-text-hover'],
+    ];
+
+    /**
+     * Build the inline CSS overriding the banner colors.
+     *
+     * Identical for every visitor (safe for page caching). Colors are
+     * re-sanitized here as a defense in depth.
+     *
+     * @param array<string, mixed> $settings
+     * @return string
+     */
+    private function buildCustomCss(array $settings): string
+    {
+        $declarations = [];
+
+        foreach (self::COLOR_CSS_VARS as $key => $vars) {
+            $color = ConsentManager::sanitizeColor((string) ($settings[ $key ] ?? ''));
+            if ($color === '') {
+                continue;
+            }
+            foreach ($vars as $var) {
+                $declarations[] = $var . ':' . $color;
+            }
+        }
+
+        $css = '';
+
+        // Banner / modal scope. "html" raises specificity above the theme rules
+        // ([data-theme="dark"], .seopulse-consent-banner) of the stylesheet.
+        if ($declarations !== []) {
+            $css .= 'html .seopulse-consent-banner,html .seopulse-consent-modal{' . implode(';', $declarations) . ';}';
+        }
+
+        if (!empty($settings['backdrop_enabled'])) {
+            $backdrop = ConsentManager::sanitizeColor((string) ($settings['backdrop_bg_color'] ?? ''));
+            if ($backdrop !== '') {
+                $css .= ':root{--sp-consent-backdrop:' . $backdrop . ';}';
+            }
+        }
+
+        return $css;
+    }
+
+    /**
+     * Custom code handed to the consent JS, which runs it once the
+     * "statistics" category is accepted (at load if consent is already stored,
+     * or right after the visitor accepts).
+     *
+     * Always passed regardless of the current consent state, so the HTML stays
+     * identical for every visitor and is safe to cache.
+     *
+     * Returns null when there is nothing to run: no custom code configured or
+     * user excluded from tracking.
+     *
+     * @param array<string, mixed> $settings
+     * @return array{head: string, footer: string}|null
+     */
+    private function getCustomCodeForJs(array $settings): ?array
+    {
+        $head   = (string) ($settings['custom_head_code'] ?? '');
+        $footer = (string) ($settings['custom_footer_code'] ?? '');
+
+        if ($head === '' && $footer === '') {
+            return null;
+        }
+
+        if ($this->tracking->should_exclude_current_user()) {
+            return null;
+        }
+
+        return [
+            'head'   => $head,
+            'footer' => $footer,
+        ];
     }
 
     /**

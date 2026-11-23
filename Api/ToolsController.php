@@ -422,6 +422,9 @@ class ToolsController extends RestController
     {
         global $wpdb;
 
+        // Entries held by a persistent object cache never reach wp_options.
+        \SEOPulse\Core\Cache\ObjectCache::flush_all();
+
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $deleted = (int) $wpdb->query(
             $wpdb->prepare(

@@ -34,7 +34,7 @@ class PageBuildersController extends RestController
      *
      * @var array<string>
      */
-    private const BUILDERS = ['elementor', 'divi', 'beaver_builder', 'oxygen'];
+    private const BUILDERS = ['elementor', 'divi', 'beaver_builder', 'oxygen', 'live_composer', 'kubio', 'bricks'];
 
     /**
      * Constructor

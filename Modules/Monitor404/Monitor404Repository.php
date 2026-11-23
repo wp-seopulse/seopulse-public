@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace SEOPulse\Modules\Monitor404;
 
+use SEOPulse\Core\Database\UrlHash;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -163,6 +165,67 @@ class Monitor404Repository
         );
 
         return $row ?: null;
+    }
+
+    /**
+     * Finds the non-ignored log row of a URL (hot path of the 404 logger).
+     *
+     * Uses the url_hash index when it exists; rows written without a hash
+     * (empty value) are still found.
+     */
+    public function findTrackedByUrl(string $url): ?object
+    {
+        global $wpdb;
+
+        if (UrlHash::isReady()) {
+            $row = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT id, hits FROM `{$wpdb->seopulse_404_logs}`
+                     WHERE url_hash IN (%s, '') AND url = %s AND status != 'ignored' LIMIT 1",
+                    UrlHash::of($url),
+                    $url,
+                ),
+            );
+        } else {
+            $row = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT id, hits FROM `{$wpdb->seopulse_404_logs}`
+                     WHERE url = %s AND status != 'ignored' LIMIT 1",
+                    $url,
+                ),
+            );
+        }
+
+        return $row ?: null;
+    }
+
+    /**
+     * Records one more hit on an existing 404 row.
+     *
+     * @param array<string, mixed> $fields Columns to refresh (hits, last_hit, referrer, ...).
+     * @param string[] $formats Matching $wpdb formats.
+     */
+    public function updateHit(int $id, array $fields, array $formats): void
+    {
+        global $wpdb;
+
+        $wpdb->update($this->table, $fields, ['id' => $id], $formats, ['%d']);
+    }
+
+    /**
+     * Inserts a new 404 row, adding its url_hash when available.
+     *
+     * @param array<string, mixed> $row Columns (must include 'url').
+     * @param string[] $formats Matching $wpdb formats.
+     * @return int New row ID, 0 on failure.
+     */
+    public function insertHit(array $row, array $formats): int
+    {
+        global $wpdb;
+
+        [$row, $formats] = UrlHash::withHash($row, $formats, (string) $row['url']);
+
+        return $wpdb->insert($this->table, $row, $formats) ? (int) $wpdb->insert_id : 0;
     }
 
     /**

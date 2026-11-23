@@ -130,6 +130,7 @@ class SitemapSettings implements ExecuteHooksAdmin
             'enable_category'        => '1',
             'enable_post_tag'        => '1',
             'enable_images'          => '1',
+            'enable_videos'          => '1',
             'include_images'         => '1',
             'enable_news_sitemap'    => '0',
             'news_publication_name'  => '',

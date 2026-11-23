@@ -15,7 +15,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use SEOPulse\Core\Database\UrlHash;
 use SEOPulse\Core\Traits\CurrentUrlTrait;
+use SEOPulse\Modules\I18n\Multilingual;
 
 /**
  * RedirectionsManager class
@@ -30,6 +32,8 @@ class RedirectionsManager
      * @var string
      */
     private string $option_name = 'seopulse_redirections';
+
+    private ?RedirectRepository $repository = null;
 
     /**
      * Applies redirections
@@ -94,10 +98,21 @@ class RedirectionsManager
             return;
         }
 
-        $match = $this->find_sql_match($this->getRequestUri());
+        $request_uri = $this->getRequestUri();
+        $match       = $this->find_sql_match($request_uri);
+        $lang_prefix = '';
+
+        // A rule written without the language directory ("/old") also applies to "/fr/old".
+        if (null === $match) {
+            [$stripped, $lang_prefix] = Multilingual::split_path($request_uri);
+
+            if ('' !== $lang_prefix) {
+                $match = $this->find_sql_match($stripped);
+            }
+        }
 
         if (null !== $match) {
-            $this->resolveRedirect($match['rule'], $this->getRequestUriFull(), $match['target']);
+            $this->resolveRedirect($match['rule'], $this->getRequestUriFull(), $match['target'], $lang_prefix);
         }
     }
 
@@ -109,58 +124,17 @@ class RedirectionsManager
      */
     private function find_sql_match(string $request_uri): ?array
     {
-        global $wpdb;
+        $repository = $this->repository();
 
-        if (!isset($wpdb->seopulse_redirects)) {
-            $wpdb->seopulse_redirects = $wpdb->prefix . 'seopulse_redirects';
-        }
-
-        // ── 1. Exact match (case-sensitive, indexed) ──────────────────
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter
-        $redirect = $wpdb->get_row(
-            $wpdb->prepare(
-                "SELECT * FROM `{$wpdb->seopulse_redirects}`
-                 WHERE source_url = %s
-                   AND match_type = 'exact'
-                   AND status     = 'active'
-                 LIMIT 1",
-                $request_uri,
-            ),
-        );
-
-        // Exact match with ignore_case fallback (LOWER comparison).
-        if (!$redirect) {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter
-            $redirect = $wpdb->get_row(
-                $wpdb->prepare(
-                    "SELECT * FROM `{$wpdb->seopulse_redirects}`
-                     WHERE LOWER(source_url) = LOWER(%s)
-                       AND match_type  = 'exact'
-                       AND ignore_case = 1
-                       AND status      = 'active'
-                     LIMIT 1",
-                    $request_uri,
-                ),
-            );
-        }
+        // ── 1. Exact match (case-sensitive first, then ignore_case; url_hash indexed) ──
+        $redirect = $repository->findActiveExact($request_uri);
 
         if ($redirect) {
             return ['rule' => $redirect, 'target' => null];
         }
 
         // ── 2. Pattern-based rules (contains / starts_with / ends_with / regex)
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter
-        $pattern_rules = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT * FROM `{$wpdb->seopulse_redirects}`
-                 WHERE match_type IN ('contains','starts_with','ends_with','regex')
-                   AND status = %s
-                 ORDER BY match_type ASC, id ASC",
-                'active',
-            ),
-        );
-
-        foreach ($pattern_rules as $rule) {
+        foreach ($repository->findActivePatternRules() as $rule) {
             if ($this->matchesPattern($rule, $request_uri)) {
                 $target = $rule->target_url;
 
@@ -195,7 +169,13 @@ class RedirectionsManager
         $path = '/' . ltrim($path, '/');
 
         if ($this->has_redirect_table()) {
-            $match = $this->find_sql_match($path);
+            $match       = $this->find_sql_match($path);
+            $lang_prefix = '';
+
+            if (null === $match) {
+                [$stripped, $lang_prefix] = Multilingual::split_path($path);
+                $match                    = '' !== $lang_prefix ? $this->find_sql_match($stripped) : null;
+            }
 
             if (null === $match) {
                 return null;
@@ -209,7 +189,7 @@ class RedirectionsManager
             }
 
             return [
-                'to'     => (string) ($match['target'] ?? $rule->target_url),
+                'to'     => $this->prefix_target((string) ($match['target'] ?? $rule->target_url), $lang_prefix),
                 'status' => $this->resolveStatusCode($rule),
             ];
         }
@@ -263,8 +243,9 @@ class RedirectionsManager
      * @param object $redirect Database row.
      * @param string $request_uri_full Full URI including query string.
      * @param string|null $target_override Override target (regex back-refs).
+     * @param string $lang_prefix Language directory the request came in on ("/fr"), empty when none.
      */
-    private function resolveRedirect(object $redirect, string $request_uri_full, ?string $target_override = null): void
+    private function resolveRedirect(object $redirect, string $request_uri_full, ?string $target_override = null, string $lang_prefix = ''): void
     {
         $mc = (int) ($redirect->maintenance_code ?? 0);
         if (in_array($mc, RedirectionsModule::MAINTENANCE_CODES, true)) {
@@ -273,7 +254,7 @@ class RedirectionsManager
             return;
         }
 
-        $target = $target_override ?? $redirect->target_url;
+        $target = $this->prefix_target($target_override ?? $redirect->target_url, $lang_prefix);
 
         // Append query string when pass_query_string is enabled.
         if (!empty($redirect->pass_query_string)) {
@@ -411,20 +392,35 @@ class RedirectionsManager
      */
     private function incrementSqlHits(object $redirect): void
     {
-        global $wpdb;
+        $this->repository()->incrementHits((int) $redirect->id);
+    }
 
-        if (!isset($wpdb->seopulse_redirects)) {
-            $wpdb->seopulse_redirects = $wpdb->prefix . 'seopulse_redirects';
+    /**
+     * Returns the shared SQL repository (created on first use).
+     */
+    private function repository(): RedirectRepository
+    {
+        return $this->repository ??= new RedirectRepository();
+    }
+
+    /**
+     * Keeps a relative redirect target in the language the visitor came from.
+     *
+     * @param string $target Rule target.
+     * @param string $lang_prefix Language directory ("/fr"), empty when none.
+     */
+    private function prefix_target(string $target, string $lang_prefix): string
+    {
+        if ('' === $lang_prefix || !str_starts_with($target, '/') || str_starts_with($target, '//')) {
+            return $target;
         }
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter
-        $wpdb->query(
-            $wpdb->prepare(
-                "UPDATE {$wpdb->seopulse_redirects} SET hits = hits + 1, last_accessed = %s WHERE id = %d",
-                current_time('mysql'),
-                $redirect->id,
-            ),
-        );
+        // The rule already names a language directory.
+        if ('' !== Multilingual::split_path($target)[1]) {
+            return $target;
+        }
+
+        return $lang_prefix . $target;
     }
 
     /**
@@ -745,26 +741,30 @@ class RedirectionsManager
             ? str_replace('\*', '.*', preg_quote($source, '@'))
             : $source;
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-        $wpdb->insert(
-            $wpdb->prefix . 'seopulse_redirects',
-            [
-                'source_url'    => $sql_source,
-                'target_url'    => $target,
-                'redirect_type' => (int) ($redirect['type'] ?? 301),
-                'regex'         => $is_wildcard ? 1 : 0,
-                'group_name'    => 'free_import',
-                'hits'          => (int) ($redirect['hits'] ?? 0),
-                'last_accessed' => !empty($redirect['last_hit'])
-                    ? sanitize_text_field($redirect['last_hit'])
-                    : null,
-                'status'        => sanitize_text_field($redirect['status'] ?? 'active'),
-                'created_at'    => !empty($redirect['created_at'])
-                    ? sanitize_text_field($redirect['created_at'])
-                    : current_time('mysql'),
-            ],
+        $row = [
+            'source_url'    => $sql_source,
+            'target_url'    => $target,
+            'redirect_type' => (int) ($redirect['type'] ?? 301),
+            'regex'         => $is_wildcard ? 1 : 0,
+            'group_name'    => 'free_import',
+            'hits'          => (int) ($redirect['hits'] ?? 0),
+            'last_accessed' => !empty($redirect['last_hit'])
+                ? sanitize_text_field($redirect['last_hit'])
+                : null,
+            'status'        => sanitize_text_field($redirect['status'] ?? 'active'),
+            'created_at'    => !empty($redirect['created_at'])
+                ? sanitize_text_field($redirect['created_at'])
+                : current_time('mysql'),
+        ];
+
+        [$row, $formats] = UrlHash::withHash(
+            $row,
             ['%s', '%s', '%d', '%d', '%s', '%d', '%s', '%s', '%s'],
+            $sql_source,
         );
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $wpdb->insert($wpdb->prefix . 'seopulse_redirects', $row, $formats);
     }
 
     /**
@@ -795,9 +795,7 @@ class RedirectionsManager
             ? str_replace('\*', '.*', preg_quote($old_path, '@'))
             : $old_path;
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-        $wpdb->update(
-            $table,
+        [$row, $formats] = UrlHash::withHash(
             [
                 'source_url'    => $sql_source,
                 'target_url'    => esc_url_raw($redirect['destination'] ?? ''),
@@ -805,11 +803,19 @@ class RedirectionsManager
                 'regex'         => $is_wildcard ? 1 : 0,
                 'status'        => sanitize_text_field($redirect['status'] ?? 'active'),
             ],
+            ['%s', '%s', '%d', '%d', '%s'],
+            $sql_source,
+        );
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $wpdb->update(
+            $table,
+            $row,
             [
                 'source_url' => $old_sql_source,
                 'group_name' => 'free_import',
             ],
-            ['%s', '%s', '%d', '%d', '%s'],
+            $formats,
             ['%s', '%s'],
         );
     }

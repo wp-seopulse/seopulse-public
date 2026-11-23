@@ -38,6 +38,9 @@ $seopulse_options_to_delete = [
     'seopulse_archive_settings',
     'seopulse_head_cache_version',
     'seopulse_taxonomy_settings',
+    'seopulse_search_console',
+    'seopulse_gsc_cache_gen',
+    'seopulse_white_label',
 ];
 
 foreach ($seopulse_options_to_delete as $seopulse_option) {

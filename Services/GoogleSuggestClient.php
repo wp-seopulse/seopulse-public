@@ -14,6 +14,8 @@ declare(strict_types=1);
 
 namespace SEOPulse\Services;
 
+use SEOPulse\Core\Cache\ObjectCache;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -47,7 +49,7 @@ class GoogleSuggestClient
 
         // 1. Check cache first (never counts against rate limit).
         $cache_key = $this->buildCacheKey($keyword, $language);
-        $cached    = get_transient($cache_key);
+        $cached    = ObjectCache::get($cache_key, 'google');
 
         if (is_array($cached)) {
             return $cached;
@@ -94,7 +96,7 @@ class GoogleSuggestClient
         $suggestions = $this->parseResponse($body);
 
         // 4. Cache valid results.
-        set_transient($cache_key, $suggestions, self::CACHE_TTL);
+        ObjectCache::set($cache_key, $suggestions, 'google', self::CACHE_TTL);
 
         return $suggestions;
     }

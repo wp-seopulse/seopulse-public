@@ -1,0 +1,49 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "seopulse/html-sitemap",
+	"version": "1.0.0",
+	"title": "SEOPulse HTML Sitemap",
+	"category": "widgets",
+	"icon": "networking",
+	"description": "Lists your public content and term archives as a crawlable HTML sitemap.",
+	"keywords": [ "sitemap", "html sitemap", "links", "seo" ],
+	"textdomain": "seopulse",
+	"attributes": {
+		"postTypes": {
+			"type": "string",
+			"default": ""
+		},
+		"excludePostTypes": {
+			"type": "string",
+			"default": ""
+		},
+		"taxonomies": {
+			"type": "string",
+			"default": "category"
+		},
+		"excludeTerms": {
+			"type": "string",
+			"default": ""
+		},
+		"excludeIds": {
+			"type": "string",
+			"default": ""
+		},
+		"showDate": {
+			"type": "boolean",
+			"default": false
+		},
+		"limit": {
+			"type": "number",
+			"default": 500
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"className": true,
+		"multiple": true,
+		"autoRegister": true
+	}
+}

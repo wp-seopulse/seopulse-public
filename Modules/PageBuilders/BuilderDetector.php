@@ -81,6 +81,14 @@ final class BuilderDetector
     }
 
     /**
+     * Bricks Builder (theme) is active.
+     */
+    public static function isBricksActive(): bool
+    {
+        return defined('BRICKS_VERSION') || 'bricks' === get_template();
+    }
+
+    /**
      * Returns the detection state of all 4 builders.
      *
      * @return array<string, bool>
@@ -93,6 +101,7 @@ final class BuilderDetector
             //'beaver_builder' => self::isBeaverBuilderActive(),
             'live_composer'  => self::isLiveComposerActive(),
             'kubio'          => self::isKubioActive(),
+            'bricks'         => self::isBricksActive(),
         ];
     }
 }

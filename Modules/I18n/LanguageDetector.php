@@ -142,23 +142,9 @@ final class LanguageDetector
      */
     public static function active_languages(): array
     {
-        // Polylang
-        if (function_exists('pll_languages_list')) {
-            $list = pll_languages_list(['fields' => 'slug']);
-            if (is_array($list) && !empty($list)) {
-                return $list;
-            }
-        }
+        $languages = array_map('strval', array_keys(Multilingual::languages()));
 
-        // WPML
-        if (function_exists('wpml_active_languages')) {
-            $langs = wpml_active_languages('', ['skip_missing' => 0]);
-            if (is_array($langs) && !empty($langs)) {
-                return array_keys($langs);
-            }
-        }
-
-        return [self::site_language()];
+        return [] !== $languages ? $languages : [self::site_language()];
     }
 
     /**

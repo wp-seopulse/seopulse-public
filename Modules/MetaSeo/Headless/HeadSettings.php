@@ -70,6 +70,22 @@ final class HeadSettings
     }
 
     /**
+     * Whether SEOPulse abilities are registered in the WordPress Abilities API (default: yes).
+     *
+     * @return bool
+     */
+    public static function abilities_enabled(): bool
+    {
+        /**
+         * Filters whether SEOPulse abilities are registered.
+         *
+         * @since 1.9.0
+         * @param bool $enabled Setting value.
+         */
+        return (bool) apply_filters('seopulse_abilities_enabled', self::flag('headless_abilities_enabled', true));
+    }
+
+    /**
      * Reads a boolean from the global settings.
      *
      * @param string $key Setting key.

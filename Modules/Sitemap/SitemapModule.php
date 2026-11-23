@@ -66,6 +66,13 @@ class SitemapModule extends Module implements ModuleInterface
     private SitemapBulkActions $bulk_actions;
 
     /**
+     * HTML sitemap (shortcode and block)
+     *
+     * @var HtmlSitemap
+     */
+    private HtmlSitemap $html_sitemap;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -74,15 +81,18 @@ class SitemapModule extends Module implements ModuleInterface
         $this->weight = 0.10; // 10% of total score
 
         // Load dependencies
+        require_once __DIR__ . '/SitemapMedia.php';
         require_once __DIR__ . '/SitemapGenerator.php';
         require_once __DIR__ . '/SitemapSettings.php';
         require_once __DIR__ . '/SitemapNews.php';
         require_once __DIR__ . '/SitemapBulkActions.php';
+        require_once __DIR__ . '/HtmlSitemap.php';
 
         $this->generator    = new SitemapGenerator();
         $this->settings     = new SitemapSettings();
         $this->news         = new SitemapNews();
         $this->bulk_actions = new SitemapBulkActions();
+        $this->html_sitemap = new HtmlSitemap();
 
         // Disable WordPress core sitemaps
         $options = get_option('seopulse_sitemap_settings', []);
@@ -104,6 +114,9 @@ class SitemapModule extends Module implements ModuleInterface
         add_action('template_redirect', [$this->generator, 'handle_robots_request']);
         add_filter('robots_txt', [$this->generator, 'add_robots_entries'], 10, 2);
 
+        // Core sitemaps (when not replaced): keep WooCommerce system pages out
+        add_filter('wp_sitemaps_posts_query_args', [$this, 'exclude_woocommerce_pages'], 10, 2);
+
         // Cache management
         add_action('save_post', [$this->generator, 'clear_cache']);
         add_action('deleted_post', [$this->generator, 'clear_cache']);
@@ -114,6 +127,9 @@ class SitemapModule extends Module implements ModuleInterface
 
         // Sitemap Google News
         $this->news->init();
+
+        // HTML sitemap: shortcode, block and cache invalidation
+        $this->html_sitemap->init();
 
         // Admin only
         if (is_admin()) {
@@ -134,6 +150,22 @@ class SitemapModule extends Module implements ModuleInterface
             add_action('admin_post_seopulse_ping_search_engines', [$this, 'ping_search_engines']);
         }
 
+    }
+
+    /**
+     * Removes WooCommerce cart/checkout/account pages from the core page sitemap
+     *
+     * @param array $args Query arguments
+     * @param string $post_type Post type
+     * @return array Query arguments
+     */
+    public function exclude_woocommerce_pages(array $args, string $post_type): array
+    {
+        if ($post_type === 'page') {
+            $args['post__not_in'] = array_merge((array) ($args['post__not_in'] ?? []), \SEOPulse\Services\WooCommerceSystemPages::ids());
+        }
+
+        return $args;
     }
 
     /**

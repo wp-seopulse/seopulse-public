@@ -73,6 +73,11 @@ final class EventProvider implements SchemaProvider
             return false;
         }
 
+        // The editor panel configuration replaces the automatic provider
+        if (SchemaCatalog::overrides('Event')) {
+            return false;
+        }
+
         global $post;
         if (!$post instanceof \WP_Post) {
             return false;

@@ -18,6 +18,8 @@ declare(strict_types=1);
 
 namespace SEOPulse\Modules\Redirections;
 
+use SEOPulse\Core\Database\UrlHash;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -192,16 +194,167 @@ class RedirectRepository
     {
         global $wpdb;
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-        $rows = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT * FROM `{$wpdb->seopulse_redirects}` WHERE source_url = %s",
-                $source,
-            ),
-            ARRAY_A,
-        );
+        if (UrlHash::isReady()) {
+            $rows = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM `{$wpdb->seopulse_redirects}` WHERE url_hash IN (%s, '') AND source_url = %s",
+                    UrlHash::of($source),
+                    $source,
+                ),
+                ARRAY_A,
+            );
+        } else {
+            $rows = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM `{$wpdb->seopulse_redirects}` WHERE source_url = %s",
+                    $source,
+                ),
+                ARRAY_A,
+            );
+        }
 
         return $rows ?: [];
+    }
+
+    /**
+     * Finds the active exact-match rule for a request path (runtime hot path).
+     *
+     * Case-sensitive match first, then the ignore_case fallback. Both go
+     * through the url_hash index when it exists.
+     */
+    public function findActiveExact(string $path): ?object
+    {
+        global $wpdb;
+
+        $hashed = UrlHash::isReady();
+        $hash   = UrlHash::of($path);
+
+        $exact_sql = $hashed
+            ? "SELECT * FROM `{$wpdb->seopulse_redirects}`
+               WHERE url_hash IN (%s, '') AND source_url = %s
+                 AND match_type = 'exact' AND status = 'active'
+               LIMIT 1"
+            : "SELECT * FROM `{$wpdb->seopulse_redirects}`
+               WHERE source_url = %s
+                 AND match_type = 'exact' AND status = 'active'
+               LIMIT 1";
+
+        $row = $wpdb->get_row(
+            $hashed ? $wpdb->prepare($exact_sql, $hash, $path) : $wpdb->prepare($exact_sql, $path),
+        );
+
+        if ($row) {
+            return $row;
+        }
+
+        $nocase_sql = $hashed
+            ? "SELECT * FROM `{$wpdb->seopulse_redirects}`
+               WHERE url_hash IN (%s, '') AND LOWER(source_url) = LOWER(%s)
+                 AND match_type = 'exact' AND ignore_case = 1 AND status = 'active'
+               LIMIT 1"
+            : "SELECT * FROM `{$wpdb->seopulse_redirects}`
+               WHERE LOWER(source_url) = LOWER(%s)
+                 AND match_type = 'exact' AND ignore_case = 1 AND status = 'active'
+               LIMIT 1";
+
+        $row = $wpdb->get_row(
+            $hashed ? $wpdb->prepare($nocase_sql, $hash, $path) : $wpdb->prepare($nocase_sql, $path),
+        );
+
+        return $row ?: null;
+    }
+
+    /**
+     * Returns every active pattern rule (contains / starts_with / ends_with / regex).
+     *
+     * @return object[]
+     */
+    public function findActivePatternRules(): array
+    {
+        global $wpdb;
+
+        $rows = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM `{$wpdb->seopulse_redirects}`
+                 WHERE match_type IN ('contains','starts_with','ends_with','regex')
+                   AND status = %s
+                 ORDER BY match_type ASC, id ASC",
+                'active',
+            ),
+        );
+
+        return is_array($rows) ? $rows : [];
+    }
+
+    /**
+     * Returns active, non-regex source/target pairs.
+     *
+     * @param int $limit Max rows, 0 for no limit.
+     * @return array<int, array{source_url: string, target_url: string}>
+     */
+    public function getActiveExactRoutes(int $limit = 0): array
+    {
+        global $wpdb;
+
+        if ($limit > 0) {
+            $rows = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT source_url, target_url FROM `{$wpdb->seopulse_redirects}`
+                     WHERE status = %s AND regex = %d
+                     LIMIT %d",
+                    'active',
+                    0,
+                    $limit,
+                ),
+                ARRAY_A,
+            );
+        } else {
+            $rows = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT source_url, target_url FROM `{$wpdb->seopulse_redirects}`
+                     WHERE status = %s AND regex = %d",
+                    'active',
+                    0,
+                ),
+                ARRAY_A,
+            );
+        }
+
+        return is_array($rows) ? $rows : [];
+    }
+
+    /**
+     * Counts one more hit on a redirect.
+     */
+    public function incrementHits(int $id): void
+    {
+        global $wpdb;
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE `{$wpdb->seopulse_redirects}` SET hits = hits + 1, last_accessed = %s WHERE id = %d",
+                current_time('mysql'),
+                $id,
+            ),
+        );
+    }
+
+    /**
+     * True when the redirects table exists (cached per request).
+     */
+    public function tableExists(): bool
+    {
+        static $cache = [];
+
+        if (!isset($cache[ $this->table ])) {
+            global $wpdb;
+
+            $cache[ $this->table ] = $this->table === $wpdb->get_var(
+                $wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($this->table)),
+            );
+        }
+
+        return $cache[ $this->table ];
     }
 
     /**
@@ -340,7 +493,9 @@ class RedirectRepository
             'status'            => $status,
         ];
 
-        $formats = ['%s', '%s', '%d', '%d', '%s', '%d', '%d', '%s', '%s', '%s', '%d', '%s', '%s', '%s'];
+        $formats = ['%s', '%s', '%d', '%d', '%s', '%d', '%d', '%s', '%s', '%s', '%d', '%s'];
+
+        [$insert, $formats] = UrlHash::withHash($insert, $formats, $insert['source_url']);
 
         $result = $wpdb->insert($this->table, $insert, $formats);
 
@@ -434,6 +589,10 @@ class RedirectRepository
 
         if (empty($update_data)) {
             return false;
+        }
+
+        if (isset($update_data['source_url'])) {
+            [$update_data, $formats] = UrlHash::withHash($update_data, $formats, (string) $update_data['source_url']);
         }
 
         $result = $wpdb->update($this->table, $update_data, ['id' => $id], $formats, ['%d']);

@@ -71,37 +71,15 @@ class RedirectChainDetector
      */
     public static function fromSql(): self
     {
-        global $wpdb;
+        $repository = new \SEOPulse\Modules\Redirections\RedirectRepository();
 
-        $table = $wpdb->prefix . 'seopulse_redirects';
-
-        if (!isset($wpdb->seopulse_redirects)) {
-            $wpdb->seopulse_redirects = $table;
-        }
-
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-        $exists = (bool) $wpdb->get_var(
-            $wpdb->prepare('SHOW TABLES LIKE %s', $table),
-        );
-
-        if (!$exists) {
+        if (!$repository->tableExists()) {
             return self::fromOption();
         }
 
         // Only load exact-match active redirects (regex patterns can't
         // be reliably resolved in a graph).
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-        $rows = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT source_url, target_url FROM `{$wpdb->seopulse_redirects}`
-                 WHERE status = %s AND regex = %d",
-                'active',
-                0,
-            ),
-            ARRAY_A,
-        );
-
-        return new self(is_array($rows) ? $rows : []);
+        return new self($repository->getActiveExactRoutes());
     }
 
     /**

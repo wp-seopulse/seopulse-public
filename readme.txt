@@ -2,10 +2,10 @@
 Authors: citrusdevlab
 Contributors: citrusdevlab, Alexandre Jacquin
 Donate link: https://www.seopulse.citrus-design.fr
-Tags: seo, xml sitemap, schema, local seo, google search console
+Tags: seo, xml sitemap, schema, local seo, redirections
 Requires at least: 6.0
 Tested up to: 7.1
-Stable tag: 1.8.0
+Stable tag: 1.9.0
 Requires PHP: 8.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -22,9 +22,10 @@ SEOPulse is a complete WordPress SEO solution that helps you optimize your conte
 ✔ <strong>Unlimited focus keywords per post with per-keyword scoring</strong>
 ✔ <strong>Open Graph, Twitter Card & LinkedIn live social previews directly in the editor</strong>
 ✔ <strong>Meta Template Engine with 99+ dynamic variables for titles and descriptions</strong>
-✔ <strong>XML sitemaps: posts, pages, taxonomies, images, and Google News</strong>
+✔ <strong>XML sitemaps: posts, pages, taxonomies, images, videos, and Google News, plus an HTML sitemap</strong>
 ✔ <strong>301/302 URL redirections with 404 monitoring</strong>
 ✔ <strong>Local Business JSON-LD schema with interactive map</strong>
+✔ <strong>Schema.org catalog: Article, FAQPage, HowTo, Recipe, Event, Course, VideoObject, SoftwareApplication</strong>
 ✔ <strong>GDPR-compliant Google Analytics 4, Google Tag Manager & cookie consent banner</strong>
 ✔ <strong>Migrate from Yoast SEO, Rank Math & SEOPress in one click</strong>
 ✔ <strong>No ads, fully modular — disable what you don't need</strong>
@@ -43,7 +44,7 @@ SEOPulse is a complete WordPress SEO solution that helps you optimize your conte
 <ul>
 	<li><strong>Installation wizard</strong> to quickly setup your site</li>
 	<li><strong>Content analysis</strong> with up to 5 focus keywords per post and real-time SEO scoring (0–100)</li>
-	<li><strong>Content Analysis</strong>: Compatible with page builder like Elementor, Live Composer, Kubio</li>
+	<li><strong>Content Analysis</strong>: Compatible with page builder like Elementor, Bricks, Live Composer, Kubio</li>
 	<li><strong>18+ content checks</strong>: title structure, heading hierarchy, word count, keyword density, links, images, alt text</li>
 	<li><strong>Readability analysis</strong>: Flesch Reading Ease, sentence length, passive voice, complex words, transition words</li>
 	<li><strong>Mobile / Desktop Google Preview</strong> to see how your post appears in search results</li>
@@ -52,7 +53,8 @@ SEOPulse is a complete WordPress SEO solution that helps you optimize your conte
 	<li><strong>Meta Template Engine</strong>: 16 namespaces, 99+ variables, conditional rendering, fallback chains</li>
 	<li><strong>Open Graph & Twitter Cards</strong> for better social sharing on Facebook, LinkedIn, Twitter, WhatsApp…</li>
 	<li><strong>Custom canonical URL</strong> and robots directives (noindex, nofollow, noarchive)</li>
-	<li><strong>XML Sitemaps</strong>: posts, pages, custom post types, taxonomies, images</li>
+	<li><strong>XML Sitemaps</strong>: posts, pages, custom post types, taxonomies, images (up to 50 per URL), videos (YouTube, Vimeo, self-hosted)</li>
+	<li><strong>HTML Sitemap</strong>: <code>[seopulse_html_sitemap]</code> shortcode and Gutenberg block with post type, taxonomy and exclusion options</li>
 	<li><strong>Google News Sitemap</strong> with multilingual support (WPML, Polylang, TranslatePress)</li>
 	<li><strong>robots.txt management</strong> with auto-insertion of sitemap URL</li>
 	<li><strong>301/302 URL redirections</strong> with exact matching, hit counter, and chain detection</li>
@@ -60,14 +62,15 @@ SEOPulse is a complete WordPress SEO solution that helps you optimize your conte
 	<li><strong>Redirect suggestions</strong> for 404 URLs</li>
 	<li><strong>CSV export</strong> for redirects and 404 logs</li>
 	<li><strong>Local Business SEO</strong>: multi-location support JSON-LD schema with 150+ @types, address, opening hours, phone, email, social profiles, business identity, logo, ratings</li>
-	<li><strong>JSON-LD schema</strong>: Organization, WebSite, Article, FAQ, HowTo, Product (WooCommerce)</li>
+	<li><strong>JSON-LD schema</strong>: Organization, WebSite, Article, NewsArticle, BlogPosting, FAQPage, HowTo, Recipe, Event, Course, VideoObject, SoftwareApplication, Product (WooCommerce), with an editor in the Gutenberg Document sidebar</li>
 	<li><strong>JSON-LD validator</strong> with browser preview</li>
+	<li><strong>Matomo & Microsoft Clarity</strong> tracking, loaded only after statistics consent</li>
 	<li><strong>Google Analytics 4</strong> (GA4) with Consent Mode v2 and GDPR compliance</li>
 	<li><strong>Google Tag Manager</strong> (GTM) with consent-aware script injection</li>
 	<li><strong>GDPR cookie consent banner</strong>: customizable position, theme, message, and button text</li>
 	<li><strong>Instant indexing</strong>: IndexNow protocol and Google Indexing API with submission log</li>
 	<li><strong>Google Suggest integration</strong> for keyword research in the editor</li>
-	<li><strong>WooCommerce support</strong>: Product schema auto-injection, meta template variables (price, SKU, rating…), content analysis</li>
+	<li><strong>WooCommerce support</strong>: Product schema auto-injection (variable products, GTIN, MPN, brand), meta template variables (price, SKU, rating…), content analysis, Cart/Checkout/My Account kept out of indexing and sitemaps</li>
 	<li><strong>SEO columns</strong> in post/page lists: sortable score, title, description, focus keywords with color-coded badges</li>
 	<li><strong>Admin bar SEO score</strong> for quick reference</li>
 	<li><strong>Image ALT auto-fill</strong> and image diagnostics</li>
@@ -78,7 +81,7 @@ SEOPulse is a complete WordPress SEO solution that helps you optimize your conte
 	<li><strong>WP-CLI commands</strong>: analyze, dashboard, migrate, export, import</li>
 	<li><strong>Full REST API</strong> for all major features</li>
 	<li><strong>Multisite compatible</strong></li>
-	<li><strong>Multilingual ready</strong>: WPML, Polylang, TranslatePress</li>
+	<li><strong>Multilingual ready</strong>: hreflang, per-language sitemaps and language-aware redirections for WPML and Polylang; TranslatePress supported</li>
 </ul>
 
 <h3>All Features Included</h3>
@@ -98,7 +101,8 @@ SEOPulse ships with every feature unlocked — no upsells, no limits:
 SEOPulse integrates with WooCommerce out of the box:
 
 <ul>
-	<li>Automatic Product JSON-LD schema (name, price, availability, SKU, ratings, brand, images)</li>
+	<li>Automatic Product JSON-LD schema (name, price, availability, SKU, ratings, brand, images, GTIN, MPN)</li>
+	<li>Variable and grouped products output an AggregateOffer with low price, high price and offer count</li>
 	<li>WooCommerce variables in the Meta Template Engine (price, SKU, rating, stock…)</li>
 	<li>Product Grid Gutenberg block with search, filter, and sort</li>
 	<li>Freeze Modified Date to preserve SEO history on product edits</li>
@@ -110,6 +114,9 @@ SEOPulse integrates with WooCommerce out of the box:
 <ul>
 	<li>Modular architecture with 8 toggleable modules</li>
 	<li>Full REST API under <code>/wp-json/seopulse/v1/</code> for every feature</li>
+	<li>WordPress Abilities API (WordPress 6.9+): analyze content, preview meta, resolve templates and manage redirects from AI agents</li>
+	<li>Headless: <code>/head</code> endpoint, <code>seopulse_head_json</code> REST field, batch endpoint and signed revalidation webhook</li>
+	<li>Object cache abstraction with automatic transient fallback, and authenticated encryption for stored secrets</li>
 	<li>WP-CLI commands for batch operations (analyze, migrate, export, import)</li>
 	<li>Hooks and filters for extensibility (<code>seopulse_container_built</code>, <code>seopulse_modules_definition</code>…)</li>
 	<li>Modern PHP 8.1 codebase with PSR-4 autoloading</li>
@@ -175,6 +182,38 @@ When the Google Indexing feature is enabled by the administrator and a service a
 * **Service provider:** Google LLC
 * [Google Indexing API Terms of Service](https://developers.google.com/terms)
 * [Google Privacy Policy](https://policies.google.com/privacy)
+
+= Microsoft Clarity =
+
+When the Clarity feature is enabled by the administrator with a project ID, this plugin loads the Microsoft Clarity script on the frontend.
+
+* **What it does:** Provides heatmaps and session recordings of how visitors use your website.
+* **When data is sent:** On frontend page loads, only after the visitor has given "statistics" consent (if the cookie consent banner is enabled). The script is loaded from `https://www.clarity.ms/tag/`.
+* **What data is sent:** Page views, clicks, scrolls, browser and device information, collected client-side by Microsoft's script.
+* **Service provider:** Microsoft Corporation
+* [Microsoft Clarity Terms of Use](https://clarity.microsoft.com/terms)
+* [Microsoft Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement)
+
+= Matomo =
+
+When the Matomo feature is enabled by the administrator, this plugin loads the Matomo tracking script from the Matomo instance URL configured by the administrator (self-hosted or Matomo Cloud).
+
+* **What it does:** Collects website usage and traffic statistics in the administrator's own Matomo instance.
+* **When data is sent:** On frontend page loads, only after the visitor has given "statistics" consent (if the cookie consent banner is enabled).
+* **What data is sent:** Page views and visit information collected by the Matomo tracker, sent to the configured Matomo URL. No data is sent to the plugin authors.
+* **Service provider:** The Matomo instance chosen by the administrator (Matomo Cloud is operated by InnoCraft Ltd)
+* [Matomo Privacy Policy](https://matomo.org/privacy-policy/)
+
+= Vimeo oEmbed (video sitemap) =
+
+When the video sitemap is enabled and a published post embeds a Vimeo video, this plugin queries Vimeo to get the video thumbnail and duration.
+
+* **What it does:** Retrieves the thumbnail and duration required for the `<video:video>` entries of the video sitemap.
+* **When data is sent:** When the video sitemap is generated and the Vimeo data is not already cached (cached for 7 days; failures for 1 day). Requests are sent server-side to `https://vimeo.com/api/oembed.json`.
+* **What data is sent:** The public Vimeo URL of the video and your server's IP address.
+* **Service provider:** Vimeo, Inc.
+* [Vimeo Terms of Service](https://vimeo.com/terms)
+* [Vimeo Privacy Policy](https://vimeo.com/privacy)
 
 = Google Autocomplete (Google Suggest) =
 
@@ -283,6 +322,15 @@ The build process uses `@wordpress/scripts` (which includes webpack) to compile 
 
 Composer is used for PHP autoloading. Vendor dependencies are included in the `vendor/` directory. To regenerate: `composer install --no-dev`
 
+== Screenshots ==
+
+1. Modular dashboard allowing you to enable only the SEO features you need for a zero-bloat site.
+2. Real-time SEO score, Google SERP preview, and actionable optimization checks directly inside the WordPress editor.
+3. Live Open Graph and social media card previews for Facebook, X (Twitter), and LinkedIn.
+4. Built-in JSON-LD structured data generator supporting Schema.org types like Article, LocalBusiness, and FAQ.
+5. Clean Local SEO configuration panel for business details, opening hours, and geographic coordinates.
+6. Lightweight Google Analytics 4 (GA4) and Google Tag Manager setup with native Consent Mode v2 support.
+
 == Frequently Asked Questions ==
 
 = What are the requirements? =
@@ -346,6 +394,45 @@ Yes. All features are accessible via REST endpoints under `/wp-json/seopulse/v1/
 
 == Changelog ==
 
+= 1.9.0 =
+
+* NEW: HTML Sitemap — `[seopulse_html_sitemap]` shortcode and `seopulse/html-sitemap` Gutenberg block (server-side rendered) with included/excluded post types, taxonomy term lists, excluded terms and IDs, modification dates and a per-group limit; `noindex`, password-protected and sitemap-excluded content is never listed; cached and invalidated on post, term and sitemap settings changes
+* NEW: Video Sitemap — `/sitemap-videos-N.xml` with `<video:video>` entries for YouTube, Vimeo and self-hosted videos (`<video>`, core block, `[video]` shortcode); new "Videos" switch in the Sitemap settings
+* NEW: Multilingual — hreflang alternates, per-language XML sitemaps (with `xhtml:link` alternates and `x-default`) and language-aware redirections for Polylang and WPML
+* NEW: Analytics — Matomo and Microsoft Clarity tracking scripts, loaded only after "statistics" consent, with strict validation of URLs and identifiers
+* NEW: Page Builders — Bricks Builder adapter: the SEOPulse SEO panel is available inside the Bricks editor and Bricks' own meta output is disabled to avoid duplicates
+* NEW: Structured data — schema catalog with editor for Article (Article, NewsArticle, BlogPosting), FAQPage, HowTo, Recipe, Event, Course, VideoObject and SoftwareApplication; REST routes `GET /schema/types` and `GET/POST /posts/{id}/schema`, "SEOPulse structured data" panel in the Gutenberg Document sidebar with a JSON-LD preview
+* NEW: Abilities API — five abilities (`seopulse/analyze-content`, `seopulse/preview-meta`, `seopulse/resolve-meta-template`, `seopulse/list-redirects`, `seopulse/create-redirect`) exposed on WordPress 6.9+ for programmatic and AI agent use, with the same permission checks as the REST routes; can be switched off with the new `headless_abilities_enabled` setting (filter `seopulse_abilities_enabled`) in the Headless tab
+* NEW: Object cache — `ObjectCache` abstraction on `wp_cache_*` with `seopulse_*` groups and an automatic fallback to transients when no persistent object cache is active; group-wide flush
+* NEW: Security — `DataEncryption` now uses authenticated encryption (libsodium `secretbox`, or AES-256-GCM as a fallback); values encrypted with the previous algorithm are still decrypted
+* NEW: Analytics — "Custom Code" tab: JavaScript injected in the `<head>` and before `</body>`, now independent of Google Analytics 4 (settings `custom_head_code` and `custom_footer_code`; values saved in the former `ga4_custom_head_code` and `ga4_custom_footer_code` settings are migrated automatically)
+* NEW: Analytics — "Cookie" tab grouping the banner customization in extensible sub-tabs: Appearance and Texts (moved from the main tabs, settings unchanged), plus the new Backdrop, Main settings, Primary button and Secondary button sub-tabs
+* NEW: Analytics — banner colors: background, text and link colors, and background/text colors (with hover) of the primary and secondary buttons, each with a color picker, a "Clear" button to go back to the default color and strict validation (hex, `rgb()`/`rgba()`, `hsl()`/`hsla()`)
+* NEW: Analytics — optional backdrop displayed behind the cookie banner, with its own color (`backdrop_enabled`, `backdrop_bg_color`)
+* FIX: Page Builders — the Bricks adapter was never registered because Bricks is a theme and its constants do not exist yet when plugins load; it now registers after the theme is loaded and detects Bricks through the active template too
+* FIX: Multilingual — the list of WPML languages was always empty because `wpml_active_languages` was called as a function instead of a filter
+* FIX: Sitemap — clearing the sitemap cache used direct SQL, so a transient read in the same request could stay outdated; it now clears the cache group
+* FIX: Dashboard — saving an analysis did not invalidate the SEO overview widget because a non-existent transient was deleted; the shared cache key is now cleared
+* FIX: Structured data — the Event `location` check only accepted a single place and rejected multiple or virtual locations
+* FIX: Analytics — custom head and footer code was only injected when Google Analytics 4 was enabled with a valid Measurement ID, because it depended on the `google-analytics-gtag` script; it no longer depends on GA4
+* FIX: Analytics — custom code was only executed on the next page load after the visitor accepted "statistics"; it now runs immediately after consent
+* PERFORMANCE: WooCommerce — variable and grouped products output an `AggregateOffer` (`lowPrice`, `highPrice`, `offerCount`); GTIN (`gtin8/12/13/14`) and MPN support; `priceValidUntil` follows scheduled sales
+* PERFORMANCE: WooCommerce — the Cart, Checkout and My Account pages are set to `noindex,follow` and removed from the XML, native WordPress and HTML sitemaps (filter `seopulse_woocommerce_system_page_ids`)
+* PERFORMANCE: Image Sitemap — images from the featured image, WooCommerce galleries, gallery shortcode and block, and lazy-loaded attributes; up to 50 images per URL (filter `seopulse_sitemap_max_images_per_url`, filter `seopulse_sitemap_post_images`); relative URLs resolved and `data:` URIs ignored
+* PERFORMANCE: Performance — compiled classmap for the Kernel container instead of scanning folders and using reflection on every request (disabled when `WP_DEBUG` is on or `SEOPULSE_DISABLE_CLASSMAP` is defined)
+* PERFORMANCE: Performance — 404 logs and redirections now have an indexed `url_hash` column, filled in batches on existing installations
+* PERFORMANCE: Database — queries on redirections and 404 logs are centralized in repositories and always prepared
+* PERFORMANCE: Performance — dashboard, analysis, HTML sitemap, XML sitemaps, image sizes, Vimeo lookups and Google Suggest caches use `ObjectCache`
+* PERFORMANCE: Headless — saving a post only clears that post's Meta Engine cache instead of flushing it entirely
+* PERFORMANCE: Structured data — automatic Article, FAQ, HowTo and Event providers step aside when a type is configured in the editor panel; a `seopulse/schema` block of the same type keeps priority
+* PERFORMANCE: Admin — SEOPulse assets are only loaded on SEOPulse screens (no longer on other plugins' pages whose slug contains "seopulse")
+* PERFORMANCE: Internationalization — translation registry de-duplicated by string and extraction of strings containing escaped quotes fixed
+* PERFORMANCE: Development — the TypeScript project compiles without errors
+* PERFORMANCE: Analytics — the "Google Analytics" tab is now named "Analytics" and gathers Google Analytics 4, Google Tag Manager, Matomo, Microsoft Clarity, tracking exclusions and event tracking; custom code has its own tab
+* PERFORMANCE: Analytics — with the consent banner enabled, custom code is run by the consent script once "statistics" is accepted (at page load if consent is already stored, or right after the visitor accepts), so no consent-dependent code ends up in cached pages; without the banner it is still injected by PHP (hook `inject_custom_code`)
+* PERFORMANCE: Analytics — banner styles use CSS variables with the previous values as defaults, so the appearance is unchanged until a color is set; custom colors are output as one inline style, identical for every visitor and compatible with page caching
+* PERFORMANCE: Dashboard — Improve the Drag'n'Drop blocks system
+
 = 1.8.0 =
 
 * NEW: Headless — `GET /wp-json/seopulse/v1/head?url=...` returns the SEO head data (title, description, robots, canonical, Open Graph, Twitter Card and JSON-LD `@graph` with WebSite, Organization, WebPage, Article and BreadcrumbList) for any public URL: home, posts, custom post types, taxonomies, authors and archives
@@ -363,12 +450,6 @@ Yes. All features are accessible via REST endpoints under `/wp-json/seopulse/v1/
 * NEW: Headless — the head endpoint and the REST field can be switched off separately (`headless_endpoint_enabled`, `headless_field_enabled`, filters `seopulse_head_endpoint_enabled` and `seopulse_head_field_enabled`)
 * NEW: Headless — optional head for the site's 404 page (`headless_not_found_head`, filter `seopulse_head_not_found_head`): unknown URLs return a noindex head with HTTP 404 and `status: 404` instead of an error
 * NEW: Headless — "Headless" tab in Titles & Metas to set the frontend URL, the webhook, the activation switches and the 404 head without code
-* IMPROVED: Headless — on a cold cache the `seopulse_head_json` field builds at most 20 payloads per request (filter `seopulse_head_field_cold_limit`, 0 = no limit); the others are built in the background and returned as `{"version":1,"pending":true}`. Use `_fields` to leave the field out of lists that do not need it
-* IMPROVED: Headless — payloads now carry a `version` field and the route publishes a JSON schema (`OPTIONS /head`)
-* IMPROVED: Headless — scoped cache invalidation: saving a post only invalidates its own payload and the listings instead of the whole cache
-* IMPROVED: Headless — short cache for "not found" results (only with a persistent object cache, filter `seopulse_head_negative_cache_ttl`) and normalized cache keys (unknown query vars dropped, repeated slashes collapsed)
-* IMPROVED: Breadcrumbs — the BreadcrumbList JSON-LD can now be built as data (`build_json_ld()`) for reuse; the rendered output is unchanged
-* IMPROVED: Headless — `og.image` width and height are now read for images outside the media library (first bytes of the file, safe HTTP request, cached; filter `seopulse_head_remote_image_size` to turn it off)
 * FIX: Headless — the head endpoint returned a 404 for the home page because its query was never run; the home page (static page or latest posts) is now resolved
 * FIX: Headless — the BreadcrumbList JSON-LD is only included when breadcrumbs are enabled in the Meta SEO settings, like the theme output
 * FIX: Meta Engine — saving a post did not clear its cached titles and descriptions, so outdated values could be served for up to one hour; the cache entries of a post are now tracked and cleared when it is saved.
@@ -383,6 +464,12 @@ Yes. All features are accessible via REST endpoints under `/wp-json/seopulse/v1/
 * FIX: Structured data — a FAQPage or HowTo printed by a SEOPulse Schema block was duplicated by the automatic FAQ/HowTo providers; the Schema block now takes priority and the providers resume when the page has no such block.
 * FIX: Headless — the payload now includes the Local SEO Organization node and the FAQPage/HowTo nodes of Schema blocks, matching the classic frontend output.
 * FIX: Site Editor — editing a block theme (FSE) showed a PHP notice about the `seopulse-editor-sidebar` style having unregistered dependencies (`seopulse-admin-global`); the dependency is now only declared where that style is registered.
+* PERFORMANCE: Headless — on a cold cache the `seopulse_head_json` field builds at most 20 payloads per request (filter `seopulse_head_field_cold_limit`, 0 = no limit); the others are built in the background and returned as `{"version":1,"pending":true}`. Use `_fields` to leave the field out of lists that do not need it
+* PERFORMANCE: Headless — payloads now carry a `version` field and the route publishes a JSON schema (`OPTIONS /head`)
+* PERFORMANCE: Headless — scoped cache invalidation: saving a post only invalidates its own payload and the listings instead of the whole cache
+* PERFORMANCE: Headless — short cache for "not found" results (only with a persistent object cache, filter `seopulse_head_negative_cache_ttl`) and normalized cache keys (unknown query vars dropped, repeated slashes collapsed)
+* PERFORMANCE: Breadcrumbs — the BreadcrumbList JSON-LD can now be built as data (`build_json_ld()`) for reuse; the rendered output is unchanged
+* PERFORMANCE: Headless — `og.image` width and height are now read for images outside the media library (first bytes of the file, safe HTTP request, cached; filter `seopulse_head_remote_image_size` to turn it off)
 
 = 1.7.0 =
 

@@ -112,6 +112,17 @@ final class ProductProvider implements SchemaProvider
             $schema['sku'] = $sku;
         }
 
+        // GTIN (typed by length) and MPN
+        $gtin = $this->get_gtin($product, $post->ID);
+        if ($gtin !== '') {
+            $schema[ $this->gtin_property($gtin) ] = $gtin;
+        }
+
+        $mpn = $this->get_mpn($post->ID);
+        if ($mpn !== '') {
+            $schema['mpn'] = $mpn;
+        }
+
         // Brand (use the first product_brand or pa_brand term, or site name)
         $brand = $this->get_brand($product);
         if (!empty($brand)) {
@@ -297,7 +308,17 @@ final class ProductProvider implements SchemaProvider
     private function build_offers(\WC_Product $product, int $post_id): array
     {
         $price_override = get_post_meta($post_id, '_seopulse_product_schema_price_override', true);
-        $price          = !empty($price_override)
+
+        // Variable and grouped products expose a price range instead of a single price.
+        if (empty($price_override) && $product->is_type(['variable', 'grouped'])) {
+            $aggregate = $this->build_aggregate_offer($product, $post_id);
+
+            if ($aggregate !== []) {
+                return $aggregate;
+            }
+        }
+
+        $price = !empty($price_override)
             ? (float) $price_override
             : (float) $product->get_price();
 
@@ -305,30 +326,160 @@ final class ProductProvider implements SchemaProvider
             return [];
         }
 
-        $currency = get_woocommerce_currency();
-
         $offer = [
             '@type'           => 'Offer',
             'url'             => get_permalink($post_id),
             'price'           => number_format($price, 2, '.', ''),
-            'priceCurrency'   => $currency,
+            'priceCurrency'   => get_woocommerce_currency(),
             'availability'    => $this->map_availability($product),
-            'priceValidUntil' => wp_date('Y-12-31'),
+            'priceValidUntil' => $this->price_valid_until($product),
         ];
 
-        // Seller
-        $site_name = get_bloginfo('name');
-        $reference = OrgSchemaProvider::reference();
-        if ($reference !== null) {
-            $offer['seller'] = $reference;
-        } elseif (!empty($site_name)) {
-            $offer['seller'] = [
-                '@type' => 'Organization',
-                'name'  => $site_name,
-            ];
+        $seller = $this->get_seller();
+        if ($seller !== []) {
+            $offer['seller'] = $seller;
         }
 
         return $offer;
+    }
+
+    /**
+     * Build an AggregateOffer from the prices of variations or grouped children
+     *
+     * @param \WC_Product $product
+     * @param int $post_id
+     * @return array<string, mixed>
+     */
+    private function build_aggregate_offer(\WC_Product $product, int $post_id): array
+    {
+        $prices = [];
+
+        if ($product instanceof \WC_Product_Variable) {
+            $variation_prices = $product->get_variation_prices(true);
+            $prices           = array_map('floatval', $variation_prices['price'] ?? []);
+        } else {
+            foreach ($product->get_children() as $child_id) {
+                $child = wc_get_product($child_id);
+
+                if ($child && $child->is_purchasable()) {
+                    $prices[ $child_id ] = (float) wc_get_price_to_display($child);
+                }
+            }
+        }
+
+        $prices = array_filter($prices, static fn (float $price): bool => $price > 0);
+
+        if ($prices === []) {
+            return [];
+        }
+
+        $offer = [
+            '@type'           => 'AggregateOffer',
+            'url'             => get_permalink($post_id),
+            'priceCurrency'   => get_woocommerce_currency(),
+            'lowPrice'        => number_format(min($prices), 2, '.', ''),
+            'highPrice'       => number_format(max($prices), 2, '.', ''),
+            'offerCount'      => count($prices),
+            'availability'    => $this->map_availability($product),
+            'priceValidUntil' => $this->price_valid_until($product),
+        ];
+
+        $seller = $this->get_seller();
+        if ($seller !== []) {
+            $offer['seller'] = $seller;
+        }
+
+        return $offer;
+    }
+
+    /**
+     * Seller reference (organization node, or site name fallback)
+     *
+     * @return array<string, mixed>
+     */
+    private function get_seller(): array
+    {
+        $reference = OrgSchemaProvider::reference();
+        if ($reference !== null) {
+            return $reference;
+        }
+
+        $site_name = get_bloginfo('name');
+
+        return $site_name !== '' ? ['@type' => 'Organization', 'name' => $site_name] : [];
+    }
+
+    /**
+     * End of the scheduled sale when set, otherwise the end of the current year
+     *
+     * @param \WC_Product $product
+     * @return string Y-m-d
+     */
+    private function price_valid_until(\WC_Product $product): string
+    {
+        $sale_end = $product->is_type(['variable', 'grouped']) ? null : $product->get_date_on_sale_to();
+
+        return $sale_end ? $sale_end->date('Y-m-d') : wp_date('Y-12-31');
+    }
+
+    /**
+     * GTIN from the override, WooCommerce's unique ID field or common third-party fields
+     *
+     * @param \WC_Product $product
+     * @param int $post_id
+     * @return string Digits only, or empty when not a valid length
+     */
+    private function get_gtin(\WC_Product $product, int $post_id): string
+    {
+        $candidates = [get_post_meta($post_id, '_seopulse_product_schema_gtin', true)];
+
+        if (method_exists($product, 'get_global_unique_id')) {
+            $candidates[] = $product->get_global_unique_id();
+        }
+
+        foreach (['_wpm_gtin_code', '_ts_gtin'] as $key) {
+            $candidates[] = get_post_meta($post_id, $key, true);
+        }
+
+        foreach ($candidates as $candidate) {
+            $digits = preg_replace('/\D+/', '', is_scalar($candidate) ? (string) $candidate : '');
+
+            if (in_array(strlen((string) $digits), [8, 12, 13, 14], true)) {
+                return (string) $digits;
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * schema.org property matching a GTIN length
+     *
+     * @param string $gtin Digits only
+     * @return string
+     */
+    private function gtin_property(string $gtin): string
+    {
+        return 'gtin' . strlen($gtin);
+    }
+
+    /**
+     * Manufacturer part number from the override or common third-party field
+     *
+     * @param int $post_id
+     * @return string
+     */
+    private function get_mpn(int $post_id): string
+    {
+        foreach (['_seopulse_product_schema_mpn', '_wpm_mpn', '_mpn'] as $key) {
+            $value = get_post_meta($post_id, $key, true);
+
+            if (is_scalar($value) && trim((string) $value) !== '') {
+                return sanitize_text_field((string) $value);
+            }
+        }
+
+        return '';
     }
 
     /**

@@ -19,12 +19,12 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use SEOPulse\Api\DashboardWidgetController;
+use SEOPulse\Core\Cache\ObjectCache;
 use SEOPulse\Core\Contracts\ExecuteHooksAdmin;
 
 class SeoOverviewWidget implements ExecuteHooksAdmin
 {
-    private const CACHE_KEY = 'seopulse_dashboard_widget_overview';
-
     public function hooks(): void
     {
         add_action('wp_dashboard_setup', [$this, 'register_widget']);
@@ -114,7 +114,7 @@ class SeoOverviewWidget implements ExecuteHooksAdmin
      */
     private function get_initial_data(): ?array
     {
-        $cached = get_transient(self::CACHE_KEY);
+        $cached = ObjectCache::get(DashboardWidgetController::CACHE_KEY, DashboardWidgetController::CACHE_GROUP);
 
         return is_array($cached) ? $cached : null;
     }

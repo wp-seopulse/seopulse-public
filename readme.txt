@@ -5,7 +5,7 @@ Donate link: https://www.seopulse.citrus-design.fr
 Tags: seo, xml sitemap, schema, local seo, redirections
 Requires at least: 6.0
 Tested up to: 7.1
-Stable tag: 1.9.0
+Stable tag: 1.9.1
 Requires PHP: 8.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -43,7 +43,7 @@ SEOPulse is a complete WordPress SEO solution that helps you optimize your conte
 
 <ul>
 	<li><strong>Installation wizard</strong> to quickly setup your site</li>
-	<li><strong>Content analysis</strong> with up to 5 focus keywords per post and real-time SEO scoring (0–100)</li>
+	<li><strong>Content analysis</strong> unlimited focus keywords per post and real-time SEO scoring (0–100)</li>
 	<li><strong>Content Analysis</strong>: Compatible with page builder like Elementor, Bricks, Live Composer, Kubio</li>
 	<li><strong>18+ content checks</strong>: title structure, heading hierarchy, word count, keyword density, links, images, alt text</li>
 	<li><strong>Readability analysis</strong>: Flesch Reading Ease, sentence length, passive voice, complex words, transition words</li>
@@ -393,6 +393,17 @@ Use the WordPress.org support forum.
 Yes. All features are accessible via REST endpoints under `/wp-json/seopulse/v1/`.
 
 == Changelog ==
+
+= 1.9.1 =
+
+* FIX: Improved Google Consent Mode VS integration with Google Analytics 4.
+* Fix: Ensured GA4 is no longer initialized directly before user consent is granted.
+* Fix: Aligned GA4 tracking with SEOPulse consent categories, particularly the Statistics category.
+* Fix: Prevented GA4 from firing when analytics_storage remains denied.
+* Fix: Improved consistency between SEOPulse consent settings, Google Tag Manager and GA4.
+* Fix: Preserved Consent Mode default values and ensured they are applied before tracking initialization.
+* Improvement: Clarified consent handling for analytics, marketing and personalization cookies.
+* Compatibility: Verified compatibility with Google Tag Manager and Google Analytics 4.
 
 = 1.9.0 =
 

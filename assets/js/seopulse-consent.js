@@ -123,6 +123,7 @@
 
 	// ── Utility: Save consent ───────────────────────────────────
 	function saveConsent(categories) {
+		const previous = getStoredConsent();
 		const consentData = {
 			categories,
 			timestamp: new Date().toISOString(),
@@ -130,23 +131,49 @@
 		};
 		setCookie(COOKIE_NAME, JSON.stringify(consentData), COOKIE_EXPIRY);
 
-		// Also save in localStorage for quick JS access
 		try {
 			localStorage.setItem(COOKIE_NAME, JSON.stringify(consentData));
 		} catch (e) {
 			// localStorage not available
 		}
 
-		// Fire custom event
-		fireConsentEvent(categories);
+		// 1. consent update  2. and then load allowed scripts
+		applyConsent(categories);
 
-		// Update Google Consent Mode v2
+		// If statistics consent is revoked, clean up GA cookies.
+		if (previous && previous.categories && previous.categories.statistics && !categories.statistics) {
+			purgeAnalyticsCookies();
+		}
+
+		fireConsentEvent(categories);
+	}
+
+	// This function applies the consent settings: updates Google Consent Mode first, then loads allowed scripts.
+	function applyConsent(categories) {
 		if (GCM_V2) {
 			updateGoogleConsentMode(categories);
 		}
-
-		// Load accepted scripts
 		loadConsentedScripts(categories);
+	}
+
+	function purgeAnalyticsCookies() {
+		const host = location.hostname;
+		const parts = host.split('.');
+		const domains = ['', host, '.' + host];
+		if (parts.length > 2) {
+			domains.push('.' + parts.slice(-2).join('.'));
+		}
+		document.cookie.split(';').forEach(function (c) {
+			const name = c.split('=')[0].trim();
+			if (!/^(_ga|_gid|_gat)/.test(name)) {
+				return;
+			}
+			domains.forEach(function (d) {
+				document.cookie =
+					name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' +
+					(d ? '; domain=' + d : '');
+			});
+		});
 	}
 
 	// ── Google Consent Mode v2 ──────────────────────────────────
@@ -179,13 +206,12 @@
 	// ── Script loading after consent ────────────────────────────
 	function loadConsentedScripts(categories) {
 		// Load GA4 if statistics accepted
-		if (categories.statistics && scripts.ga4_id) {
-			loadGA4(scripts.ga4_id);
-		}
-
-		// Load GTM if statistics accepted
-		if (categories.statistics && scripts.gtm_id) {
-			loadGTM(scripts.gtm_id);
+		if (categories.statistics) {
+			if (scripts.gtm_id) {
+				loadGTM(scripts.gtm_id);
+			} else if (scripts.ga4_id) {
+				loadGA4(scripts.ga4_id);
+			}
 		}
 
 		// Matomo and Clarity (statistics category)
@@ -263,14 +289,10 @@
 	}
 
 	function loadGA4(ga4Id) {
-		// Avoid double-loading
-		if (
-			document.querySelector(
-				'script[src*="googletagmanager.com/gtag/js"]'
-			)
-		) {
+		if (window.__seopulseGa4Loaded || document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) {
 			return;
 		}
+		window.__seopulseGa4Loaded = true;
 
 		const script = document.createElement('script');
 		script.async = true;
@@ -289,13 +311,10 @@
 
 	function loadGTM(gtmId) {
 		// Avoid double-loading
-		if (
-			document.querySelector(
-				'script[src*="googletagmanager.com/gtm.js"]'
-			)
-		) {
+		if (window.__seopulseGtmLoaded || document.querySelector('script[src*="googletagmanager.com/gtm.js"]')) {
 			return;
 		}
+		window.__seopulseGtmLoaded = true;
 
 		(function (w, d, s, l, i) {
 			w[l] = w[l] || [];
@@ -349,14 +368,9 @@
 		const storedConsent = getStoredConsent();
 
 		if (storedConsent) {
-			// Consent exists → load scripts, show reopen button
-			loadConsentedScripts(storedConsent.categories);
-			if (GCM_V2) {
-				updateGoogleConsentMode(storedConsent.categories);
-			}
+			// Consentment already exists, no need to show the banner again.
 			showReopenButton();
 		} else {
-			// No consent → show banner
 			showBanner();
 		}
 	}
@@ -805,6 +819,10 @@
 			} catch (e) {
 				// Ignore
 			}
+			if (GCM_V2) {
+				updateGoogleConsentMode({ statistics: false, marketing: false, preferences: false });
+			}
+			purgeAnalyticsCookies();
 			showBanner();
 			if (reopenBtn) {
 				reopenBtn.style.display = 'none';
@@ -823,6 +841,12 @@
 	};
 
 	// ── Boot ────────────────────────────────────────────────────
+	// Visitor has already made a choice: apply consent immediately without waiting for DOMContentLoaded.
+	// This script is in the <head>, after the default Consent Mode and before any GTM loading.
+	const earlyConsent = getStoredConsent();
+	if (earlyConsent && earlyConsent.categories) {
+		applyConsent(earlyConsent.categories);
+	}
 	if (document.readyState === 'loading') {
 		document.addEventListener('DOMContentLoaded', init);
 	} else {

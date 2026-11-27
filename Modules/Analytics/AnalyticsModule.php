@@ -72,31 +72,28 @@ class AnalyticsModule implements ExecuteHooksFrontend, ModuleInterface
     {
         $settings = $this->consentManager->getSettings();
 
-        // Register tracking script hooks
-        $this->registerTrackingHooks($settings);
+        // Event outbound / download : script identical for all visitors
+        // (cache compatible). Consent is checked at the click time, on the JS side.
+        add_action('wp_enqueue_scripts', [$this->tracking, 'inject_event_tracking'], 24);
 
-        // Custom code: when the consent module is disabled there is no JS loader,
-        // so it is injected server-side. When enabled, seopulse-consent.js runs it
-        // (after consent) so that no consent-dependent code ends up in cached HTML.
+        // Consent module disabled: historical behavior (server-side injection).
         if (empty($settings['enabled'])) {
+            $this->registerTrackingHooks($settings);
             add_action('wp_enqueue_scripts', [$this->tracking, 'inject_custom_code'], 23);
+
+            return;
         }
 
-        // Only activate consent module if enabled
-        if (!empty($settings['enabled'])) {
-            // Conditionally block tracking based on consent
-            add_action('wp_loaded', [$this, 'interceptTrackingScripts'], 5);
+        // Consent active: NO tracking scripts in server-side HTML.
+        // All tracking scripts will be loaded dynamically via JS after consent.
+        // GTM / Matomo / Clarity / Custom tracking scripts will be injected by seopulse-consent.js
+        // after consent for the "statistics" category.
+        add_action('wp_enqueue_scripts', [$this, 'enqueueConsentAssets'], 5);
+        add_action('wp_footer', [$this->consentBanner, 'render'], 5);
 
-            // Enqueue consent banner assets
-            add_action('wp_enqueue_scripts', [$this, 'enqueueConsentAssets'], 5);
-
-            // Render consent banner in footer
-            add_action('wp_footer', [$this->consentBanner, 'render'], 5);
-
-            // Inject Google Consent Mode v2 defaults (must be before any gtag call)
-            if (!empty($settings['gcm_v2_enabled'])) {
-                add_action('wp_enqueue_scripts', [$this, 'injectGoogleConsentModeDefaults'], 1);
-            }
+        if (!empty($settings['gcm_v2_enabled'])) {
+            // Must precede any gtag calls / GTM loading.
+            add_action('wp_enqueue_scripts', [$this, 'injectGoogleConsentModeDefaults'], 1);
         }
     }
 
@@ -193,15 +190,18 @@ class AnalyticsModule implements ExecuteHooksFrontend, ModuleInterface
             wp_add_inline_style('seopulse-consent', $custom_css);
         }
 
+        $settings = $this->consentManager->getSettings();
+
+        // Guarantee that Consent Mode defaults are loaded before seopulse-consent.js
+        $deps = !empty($settings['gcm_v2_enabled']) ? ['seopulse-gcm-defaults'] : [];
+
         wp_enqueue_script(
             'seopulse-consent',
             SEOPULSE_PLUGIN_URL . 'assets/js/seopulse-consent.js',
-            [],
+            $deps,
             $version,
-            false, // Load in head to prevent FOUC
+            false, // head
         );
-
-        $settings = $this->consentManager->getSettings();
 
         wp_localize_script(
             'seopulse-consent',
@@ -214,22 +214,7 @@ class AnalyticsModule implements ExecuteHooksFrontend, ModuleInterface
                     'theme'         => $settings['theme'] ?? 'light',
                     'gcmV2'         => !empty($settings['gcm_v2_enabled']),
                 ],
-                'scripts'  => [
-                    'gtm_id' => (!empty($settings['gtm_enabled']) && !empty($settings['gtm_id']))
-                        ? sanitize_text_field($settings['gtm_id']) : '',
-                    'ga4_id' => (!empty($settings['ga4_enabled']) && !empty($settings['ga4_id']))
-                        ? sanitize_text_field($settings['ga4_id']) : '',
-                    'matomo' => (!empty($settings['matomo_enabled'])
-                        && AnalyticsTracking::normalizeMatomoUrl((string) ($settings['matomo_url'] ?? '')) !== ''
-                        && AnalyticsTracking::normalizeMatomoSiteId((string) ($settings['matomo_site_id'] ?? '')) !== '')
-                        ? [
-                            'url'     => AnalyticsTracking::normalizeMatomoUrl((string) $settings['matomo_url']),
-                            'site_id' => AnalyticsTracking::normalizeMatomoSiteId((string) $settings['matomo_site_id']),
-                        ] : null,
-                    'clarity_id' => !empty($settings['clarity_enabled'])
-                        ? AnalyticsTracking::normalizeClarityId((string) ($settings['clarity_id'] ?? '')) : '',
-                    'custom_code' => $this->getCustomCodeForJs($settings),
-                ],
+                'scripts'  => $this->getScriptsForJs($settings),
                 'i18n'     => [
                     'bannerTitle'        => $settings['banner_title'] ?: __('We respect your privacy', 'seopulse'),
                     'bannerDescription'  => $settings['banner_description'] ?: __('We use cookies to improve your experience, analyze traffic, and personalize content. You can choose which categories of cookies you accept.', 'seopulse'),
@@ -257,6 +242,40 @@ class AnalyticsModule implements ExecuteHooksFrontend, ModuleInterface
                 ],
             ],
         );
+    }
+
+    /**
+     * Returns an array of tracking IDs for JavaScript, based on the provided settings and user consent.
+     * GA4 tracking ID is only returned if GTM is not used, as GA4 can be loaded via GTM.
+     *
+     * @param array<string, mixed> $settings
+     * @return array<string, mixed>
+     */
+    private function getScriptsForJs(array $settings): array
+    {
+        // Users who are excluded (admins, specific roles) do not receive any trackers.
+        $excluded = $this->tracking->should_exclude_current_user();
+
+        $gtm_id = trim((string) ($settings['gtm_id'] ?? ''));
+        $gtm_id = (!$excluded && !empty($settings['gtm_enabled']) && preg_match('/^GTM-[A-Z0-9]+$/', $gtm_id) === 1)
+            ? $gtm_id : '';
+
+        $ga4_id = trim((string) ($settings['ga4_id'] ?? ''));
+        $ga4_id = (!$excluded && $gtm_id === '' && !empty($settings['ga4_enabled']) && preg_match('/^G-[A-Z0-9]+$/', $ga4_id) === 1)
+            ? $ga4_id : '';
+
+        $matomo_url = AnalyticsTracking::normalizeMatomoUrl((string) ($settings['matomo_url'] ?? ''));
+        $matomo_id  = AnalyticsTracking::normalizeMatomoSiteId((string) ($settings['matomo_site_id'] ?? ''));
+
+        return [
+            'gtm_id'      => $gtm_id,
+            'ga4_id'      => $ga4_id,
+            'matomo'      => (!$excluded && !empty($settings['matomo_enabled']) && $matomo_url !== '' && $matomo_id !== '')
+                ? ['url' => $matomo_url, 'site_id' => $matomo_id] : null,
+            'clarity_id'  => (!$excluded && !empty($settings['clarity_enabled']))
+                ? AnalyticsTracking::normalizeClarityId((string) ($settings['clarity_id'] ?? '')) : '',
+            'custom_code' => $this->getCustomCodeForJs($settings),
+        ];
     }
 
     /**

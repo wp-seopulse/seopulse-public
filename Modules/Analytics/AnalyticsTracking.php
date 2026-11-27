@@ -144,13 +144,20 @@ class AnalyticsTracking
     }
 
     /**
-     * Inject outbound link + download tracking scripts
+     * Track outbound links and file downloads.
+     *
+     * Via GTM: pushes events to the dataLayer (seopulse_file_download, seopulse_outbound_click)
+     * Without GTM: fallback to gtag('event') if GA4 is active directly.
+     * The script is identical for all visitors; consent is checked on click.
      */
     public function inject_event_tracking(): void
     {
         $settings = $this->getTrackingSettings();
 
-        if (empty($settings['ga4_enabled']) || empty($settings['ga4_id'])) {
+        $via_gtm = !empty($settings['gtm_enabled']) && !empty($settings['gtm_id']);
+        $via_ga4 = !$via_gtm && !empty($settings['ga4_enabled']) && !empty($settings['ga4_id']);
+
+        if (!$via_gtm && !$via_ga4) {
             return;
         }
 
@@ -165,57 +172,74 @@ class AnalyticsTracking
             return;
         }
 
-        $extensions = '';
-        if ($track_downloads) {
-            $raw_ext    = sanitize_text_field($settings['ga4_download_extensions'] ?? 'pdf,zip,doc,docx,xls,xlsx');
-            $ext_array  = array_filter(array_map('trim', explode(',', $raw_ext)));
-            $extensions = implode('|', array_map('preg_quote', $ext_array));
+        $raw_ext    = sanitize_text_field((string) ($settings['ga4_download_extensions'] ?? 'pdf,zip,doc,docx,xls,xlsx'));
+        $extensions = array_values(array_filter(
+            array_map('trim', explode(',', $raw_ext)),
+            static fn ($e) => preg_match('/^[A-Za-z0-9]{1,10}$/', $e) === 1,
+        ));
+
+        $config = wp_json_encode([
+            'outbound'   => $track_outbound,
+            'downloads'  => $track_downloads && $extensions !== [],
+            'extensions' => array_map('strtolower', $extensions),
+            'viaGtm'     => $via_gtm,
+        ]);
+
+        $js = <<<'JS'
+(function(){
+    var cfg = window.seopulseEvents || {};
+    var siteHost = window.location.hostname;
+    var dlRe = (cfg.downloads && cfg.extensions.length)
+        ? new RegExp('\\.(' + cfg.extensions.join('|') + ')$', 'i') : null;
+
+    // No consent module => allowed; otherwise requires "statistics".
+    function allowed(){
+        return !window.SEOPulseConsent || window.SEOPulseConsent.hasConsent('statistics');
+    }
+    function send(gtmEvent, gaEvent, params){
+        if (cfg.viaGtm) {
+            window.dataLayer = window.dataLayer || [];
+            var p = { event: gtmEvent };
+            for (var k in params) { p[k] = params[k]; }
+            window.dataLayer.push(p);
+        } else if (typeof window.gtag === 'function') {
+            window.gtag('event', gaEvent, params);
         }
+    }
+    document.addEventListener('click', function(e){
+        if (!allowed()) { return; }
+        var el = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+        if (!el) { return; }
+        var href = el.getAttribute('href') || '';
+        var path = href.split('#')[0].split('?')[0];
+        if (dlRe && dlRe.test(path)) {
+            send('seopulse_file_download', 'file_download', {
+                file_name: path.split('/').pop(),
+                file_extension: path.split('.').pop().toLowerCase(),
+                link_url: href
+            });
+            return;
+        }
+        if (cfg.outbound) {
+            try {
+                var host = new URL(href, window.location.href).hostname;
+                if (host && host !== siteHost) {
+                    send('seopulse_outbound_click', 'click', {
+                        event_category: 'outbound',
+                        event_label: href,
+                        transport_type: 'beacon',
+                        link_url: href
+                    });
+                }
+            } catch (err) {}
+        }
+    }, true);
+})();
+JS;
 
-        $outbound_js  = $track_outbound ? 'true' : 'false';
-        $download_js  = $track_downloads ? 'true' : 'false';
-        $ext_regex_js = !empty($extensions) ? esc_js($extensions) : '';
-
-        $script = sprintf(
-            "(function(){
-                var trackOutbound  = %s;
-                var trackDownloads = %s;
-                var dlExtensions   = /\\.(%s)(\?.*)?$/i;
-                var siteHost       = window.location.hostname;
-                document.addEventListener('click', function(e) {
-                    var el = e.target.closest('a[href]');
-                    if (!el) return;
-                    var href = el.getAttribute('href') || '';
-                    if (trackDownloads && dlExtensions.test(href)) {
-                        gtag('event', 'file_download', {
-                            file_name: href.split('/').pop().split('?')[0],
-                            file_extension: href.split('.').pop().split('?')[0].toLowerCase(),
-                            link_url: href
-                        });
-                        return;
-                    }
-                    if (trackOutbound) {
-                        try {
-                            var linkHost = new URL(href, window.location.href).hostname;
-                            if (linkHost && linkHost !== siteHost) {
-                                gtag('event', 'click', {
-                                    event_category: 'outbound',
-                                    event_label: href,
-                                    transport_type: 'beacon'
-                                });
-                            }
-                        } catch(err) {}
-                    }
-                }, true);
-            })();",
-            $outbound_js,
-            $download_js,
-            $ext_regex_js,
-        );
-
-        wp_register_script('seopulse-ga4-events', false, ['google-analytics-gtag'], SEOPULSE_VERSION, true);
-        wp_enqueue_script('seopulse-ga4-events');
-        wp_add_inline_script('seopulse-ga4-events', $script);
+        wp_register_script('seopulse-events', false, [], SEOPULSE_VERSION, true);
+        wp_enqueue_script('seopulse-events');
+        wp_add_inline_script('seopulse-events', 'window.seopulseEvents=' . $config . ';' . $js);
     }
 
     /**
@@ -425,6 +449,10 @@ class AnalyticsTracking
     {
         $tracking = $this->getTrackingSettings();
 
+        if (!empty($tracking['gtm_enabled']) && !empty($tracking['gtm_id'])) {
+            return;
+        }
+
         if (empty($tracking['ga4_enabled']) || empty($tracking['ga4_id'])) {
             return;
         }
@@ -457,9 +485,6 @@ class AnalyticsTracking
         );
 
         wp_add_inline_script('google-analytics-gtag', $inline_script);
-
-        // Event tracking (depends on gtag being loaded)
-        $this->inject_event_tracking();
     }
 }
 ?>
